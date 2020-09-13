@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/nav_characters"
+    app:startDestination="@id/characterListFragment"
+    >
+
+    <fragment
+        android:id="@+id/characterListFragment"
+        android:name="es.i12capea.rickandmortyapiclient.presentation.characters.CharacterListFragment"
+        android:label="CharacterListFragment" >
+        <action
+            android:id="@+id/action_characterListFragment_to_characterDetailFragment"
+            app:destination="@id/characterDetailFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim"
+            app:popUpTo="@+id/characters_list_fragment"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/characterDetailFragment"
+        android:name="es.i12capea.rickandmortyapiclient.presentation.characters.CharacterDetailFragment"
+        android:label="CharacterDetailFragment" >
+        <argument
+            android:name="character"
+            app:argType="es.i12capea.rickandmortyapiclient.presentation.entities.Character"
+            app:nullable="true"
+            android:defaultValue="@null" />
+    </fragment>
+</navigation>
