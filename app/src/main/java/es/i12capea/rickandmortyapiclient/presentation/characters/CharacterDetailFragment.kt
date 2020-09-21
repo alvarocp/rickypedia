@@ -2,6 +2,7 @@ package es.i12capea.rickandmortyapiclient.presentation.characters
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,6 +25,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import es.i12capea.rickandmortyapiclient.R
 import es.i12capea.rickandmortyapiclient.presentation.characters.state.CharactersStateEvent
 import es.i12capea.rickandmortyapiclient.presentation.common.displayErrorDialog
+import es.i12capea.rickandmortyapiclient.presentation.entities.Character
 import kotlinx.android.synthetic.main.character_detail_scroll_layout.*
 import kotlinx.android.synthetic.main.fragment_character_detail.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -59,6 +61,15 @@ class CharacterDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        arguments?.let {bundle ->
+            val charId= bundle.getString("characterId")?.toInt()
+
+            charId?.let {
+                viewModel.setStateEvent(CharactersStateEvent.GetCharacter(it))
+            }
+        }
+
+
         args.character?.let { character ->
             sharedElementEnterTransition = TransitionInflater.from(context)
                 .inflateTransition(android.R.transition.move)
@@ -66,7 +77,6 @@ class CharacterDetailFragment : Fragment() {
                     override fun onTransitionEnd(transition: Transition) {
                         viewModel.setStateEvent(CharactersStateEvent.GetEpisodesFromCharacter(character))
                         collapsing_toolbar.title = character.name
-
                     }
                     override fun onTransitionResume(transition: Transition) {}
                     override fun onTransitionPause(transition: Transition) {}
@@ -86,6 +96,7 @@ class CharacterDetailFragment : Fragment() {
         initRecyclerView()
 
         subscribeObservers()
+
 
 
         args.character?.let { character ->
@@ -143,6 +154,10 @@ class CharacterDetailFragment : Fragment() {
                 viewState.episodes?.let {
                     viewModel.setEpisodeList(it)
                 }
+                viewState.character?.let {
+                    setCharacterView(it)
+                    viewModel.setStateEvent(CharactersStateEvent.GetEpisodesFromCharacter(it))
+                }
             }
             dataState.loading.let {
 
@@ -157,6 +172,19 @@ class CharacterDetailFragment : Fragment() {
                 episodeListAdapter.submitList(it)
             }
         })
+    }
+
+    private fun setCharacterView(character: Character) {
+        expandedImage.apply {
+            Glide.with(this)
+                .load(character.image)
+                .into(expandedImage)
+        }
+
+        tv_status.text = character.status
+        tv_specie.text = character.species
+        tv_location_info.text = character.location.name
+        collapsing_toolbar.title = character.name
     }
 
 }

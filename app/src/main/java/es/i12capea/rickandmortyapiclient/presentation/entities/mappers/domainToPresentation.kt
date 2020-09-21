@@ -1,14 +1,28 @@
 package es.i12capea.rickandmortyapiclient.presentation.entities.mappers
 
-import es.i12capea.rickandmortyapiclient.data.api.models.episode.RemoteEpisode
-import es.i12capea.rickandmortyapiclient.data.mappers.toDomain
 import es.i12capea.rickandmortyapiclient.domain.entities.CharacterEntity
 import es.i12capea.rickandmortyapiclient.domain.entities.EpisodeEntity
 import es.i12capea.rickandmortyapiclient.domain.entities.LocationEntity
-import es.i12capea.rickandmortyapiclient.presentation.entities.Character
-import es.i12capea.rickandmortyapiclient.presentation.entities.Episode
-import es.i12capea.rickandmortyapiclient.presentation.entities.Location
-import es.i12capea.rickandmortyapiclient.presentation.entities.LocationShort
+import es.i12capea.rickandmortyapiclient.domain.entities.PageEntity
+import es.i12capea.rickandmortyapiclient.presentation.entities.*
+
+fun PageEntity<CharacterEntity>.characterPageEntityToPresentation() : Page<Character>{
+    return Page(
+        this.nextPage,
+        this.prevPage,
+        this.actualPage,
+        this.list.characterListToPresentation()
+    )
+}
+
+fun PageEntity<LocationEntity>.locationPageEntityToPresentation() : Page<Location>{
+    return Page(
+        this.nextPage,
+        this.prevPage,
+        this.actualPage,
+        this.list.locationListToPresentation()
+    )
+}
 
 fun List<CharacterEntity>.characterListToPresentation() : List<Character>{
     val characterList = ArrayList<Character>()
@@ -45,7 +59,7 @@ fun CharacterEntity.toPresentation() : Character{
         origin= LocationShort(origin.id, origin.name),
         location = LocationShort(location.id, location.name),
         image= image,
-        episode= episode
+        episodes= episode
     )
 }
 

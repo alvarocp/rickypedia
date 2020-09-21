@@ -15,6 +15,7 @@ fun <T> Call<T>.call(): T {
 
     val latch = CountDownLatch(1)
     var result: T? = null
+    var throwable : Throwable? = null
 
     val request = this.request().body()
     val method = this.request().method()
@@ -26,8 +27,8 @@ fun <T> Call<T>.call(): T {
 
     this.enqueue(object : Callback<T> {
         override fun onFailure(call: Call<T>, t: Throwable) {
+            throwable = RequestException()
             latch.countDown()
-            throw RequestException()
         }
 
         override fun onResponse(call: Call<T>, response: Response<T>) {
@@ -41,14 +42,18 @@ fun <T> Call<T>.call(): T {
                     latch.countDown()
                 }
                 false -> {
+                    throwable = ResponseException(response.code(), response.message())
                     latch.countDown()
-                    throw ResponseException(response.code(), response.message())
                 }
             }
         }
     })
 
     latch.await()
+    throwable?.let {
+        throw it
+    }
+
     return result as T
 }
 

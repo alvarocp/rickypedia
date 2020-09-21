@@ -9,19 +9,19 @@ import es.i12capea.rickandmortyapiclient.R
 
 
 fun Activity.displayToast(@StringRes message:Int){
-    Toast.makeText(this, message,Toast.LENGTH_LONG).show()
+    Toast.makeText(this, message,Toast.LENGTH_SHORT).show()
 }
 
 fun Fragment.displayToast(@StringRes message:Int){
-    Toast.makeText(this.context, message,Toast.LENGTH_LONG).show()
+    Toast.makeText(this.context, message,Toast.LENGTH_SHORT).show()
 }
 
 fun Activity.displayToast(message:String){
-    Toast.makeText(this,message,Toast.LENGTH_LONG).show()
+    Toast.makeText(this,message,Toast.LENGTH_SHORT).show()
 }
 
 fun Fragment.displayToast(message:String){
-    Toast.makeText(this.context,message,Toast.LENGTH_LONG).show()
+    Toast.makeText(this.context,message,Toast.LENGTH_SHORT).show()
 }
 
 fun Activity.displaySuccessDialog(message: String?){

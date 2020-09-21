@@ -1,13 +1,82 @@
 package es.i12capea.rickandmortyapiclient.data.mappers
 
-import android.util.Log
+import android.net.Uri
+import es.i12capea.rickandmortyapiclient.data.api.models.PageableResponse
 import es.i12capea.rickandmortyapiclient.data.api.models.character.RemoteCharacter
 import es.i12capea.rickandmortyapiclient.data.api.models.episode.RemoteEpisode
 import es.i12capea.rickandmortyapiclient.data.api.models.location.RemoteLocation
-import es.i12capea.rickandmortyapiclient.domain.entities.CharacterEntity
-import es.i12capea.rickandmortyapiclient.domain.entities.EpisodeEntity
-import es.i12capea.rickandmortyapiclient.domain.entities.LocationEntity
-import es.i12capea.rickandmortyapiclient.domain.entities.LocationShortEntity
+import es.i12capea.rickandmortyapiclient.domain.entities.*
+import java.net.URL
+
+fun PageableResponse<RemoteCharacter>.characterPageToDomain() : PageEntity<CharacterEntity>{
+    val next = getIdFromPage(this.info.next)
+    val prev = getIdFromPage(this.info.prev)
+
+    var actual = -1
+    next?.let {
+        actual = it -1
+    }
+    prev?.let {
+        actual = it +1
+    }
+
+    return PageEntity(
+        next,
+        prev,
+        actual,
+        this.results.charactersToDomain()
+    )
+}
+
+fun PageableResponse<RemoteEpisode>.episodePageToDomain() : PageEntity<EpisodeEntity>{
+    val next = getIdFromPage(this.info.next)
+    val prev = getIdFromPage(this.info.prev)
+
+    var actual = -1
+    next?.let {
+        actual = it -1
+    }
+    prev?.let {
+        actual = it +1
+    }
+
+    return PageEntity(
+        next,
+        prev,
+        actual,
+        this.results.episodesToDomain()
+    )
+}
+
+fun PageableResponse<RemoteLocation>.locationPageToDomain() : PageEntity<LocationEntity> {
+
+    val next = getIdFromPage(this.info.next)
+    val prev = getIdFromPage(this.info.prev)
+
+    var actual = -1
+    next?.let {
+        actual = it -1
+    }
+    prev?.let {
+        actual = it +1
+    }
+
+    return PageEntity (
+        next,
+        prev,
+        actual,
+        this.results.locationsToDomain()
+    )
+}
+
+fun getIdFromPage(url: String?) : Int?{
+    return if (url.isNullOrEmpty()){
+        null
+    } else{
+        val uri = Uri.parse(url)
+        uri.getQueryParameter("page")?.toInt()
+    }
+}
 
 fun getIdFromUrl(url: String?) : Int?{
 

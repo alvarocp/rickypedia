@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
@@ -33,7 +34,7 @@ class EpisodeListFragment (
         super.onCreate(savedInstanceState)
     }
 
-    private val viewModel : EpisodesViewModel by  viewModels()
+    private val viewModel : EpisodesViewModel by  activityViewModels()
 
     lateinit var episodeListAdapter : EpisodeListAdapter2
 

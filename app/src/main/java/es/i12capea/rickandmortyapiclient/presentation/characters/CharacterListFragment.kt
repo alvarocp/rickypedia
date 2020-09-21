@@ -7,24 +7,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.RequestManager
 import dagger.hilt.android.AndroidEntryPoint
 import es.i12capea.rickandmortyapiclient.R
-import es.i12capea.rickandmortyapiclient.domain.entities.CharacterEntity
 import es.i12capea.rickandmortyapiclient.presentation.characters.state.CharactersStateEvent
 import es.i12capea.rickandmortyapiclient.presentation.common.displayErrorDialog
 import es.i12capea.rickandmortyapiclient.presentation.entities.Character
-import kotlinx.android.synthetic.main.character_item.view.*
 import kotlinx.android.synthetic.main.character_list_fragment.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
@@ -83,8 +79,9 @@ class CharacterListFragment (
     fun subscribeObservers() {
         viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
             dataState.data?.let { data ->
-                data.characters?.let {
-                    viewModel.addToCharacterList(it)
+                data.lastPage?.let {
+                    viewModel.setActualPage(it)
+                    viewModel.addToCharacterList(it.list)
                 }
             }
 
@@ -114,7 +111,7 @@ class CharacterListFragment (
 
     private fun initRecyclerView(){
         rv_characters.apply {
-            layoutManager = GridLayoutManager(this@CharacterListFragment.context, 2)
+            layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
             characterListAdapter = CharacterListAdapter(this@CharacterListFragment, requestManager)
             adapter = characterListAdapter
 
@@ -122,10 +119,11 @@ class CharacterListFragment (
 
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                     super.onScrollStateChanged(recyclerView, newState)
-                    val layoutManager = recyclerView.layoutManager as GridLayoutManager
-                    val lastPosition = layoutManager.findLastVisibleItemPosition()
-                    if (lastPosition >= characterListAdapter.itemCount.minus(10)) {
-                        viewModel.setStateEvent(CharactersStateEvent.GetAllCharacters(viewModel.getActualPage() + 1 ))
+                    val layoutManager = recyclerView.layoutManager as StaggeredGridLayoutManager
+                    val lastPosition = IntArray(layoutManager.spanCount)
+                    layoutManager.findLastVisibleItemPositions(lastPosition)
+                    if (lastPosition[0] >= characterListAdapter.itemCount.minus(4)) {
+                        viewModel.setStateEvent(CharactersStateEvent.GetNextCharacterPage())
                         Log.d("A", "LastPositionReached")
                     }
                 }
@@ -148,7 +146,7 @@ class CharacterListFragment (
                 viewModel.setRecyclerState(null)
             }
         } ?: kotlin.run {
-            viewModel.setStateEvent(CharactersStateEvent.GetAllCharacters())
+            viewModel.setStateEvent(CharactersStateEvent.GetNextCharacterPage())
             Log.d(TAG, "onViewCreated without characters")
         }
     }

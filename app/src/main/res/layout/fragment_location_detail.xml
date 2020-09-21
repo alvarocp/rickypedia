@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <include android:id="@+id/location_item"
+        layout="@layout/location_item" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_characters_header"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/location_item"
+        app:layout_constraintBottom_toTopOf="@id/rv_characters_location"
+        android:textSize="16sp"
+        android:text="@string/characters_belongin_there"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_characters_location"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_characters_header"
+/>
+</androidx.constraintlayout.widget.ConstraintLayout>

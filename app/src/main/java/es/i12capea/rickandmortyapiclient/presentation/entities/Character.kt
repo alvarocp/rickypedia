@@ -14,6 +14,6 @@ data class Character(
     val origin: LocationShort,
     val location : LocationShort,
     val image: String,
-    val episode: List<Int>
+    val episodes: List<Int>
 ) : Parcelable{
 }

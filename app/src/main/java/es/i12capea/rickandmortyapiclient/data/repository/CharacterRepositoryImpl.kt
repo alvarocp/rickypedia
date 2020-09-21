@@ -2,8 +2,10 @@ package es.i12capea.rickandmortyapiclient.data.repository
 
 import es.i12capea.rickandmortyapiclient.data.api.CharacterApi
 import es.i12capea.rickandmortyapiclient.data.api.call
+import es.i12capea.rickandmortyapiclient.data.mappers.characterPageToDomain
 import es.i12capea.rickandmortyapiclient.data.mappers.toDomain
 import es.i12capea.rickandmortyapiclient.domain.entities.CharacterEntity
+import es.i12capea.rickandmortyapiclient.domain.entities.PageEntity
 import es.i12capea.rickandmortyapiclient.domain.repositories.CharacterRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -15,19 +17,13 @@ class CharacterRepositoryImpl @Inject constructor(
     private val characterApi: CharacterApi
 ) : CharacterRepository{
 
-    override suspend fun getAllCharacters(page: Int?): Flow<List<CharacterEntity>> {
+    override suspend fun getCharactersAtPage(page: Int?): Flow<PageEntity<CharacterEntity>> {
         return flow{
 
             val result = characterApi.getAllCharacters(page)
                 .call()
 
-            val list = ArrayList<CharacterEntity>()
-
-            for(c in result.results){
-                list.add(c.toDomain())
-            }
-
-            emit(list)
+            emit(result.characterPageToDomain())
         }
     }
 
@@ -38,7 +34,7 @@ class CharacterRepositoryImpl @Inject constructor(
 
             val list = ArrayList<CharacterEntity>()
 
-            for (c in result.results) {
+            for (c in result) {
                 list.add(c.toDomain())
             }
 

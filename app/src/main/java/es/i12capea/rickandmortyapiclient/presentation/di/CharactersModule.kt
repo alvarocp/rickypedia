@@ -7,10 +7,8 @@ import dagger.hilt.android.components.ActivityRetainedComponent
 import es.i12capea.rickandmortyapiclient.data.api.CharacterApi
 import es.i12capea.rickandmortyapiclient.data.repository.CharacterRepositoryImpl
 import es.i12capea.rickandmortyapiclient.domain.repositories.CharacterRepository
-import es.i12capea.rickandmortyapiclient.domain.usecases.GetAllCharactersUseCase
-import es.i12capea.rickandmortyapiclient.domain.usecases.GetEpisodesUseCase
-import es.i12capea.rickandmortyapiclient.presentation.characters.CharactersViewModel
-import javax.inject.Singleton
+import es.i12capea.rickandmortyapiclient.domain.usecases.GetCharacterUseCase
+import es.i12capea.rickandmortyapiclient.domain.usecases.GetCharactersInPage
 
 
 @Module
@@ -24,8 +22,13 @@ class CharactersModule {
     }
 
     @Provides
-    fun provideGetAllCharactersUseCase(charactersRepository: CharacterRepository) : GetAllCharactersUseCase{
-        return GetAllCharactersUseCase(charactersRepository)
+    fun provideGetAllCharactersUseCase(charactersRepository: CharacterRepository) : GetCharactersInPage{
+        return GetCharactersInPage(charactersRepository)
+    }
+
+    @Provides
+    fun provideGetCharacterUseCase(charactersRepository: CharacterRepository) : GetCharacterUseCase {
+        return GetCharacterUseCase(charactersRepository)
     }
 
 }

@@ -5,6 +5,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import es.i12capea.rickandmortyapiclient.common.DataState
+import es.i12capea.rickandmortyapiclient.domain.exceptions.PredicateNotSatisfiedException
+import es.i12capea.rickandmortyapiclient.domain.exceptions.RequestException
+import es.i12capea.rickandmortyapiclient.domain.exceptions.ResponseException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -30,7 +33,7 @@ abstract class BaseViewModel<StateEvent, ViewState> : ViewModel(),
     }
 
     fun setViewState(viewState: ViewState) {
-        _viewState.postValue(viewState)
+        _viewState.value = (viewState)
     }
 
     abstract fun setStateEvent(stateEvent: StateEvent)
@@ -48,8 +51,22 @@ abstract class BaseViewModel<StateEvent, ViewState> : ViewModel(),
         jobs[methodName] = job
     }
 
+    fun removeJobFromList(methodName: String){
+        Log.d("JOB", "Remove from list")
+        jobs.remove(methodName)
+    }
+
     fun cancelJob(methodName: String){
         getJob(methodName)?.cancel()
+    }
+
+    fun clearCompletedJobs(){
+        Log.d("JOB", "Clear completed jobs")
+        for((methodName, job) in jobs){
+            if(job.isCompleted){
+                jobs.remove(methodName)
+            }
+        }
     }
 
     fun getJob(methodName: String): Job? {
@@ -74,5 +91,37 @@ abstract class BaseViewModel<StateEvent, ViewState> : ViewModel(),
         super.onCleared()
         Log.d(TAG, "Se limpia")
         cancelActiveJobs()
+    }
+
+    fun handleError(cause: Throwable){
+        when(cause){
+            is RequestException -> {
+                dataState.postValue(
+                    DataState.error(1, "No se ha podido realizar la conexión.")
+                )
+            }
+            is ResponseException -> {
+                dataState.postValue(
+                    DataState.error(2, "Error en la respuesta de servidor.")
+                )
+            }
+            is PredicateNotSatisfiedException -> {
+                dataState.postValue(
+                    DataState.error(3, "No se ha cumplido los predicados.")
+                )
+            }
+            else -> {
+                dataState.postValue(
+                    DataState.error(9999, "Error desconocido")
+                )
+            }
+        }
+    }
+
+    fun handleCompletion(cause: Throwable?){
+        cause?.let {
+            handleError(it)
+        }
+        dataState.postValue(DataState.loading(false))
     }
 }

@@ -6,13 +6,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityRetainedComponent
 import es.i12capea.rickandmortyapiclient.data.api.EpisodesApi
 import es.i12capea.rickandmortyapiclient.data.repository.EpisodeRepositoryImpl
-import es.i12capea.rickandmortyapiclient.domain.repositories.CharacterRepository
 import es.i12capea.rickandmortyapiclient.domain.repositories.EpisodeRepository
-import es.i12capea.rickandmortyapiclient.domain.usecases.GetAllCharactersUseCase
 import es.i12capea.rickandmortyapiclient.domain.usecases.GetAllEpisodesUseCase
 import es.i12capea.rickandmortyapiclient.domain.usecases.GetEpisodesUseCase
-import es.i12capea.rickandmortyapiclient.presentation.episodes.EpisodesViewModel
-import javax.inject.Singleton
 
 @Module
 @InstallIn(ActivityRetainedComponent::class)
