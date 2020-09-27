@@ -33,6 +33,15 @@
             app:nullable="true" />
         <deepLink
             android:id="@+id/deepLink"
-            app:uri="https://www.rickandmortyapiclient.com/character/{characterId}" />
+            app:uri="https://www.rickandmortyapiclient.com/characterDetail/{characterId}/{characterName}/{characterImage}" />
+        <argument
+            android:name="characterId"
+            app:argType="integer" />
+        <argument
+            android:name="characterImage"
+            app:argType="string" />
+        <argument
+            android:name="characterName"
+            app:argType="string" />
     </fragment>
 </navigation>

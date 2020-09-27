@@ -24,7 +24,16 @@ class MainActivity : AppCompatActivity() {
 
         bottom_navigation.setupWithNavController(navController)
 
-        bottom_navigation.setOnNavigationItemReselectedListener {  }
+        bottom_navigation.setOnNavigationItemReselectedListener {
+
+        }
+
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            when (destination.id) {
+                R.id.characterListFragment, R.id.locationListFragment, R.id.episodeListFragment -> bottom_navigation.visibility = View.VISIBLE
+                else -> bottom_navigation.visibility = View.GONE
+            }
+        }
     }
     
 }

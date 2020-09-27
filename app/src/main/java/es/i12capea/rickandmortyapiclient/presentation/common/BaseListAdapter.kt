@@ -1,4 +1,4 @@
-package es.i12capea.rickandmortyapiclient.presentation
+package es.i12capea.rickandmortyapiclient.presentation.common
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -9,9 +9,9 @@ import java.util.ArrayList
 
 
 abstract class BaseListAdapter<T>(
-    private val interaction: Interaction<T>? = null,
     itemsSame: (T, T) -> Boolean,
-    contentsSame: (T, T) -> Boolean
+    contentsSame: (T, T) -> Boolean,
+    private val interaction: Interaction<T>? = null
 ) : ListAdapter<T, RecyclerView.ViewHolder>(object : DiffUtil.ItemCallback<T>() {
     override fun areItemsTheSame(oldItem: T, newItem: T): Boolean = itemsSame(oldItem, newItem)
     override fun areContentsTheSame(oldItem: T, newItem: T): Boolean = contentsSame(oldItem, newItem)

@@ -14,5 +14,18 @@
     <fragment
         android:id="@+id/episodeDetailFragment"
         android:name="es.i12capea.rickandmortyapiclient.presentation.episodes.EpisodeDetailFragment"
-        android:label="EpisodeDetailFragment" />
+        android:label="EpisodeDetailFragment">
+        <argument
+            android:name="episode"
+            android:defaultValue="@null"
+            app:argType="es.i12capea.rickandmortyapiclient.presentation.entities.Episode"
+            app:nullable="true" />
+        <deepLink
+            android:id="@+id/deepLink4"
+            app:uri="https://www.rickandmortyapiclient.com/episodeDetail/{episodeId}" />
+        <argument
+            android:name="episodeId"
+            app:argType="integer"
+            android:defaultValue="0" />
+    </fragment>
 </navigation>

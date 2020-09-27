@@ -10,5 +10,6 @@ data class EpisodesViewState(
     var characters: List<Character>? = null,
     var character: Character? = null,
     var layoutManagerState: Parcelable? = null,
-    var episodes: List<Episode>? = null
+    var episodes: List<Episode>? = null,
+    var episode: Episode? = null
 )

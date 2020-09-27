@@ -1,15 +1,16 @@
-package es.i12capea.rickandmortyapiclient.presentation.characters
+package es.i12capea.rickandmortyapiclient.presentation.episodes
 
+import android.os.Bundle
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import es.i12capea.rickandmortyapiclient.R
 import es.i12capea.rickandmortyapiclient.presentation.entities.Episode
 import kotlinx.android.synthetic.main.episode_item.view.*
-import kotlinx.coroutines.*
 
 class EpisodeListAdapter(private val interaction: Interaction? = null) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -67,12 +68,18 @@ class EpisodeListAdapter(private val interaction: Interaction? = null) :
     ) : RecyclerView.ViewHolder(itemView) {
 
         fun bind(item: Episode) = with(itemView) {
-            itemView.setOnClickListener {
-                interaction?.onItemSelected(absoluteAdapterPosition, item)
-            }
 
             itemView.tv_title.text = item.name
             itemView.tv_episode.text = item.episode
+
+            setOnClickListener{
+
+                val bundle = Bundle()
+                bundle.putParcelable("episode", item)
+                findNavController().navigate(R.id.action_episodeListFragment_to_episodeDetailFragment, bundle)
+
+                interaction?.onItemSelected(absoluteAdapterPosition, item)
+            }
         }
     }
 

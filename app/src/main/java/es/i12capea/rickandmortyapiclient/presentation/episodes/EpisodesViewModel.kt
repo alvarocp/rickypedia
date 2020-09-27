@@ -4,9 +4,15 @@ import androidx.hilt.lifecycle.ViewModelInject
 import es.i12capea.rickandmortyapiclient.common.DataState
 import es.i12capea.rickandmortyapiclient.presentation.entities.Character
 import es.i12capea.rickandmortyapiclient.domain.usecases.GetAllEpisodesUseCase
+import es.i12capea.rickandmortyapiclient.domain.usecases.GetCharactersInEpisodeUseCase
+import es.i12capea.rickandmortyapiclient.domain.usecases.GetEpisodeUseCase
+import es.i12capea.rickandmortyapiclient.domain.usecases.GetEpisodesUseCase
 import es.i12capea.rickandmortyapiclient.presentation.common.BaseViewModel
 import es.i12capea.rickandmortyapiclient.presentation.entities.Episode
+import es.i12capea.rickandmortyapiclient.presentation.entities.mappers.characterListToPresentation
 import es.i12capea.rickandmortyapiclient.presentation.entities.mappers.episodeListToPresentation
+import es.i12capea.rickandmortyapiclient.presentation.entities.mappers.toDomain
+import es.i12capea.rickandmortyapiclient.presentation.entities.mappers.toPresentation
 import es.i12capea.rickandmortyapiclient.presentation.episodes.state.EpisodesStateEvent
 import es.i12capea.rickandmortyapiclient.presentation.episodes.state.EpisodesViewState
 import kotlinx.coroutines.*
@@ -15,7 +21,9 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onCompletion
 
 class EpisodesViewModel @ViewModelInject constructor(
-    private val getAllEpisodesUseCase: GetAllEpisodesUseCase
+    private val getAllEpisodesUseCase: GetAllEpisodesUseCase,
+    private val getCharactersInEpisodeUseCase: GetCharactersInEpisodeUseCase,
+    private val getEpisodeUseCase: GetEpisodeUseCase
 ) : BaseViewModel<EpisodesStateEvent, EpisodesViewState>(){
 
     @ExperimentalCoroutinesApi
@@ -37,10 +45,53 @@ class EpisodesViewModel @ViewModelInject constructor(
                             handleCollectEpisodes(it.episodeListToPresentation())
                         }
                 }
+                is EpisodesStateEvent.GetCharactersInEpisode -> {
+                    getCharactersInEpisodeUseCase.invoke(stateEvent.episode.toDomain())
+                        .flowOn(Dispatchers.IO)
+                        .onCompletion { cause ->
+                            withContext(Dispatchers.Main){
+                                handleCompletion(cause)
+                            } }
+                        .collect {
+                            handleCollectCharacters(it.characterListToPresentation())
+                        }
+                }
+                is EpisodesStateEvent.GetEpisode -> {
+                    getEpisodeUseCase.invoke(stateEvent.id)
+                        .flowOn(Dispatchers.IO)
+                        .onCompletion { cause ->
+                            withContext(Dispatchers.Main){
+                                handleCompletion(cause)
+                            } }
+                        .collect {
+                            handleCollectEpisode(it.toPresentation())
+                        }
+                }
+
             }
         }
 
         addJob(jobName, job)
+    }
+
+    private fun handleCollectEpisode(episode: Episode) {
+        dataState.postValue(
+            DataState.success(
+                EpisodesViewState(
+                    episode = episode
+                )
+            )
+        )
+    }
+
+    private fun handleCollectCharacters(characters: List<Character>) {
+        dataState.postValue(
+            DataState.success(
+                EpisodesViewState(
+                    characters = characters
+                )
+            )
+        )
     }
 
     private fun handleCollectEpisodes(episodeList: List<Episode>) {
@@ -114,5 +165,15 @@ class EpisodesViewModel @ViewModelInject constructor(
 
     override fun initNewViewState(): EpisodesViewState {
         return EpisodesViewState()
+    }
+
+    fun setEpisode(episode: Episode){
+        val update = getCurrentViewStateOrNew()
+        update.episode = episode
+        setViewState(update)
+    }
+
+    fun getEpisode() : Episode?{
+        return getCurrentViewStateOrNew().episode
     }
 }

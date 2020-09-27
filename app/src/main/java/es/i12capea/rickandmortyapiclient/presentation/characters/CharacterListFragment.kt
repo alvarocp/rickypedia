@@ -6,13 +6,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.fragment.FragmentNavigatorExtras
-import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.RequestManager
@@ -20,15 +16,13 @@ import dagger.hilt.android.AndroidEntryPoint
 import es.i12capea.rickandmortyapiclient.R
 import es.i12capea.rickandmortyapiclient.presentation.characters.state.CharactersStateEvent
 import es.i12capea.rickandmortyapiclient.presentation.common.displayErrorDialog
-import es.i12capea.rickandmortyapiclient.presentation.entities.Character
 import kotlinx.android.synthetic.main.character_list_fragment.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class CharacterListFragment (
-) : Fragment(),
-    CharacterListAdapter.Interaction
+) : Fragment()
 {
 
     val TAG = "Pruebas"
@@ -39,17 +33,7 @@ class CharacterListFragment (
 
     private val viewModel : CharactersViewModel by  activityViewModels()
 
-    override fun onItemSelected(position: Int, item: Character, imageView: ImageView) {
-
-        val extras = FragmentNavigatorExtras(
-            imageView to imageView.transitionName
-        )
-        val direction = CharacterListFragmentDirections.actionCharacterListFragmentToCharacterDetailFragment(
-            character = item
-        )
-        findNavController().navigate(direction, extras)
-    }
-
+    @Inject
     lateinit var characterListAdapter : CharacterListAdapter
 
     @ExperimentalCoroutinesApi
@@ -112,7 +96,6 @@ class CharacterListFragment (
     private fun initRecyclerView(){
         rv_characters.apply {
             layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
-            characterListAdapter = CharacterListAdapter(this@CharacterListFragment, requestManager)
             adapter = characterListAdapter
 
             addOnScrollListener(object: RecyclerView.OnScrollListener(){

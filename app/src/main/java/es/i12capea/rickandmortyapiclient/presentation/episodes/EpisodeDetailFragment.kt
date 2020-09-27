@@ -1,75 +1,70 @@
 package es.i12capea.rickandmortyapiclient.presentation.episodes
 
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.transition.Transition
-import androidx.transition.TransitionInflater
-import com.bumptech.glide.Glide
+import androidx.navigation.fragment.navArgs
+import androidx.recyclerview.widget.GridLayoutManager
 import com.bumptech.glide.RequestManager
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
 import dagger.hilt.android.AndroidEntryPoint
 import es.i12capea.rickandmortyapiclient.R
-import es.i12capea.rickandmortyapiclient.presentation.characters.CharacterListAdapter
-import es.i12capea.rickandmortyapiclient.presentation.characters.state.CharactersStateEvent
+import es.i12capea.rickandmortyapiclient.presentation.characters.CharacterListAdapterDeepLink
 import es.i12capea.rickandmortyapiclient.presentation.common.displayErrorDialog
-import es.i12capea.rickandmortyapiclient.presentation.entities.Character
-import kotlinx.android.synthetic.main.character_detail_scroll_layout.*
-import kotlinx.android.synthetic.main.fragment_character_detail.*
+import es.i12capea.rickandmortyapiclient.presentation.entities.Episode
+import es.i12capea.rickandmortyapiclient.presentation.episodes.state.EpisodesStateEvent
+import kotlinx.android.synthetic.main.episode_item.view.*
+import kotlinx.android.synthetic.main.fragment_episode_detail.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class EpisodeDetailFragment : Fragment(), CharacterListAdapter.Interaction
+class EpisodeDetailFragment : Fragment()
 {
 
-    @Inject lateinit var requestManager : RequestManager
+    @Inject
+    lateinit var requestManager : RequestManager
 
-    private lateinit var characterListAdapter : CharacterListAdapter
+    @Inject
+    lateinit var characterListAdapterDeepLink : CharacterListAdapterDeepLink
 
-    private val viewModel : EpisodesViewModel by  viewModels()
+    private val viewModel : EpisodesViewModel by  activityViewModels()
 
-    @ExperimentalCoroutinesApi
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
-
-    //private val args: CharacterDetailFragmentArgs by navArgs()
+    private val args: EpisodeDetailFragmentArgs by navArgs()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_character_detail, container, false)
+        return inflater.inflate(R.layout.fragment_episode_detail, container, false)
     }
 
     @ExperimentalCoroutinesApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        subscribeObservers()
         initRecyclerView()
 
-        subscribeObservers()
+        args.episode?.let {
+            onEpisodeChange(it)
+        } ?: kotlin.run {
+            if(args.episodeId > 0){
+                viewModel.setStateEvent(EpisodesStateEvent.GetEpisode(args.episodeId))
+            }
+        }
 
     }
 
     private fun initRecyclerView(){
-        rv_episodes.apply {
-            layoutManager = LinearLayoutManager(this@EpisodeDetailFragment.context)
-            characterListAdapter = CharacterListAdapter(this@EpisodeDetailFragment, requestManager)
-            adapter = characterListAdapter
+        rv_characters_episode.apply {
+            layoutManager = GridLayoutManager(this@EpisodeDetailFragment.context, 2)
+            adapter = characterListAdapterDeepLink
         }
     }
 
@@ -79,6 +74,9 @@ class EpisodeDetailFragment : Fragment(), CharacterListAdapter.Interaction
             dataState.data?.let {viewState ->
                 viewState.characters?.let {
                     viewModel.setCharacterList(it)
+                }
+                viewState.episode?.let {
+                    onEpisodeChange(it)
                 }
             }
             dataState.loading.let {
@@ -91,13 +89,18 @@ class EpisodeDetailFragment : Fragment(), CharacterListAdapter.Interaction
 
         viewModel.viewState.observe(viewLifecycleOwner, Observer {viewState ->
             viewState.characters?.let {
-                characterListAdapter.submitList(it)
+                characterListAdapterDeepLink.submitList(it)
             }
         })
     }
 
-    override fun onItemSelected(position: Int, item: Character, imageView: ImageView) {
+    @ExperimentalCoroutinesApi
+    fun onEpisodeChange(it: Episode){
+        layout_episode.tv_title.text = it.name
+        layout_episode.tv_episode.text = it.episode
+        tv_air_date.text = it.air_date
 
+        viewModel.setStateEvent(EpisodesStateEvent.GetCharactersInEpisode(it))
     }
 
 }

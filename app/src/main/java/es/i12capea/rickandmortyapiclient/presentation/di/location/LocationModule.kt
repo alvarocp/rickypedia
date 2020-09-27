@@ -1,4 +1,4 @@
-package es.i12capea.rickandmortyapiclient.presentation.di
+package es.i12capea.rickandmortyapiclient.presentation.di.location
 
 import dagger.Module
 import dagger.Provides

@@ -9,7 +9,7 @@
         android:id="@+id/locationListFragment"
         android:name="es.i12capea.rickandmortyapiclient.presentation.locations.LocationListFragment"
         android:label="fragment_location_list"
-        tools:layout="@layout/fragment_location_list" >
+        tools:layout="@layout/fragment_location_list">
         <action
             android:id="@+id/action_locationListFragment_to_locationDetailFragment"
             app:destination="@id/locationDetailFragment" />
@@ -28,4 +28,7 @@
             android:id="@+id/deepLink2"
             app:uri="https://www.rickandmortyapiclient.com/locations/{id}" />
     </fragment>
+    <deepLink
+        android:id="@+id/deepLink3"
+        app:uri="https://www.rickandmortyapiclient.com/episodeDetail/{episodeId}" />
 </navigation>

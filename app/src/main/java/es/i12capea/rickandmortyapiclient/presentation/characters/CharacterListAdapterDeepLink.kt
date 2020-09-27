@@ -1,24 +1,30 @@
 package es.i12capea.rickandmortyapiclient.presentation.characters
 
-import android.os.Bundle
+import android.net.Uri
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import androidx.core.view.ViewCompat
+import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import dagger.Component
+import dagger.hilt.android.AndroidEntryPoint
 import es.i12capea.rickandmortyapiclient.R
+import es.i12capea.rickandmortyapiclient.presentation.common.navigateUriWithDefaultOptions
 import es.i12capea.rickandmortyapiclient.presentation.entities.Character
 import kotlinx.android.synthetic.main.character_item.view.*
 import javax.inject.Inject
 
-class CharacterListAdapter @Inject constructor(
+class CharacterListAdapterDeepLink @Inject constructor(
     private val requestManager: RequestManager
     ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -79,6 +85,10 @@ class CharacterListAdapter @Inject constructor(
                     .into(this)
             }
 
+            //itemView.setOnClickListener {
+            //    interaction?.onItemSelected(absoluteAdapterPosition, item, img_character)
+            //}
+
             itemView.txt_name.text = item.name
 
             setOnClickListener {
@@ -87,17 +97,10 @@ class CharacterListAdapter @Inject constructor(
                     img_character to img_character.transitionName
                 )
 
-                val bundle = Bundle()
-
-                bundle.putParcelable("character", item)
-
-                val direction = CharacterListFragmentDirections.actionCharacterListFragmentToCharacterDetailFragment(
-                    character = item,
-                    characterId = item.id,
-                    characterName = item.name,
-                    characterImage = item.image
+                findNavController().navigateUriWithDefaultOptions(
+                    Uri.parse("https://www.rickandmortyapiclient.com/characterDetail/${item.id}/${item.name}/${item.image.replace("/", "\\")}"),
+                    extras
                 )
-                findNavController().navigate(direction, extras)
             }
 
         }

@@ -1,44 +1,38 @@
 package es.i12capea.rickandmortyapiclient.presentation.locations
 
-import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.RequestManager
 import dagger.hilt.android.AndroidEntryPoint
 import es.i12capea.rickandmortyapiclient.R
-import es.i12capea.rickandmortyapiclient.presentation.characters.CharacterListAdapter
-import es.i12capea.rickandmortyapiclient.presentation.entities.Character
+import es.i12capea.rickandmortyapiclient.presentation.characters.CharacterListAdapterDeepLink
 import es.i12capea.rickandmortyapiclient.presentation.locations.state.LocationStateEvent
 import kotlinx.android.synthetic.main.fragment_location_detail.*
 import kotlinx.android.synthetic.main.location_item.view.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class LocationDetailFragment : Fragment(),
-CharacterListAdapter.Interaction
+class LocationDetailFragment : Fragment()
 {
-
-    override fun onItemSelected(position: Int, item: Character, imageView: ImageView) {
-        findNavController().navigate( Uri.parse("https://www.rickandmortyapiclient.com/character/${item.id}"))
-    }
 
     @Inject
     lateinit var requestManager: RequestManager
 
     private val args: LocationDetailFragmentArgs by navArgs()
+
     private val viewModel : LocationViewModel by  activityViewModels()
 
-    lateinit var characterListAdapter: CharacterListAdapter
+    @Inject
+    lateinit var characterListAdapterDeepLink: CharacterListAdapterDeepLink
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,6 +42,7 @@ CharacterListAdapter.Interaction
         return inflater.inflate(R.layout.fragment_location_detail, container, false)
     }
 
+    @ExperimentalCoroutinesApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -63,7 +58,6 @@ CharacterListAdapter.Interaction
             viewModel.setStateEvent(LocationStateEvent.GetCharactersInLocation(it))
         }
 
-
     }
 
     private fun subscribeObservers() {
@@ -72,9 +66,9 @@ CharacterListAdapter.Interaction
             dataState.data?.let { viewState ->
                 viewState.characters?.let {
                     viewModel.setCharactersInLocation(it)
-                    characterListAdapter.submitList(it)
                 }
             }
+
             dataState.loading.let {
 
             }
@@ -84,15 +78,17 @@ CharacterListAdapter.Interaction
         })
 
         viewModel.viewState.observe(viewLifecycleOwner, Observer { viewState ->
-
+            viewState.characters?.let {
+                characterListAdapterDeepLink.submitList(it)
+            }
         })
     }
 
     private fun initRecyclerView() {
         rv_characters_location.apply {
             layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
-            characterListAdapter = CharacterListAdapter(this@LocationDetailFragment, requestManager)
-            adapter = characterListAdapter
+            adapter = characterListAdapterDeepLink
+            characterListAdapterDeepLink.submitList(emptyList())
         }
     }
 }

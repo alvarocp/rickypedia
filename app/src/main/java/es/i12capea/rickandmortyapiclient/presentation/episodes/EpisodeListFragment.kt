@@ -7,36 +7,26 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import es.i12capea.rickandmortyapiclient.R
-import es.i12capea.rickandmortyapiclient.presentation.BaseListAdapter
+import es.i12capea.rickandmortyapiclient.presentation.common.BaseListAdapter
 import es.i12capea.rickandmortyapiclient.presentation.common.displayErrorDialog
 import es.i12capea.rickandmortyapiclient.presentation.entities.Episode
 import es.i12capea.rickandmortyapiclient.presentation.episodes.state.EpisodesStateEvent
 import kotlinx.android.synthetic.main.episode_list_fragment.*
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class EpisodeListFragment (
-) : Fragment(), BaseListAdapter.Interaction<Episode>
-{
-
-
-    override fun onItemSelected(position: Int, item: Episode) {
-        //findNavController().navigate()
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
+) : Fragment(){
 
     private val viewModel : EpisodesViewModel by  activityViewModels()
 
-    lateinit var episodeListAdapter : EpisodeListAdapter2
+    @Inject
+    lateinit var episodeListAdapter : EpisodeListAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -93,7 +83,6 @@ class EpisodeListFragment (
     private fun initRecyclerView(){
         rv_episodes.apply {
             layoutManager = LinearLayoutManager(this@EpisodeListFragment.context)
-            episodeListAdapter = EpisodeListAdapter2(this@EpisodeListFragment)
             adapter = episodeListAdapter
 
             addOnScrollListener(object: RecyclerView.OnScrollListener(){
