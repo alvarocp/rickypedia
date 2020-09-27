@@ -82,22 +82,26 @@ class CharacterListAdapter @Inject constructor(
             itemView.txt_name.text = item.name
 
             setOnClickListener {
+                val navController = findNavController()
+                if (navController.currentDestination?.id == R.id.characterListFragment) {
 
-                val extras = FragmentNavigatorExtras(
-                    img_character to img_character.transitionName
-                )
+                    val extras = FragmentNavigatorExtras(
+                        img_character to img_character.transitionName
+                    )
 
-                val bundle = Bundle()
+                    val bundle = Bundle()
 
-                bundle.putParcelable("character", item)
+                    bundle.putParcelable("character", item)
 
-                val direction = CharacterListFragmentDirections.actionCharacterListFragmentToCharacterDetailFragment(
-                    character = item,
-                    characterId = item.id,
-                    characterName = item.name,
-                    characterImage = item.image
-                )
-                findNavController().navigate(direction, extras)
+                    val direction = CharacterListFragmentDirections.actionCharacterListFragmentToCharacterDetailFragment(
+                        character = item,
+                        characterId = item.id,
+                        characterName = item.name,
+                        characterImage = item.image
+                    )
+
+                    navController.navigate(direction, extras)
+                }
             }
 
         }
