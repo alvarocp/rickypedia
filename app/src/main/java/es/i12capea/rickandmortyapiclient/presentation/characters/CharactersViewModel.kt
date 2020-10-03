@@ -2,6 +2,8 @@ package es.i12capea.rickandmortyapiclient.presentation.characters
 
 import android.os.Parcelable
 import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import es.i12capea.rickandmortyapiclient.common.DataState
 import es.i12capea.rickandmortyapiclient.domain.usecases.GetCharacterUseCase
 import es.i12capea.rickandmortyapiclient.presentation.entities.Character
@@ -26,11 +28,22 @@ class CharactersViewModel @ViewModelInject constructor(
     private val getCharacter: GetCharacterUseCase
 ) : BaseViewModel<CharactersStateEvent, CharactersViewState>(){
 
-    @ExperimentalCoroutinesApi
-    override fun setStateEvent(stateEvent: CharactersStateEvent)  {
-        clearCompletedJobs()
+    init {
+        val update = getCurrentViewStateOrNew()
+        update.lastPage = Page(
+            next = 1,
+            prev = null,
+            actual = 0,
+            list = emptyList()
+        )
+        update.characters = emptyList()
+        setViewState(update)
+    }
 
-        val jobName = when(stateEvent){
+
+
+    override fun getJobNameForEvent(stateEvent: CharactersStateEvent) : String?{
+        return when(stateEvent){
             is CharactersStateEvent.GetNextCharacterPage -> {
                 CharactersStateEvent.GetNextCharacterPage::class.java.name + getNextPage()
             }
@@ -40,71 +53,72 @@ class CharactersViewModel @ViewModelInject constructor(
             is CharactersStateEvent.GetCharacter -> {
                 CharactersStateEvent.GetCharacter::class.java.name
             }
-            else -> { "" }
+            else -> { null }
         }
+    }
 
-        getJob(jobName)?.let {
+    private suspend fun getNextCharacterFlow(nextPage: Int){
+        getCharacters.invoke(nextPage)
+            .flowOn(Dispatchers.IO)
+            .onCompletion { cause ->
+                handleCompletion(cause)
+            }
+            .collect {
+                handleCollectCharacters(it.characterPageEntityToPresentation())
+            }
+    }
 
-        } ?: kotlin.run {
-            val job = launch {
-                dataState.postValue(DataState.loading(true))
-
-                when(stateEvent){
-
-                    is CharactersStateEvent.GetNextCharacterPage -> {
-                        getNextPage()?.let {nextPage ->
-                            getCharacters.invoke(nextPage)
-                                .flowOn(Dispatchers.IO)
-                                .onCompletion { cause ->
-                                    withContext(Dispatchers.Main) {
-                                        handleCompletion(cause)
-                                    }
-                                }
-                                .collect{
-                                    handleCollectCharacters(it.characterPageEntityToPresentation())
-                                }
+    override fun getJobForEvent(stateEvent: CharactersStateEvent): Job? {
+        return launch {
+            when (stateEvent) {
+                is CharactersStateEvent.GetNextCharacterPage -> {
+                    getLastPage()?.let { currentPage ->
+                        currentPage.next?.let { nextPage ->
+                            getNextCharacterFlow(nextPage)
                         }
-                    }
-
-
-                    is CharactersStateEvent.GetEpisodesFromCharacter -> {
-                        getEpisodes.invoke(stateEvent.character.episodes)
-                            .flowOn(Dispatchers.IO)
-                            .onCompletion { cause -> withContext(Dispatchers.Main){
-                                handleCompletion(cause)
-                            } }
-                            .collect{
-                                handleCollectEpisodes(it.episodeListToPresentation())
-                            }
-                    }
-
-                    is CharactersStateEvent.GetCharacter -> {
-                        getCharacter.invoke(stateEvent.id)
-                            .flowOn(Dispatchers.IO)
-                            .onCompletion { cause -> withContext(Dispatchers.Main){
-                                handleCompletion(cause)
-                            } }
-                            .collect {
-                                handleCollectCharacter(it.toPresentation())
-                            }
+                    } ?: kotlin.run {
+                        setEpisodeList(emptyList())
+                        getNextCharacterFlow(1)
                     }
                 }
-            }
 
-            job.invokeOnCompletion {
-                removeJobFromList(jobName)
+                is CharactersStateEvent.GetEpisodesFromCharacter -> {
+                    getEpisodes(stateEvent.character.episodes)
+                        .flowOn(Dispatchers.IO)
+                        .onCompletion { cause ->
+                            handleCompletion(cause)
+                        }
+                        .collect {
+                            handleCollectEpisodes(it.episodeListToPresentation())
+                        }
+                }
+
+                is CharactersStateEvent.GetCharacter -> {
+                    getCharacter(stateEvent.id)
+                        .flowOn(Dispatchers.IO)
+                        .onCompletion { cause ->
+                            handleCompletion(cause)
+                        }
+                        .collect {
+                            handleCollectCharacter(it.toPresentation())
+                        }
+                }
             }
-            addJob(jobName, job)
         }
-
-
-
     }
 
     private fun handleCollectCharacter(character: Character) {
         dataState.postValue(DataState.success(
             CharactersViewState(
                 character = character
+            )
+        ))
+    }
+
+    fun setImageLoad(isLoad: Boolean){
+        dataState.postValue(DataState.success(
+            CharactersViewState(
+                isImageLoaded = isLoad
             )
         ))
     }
@@ -186,6 +200,10 @@ class CharactersViewModel @ViewModelInject constructor(
 
     fun getRecyclerState() : Parcelable? {
         return getCurrentViewStateOrNew().layoutManagerState
+    }
+
+    fun getLastPage() : Page<Character>?{
+        return getCurrentViewStateOrNew().lastPage
     }
 
     fun getNextPage() : Int? {

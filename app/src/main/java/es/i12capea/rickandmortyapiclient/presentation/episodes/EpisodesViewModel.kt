@@ -6,7 +6,6 @@ import es.i12capea.rickandmortyapiclient.presentation.entities.Character
 import es.i12capea.rickandmortyapiclient.domain.usecases.GetAllEpisodesUseCase
 import es.i12capea.rickandmortyapiclient.domain.usecases.GetCharactersInEpisodeUseCase
 import es.i12capea.rickandmortyapiclient.domain.usecases.GetEpisodeUseCase
-import es.i12capea.rickandmortyapiclient.domain.usecases.GetEpisodesUseCase
 import es.i12capea.rickandmortyapiclient.presentation.common.BaseViewModel
 import es.i12capea.rickandmortyapiclient.presentation.entities.Episode
 import es.i12capea.rickandmortyapiclient.presentation.entities.mappers.characterListToPresentation
@@ -26,21 +25,31 @@ class EpisodesViewModel @ViewModelInject constructor(
     private val getEpisodeUseCase: GetEpisodeUseCase
 ) : BaseViewModel<EpisodesStateEvent, EpisodesViewState>(){
 
-    @ExperimentalCoroutinesApi
-    override fun setStateEvent(stateEvent: EpisodesStateEvent)  {
-        cancelActiveJobs()
-        var jobName = ""
-        val job = launch {
-            dataState.postValue(DataState.loading(true))
 
+    override fun getJobNameForEvent(stateEvent: EpisodesStateEvent): String? {
+        return when(stateEvent){
+            is EpisodesStateEvent.GetAllEpisodes -> {
+                EpisodesStateEvent.GetAllEpisodes::class.java.name + stateEvent.page
+            }
+            is EpisodesStateEvent.GetCharactersInEpisode -> {
+                EpisodesStateEvent.GetCharactersInEpisode::class.java.name + stateEvent.episode.id
+            }
+            is EpisodesStateEvent.GetEpisode -> {
+                EpisodesStateEvent.GetEpisode::class.java.name + stateEvent.episodeId
+            }
+            else -> {null}
+        }
+    }
+
+    override fun getJobForEvent(stateEvent: EpisodesStateEvent): Job? {
+        return launch {
             when(stateEvent){
                 is EpisodesStateEvent.GetAllEpisodes -> {
-                    jobName = EpisodesStateEvent.GetAllEpisodes::class.java.name
                     getAllEpisodesUseCase.invoke(stateEvent.page)
                         .flowOn(Dispatchers.IO)
-                        .onCompletion { cause -> withContext(Dispatchers.Main){
+                        .onCompletion { cause ->
                             handleCompletion(cause)
-                        } }
+                        }
                         .collect{
                             handleCollectEpisodes(it.episodeListToPresentation())
                         }
@@ -49,30 +58,27 @@ class EpisodesViewModel @ViewModelInject constructor(
                     getCharactersInEpisodeUseCase.invoke(stateEvent.episode.toDomain())
                         .flowOn(Dispatchers.IO)
                         .onCompletion { cause ->
-                            withContext(Dispatchers.Main){
                                 handleCompletion(cause)
-                            } }
+                        }
                         .collect {
                             handleCollectCharacters(it.characterListToPresentation())
                         }
                 }
                 is EpisodesStateEvent.GetEpisode -> {
-                    getEpisodeUseCase.invoke(stateEvent.id)
+                    getEpisodeUseCase.invoke(stateEvent.episodeId)
                         .flowOn(Dispatchers.IO)
                         .onCompletion { cause ->
-                            withContext(Dispatchers.Main){
                                 handleCompletion(cause)
-                            } }
+                            }
                         .collect {
                             handleCollectEpisode(it.toPresentation())
                         }
                 }
-
             }
         }
-
-        addJob(jobName, job)
     }
+
+
 
     private fun handleCollectEpisode(episode: Episode) {
         dataState.postValue(

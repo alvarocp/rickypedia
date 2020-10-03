@@ -82,7 +82,7 @@ class AppModule {
             .baseUrl(Constants.BASE_URL)
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create(gson))
-            .callbackExecutor(Runnable::run)
+            //.callbackExecutor(Runnable::run)
     }
 
     @Provides

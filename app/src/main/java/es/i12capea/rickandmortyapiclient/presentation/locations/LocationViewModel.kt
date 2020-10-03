@@ -4,34 +4,27 @@ import androidx.hilt.lifecycle.ViewModelInject
 import es.i12capea.rickandmortyapiclient.common.DataState
 import es.i12capea.rickandmortyapiclient.domain.usecases.GetLocationsInPage
 import es.i12capea.rickandmortyapiclient.domain.usecases.GetCharactersInLocationUseCase
-import es.i12capea.rickandmortyapiclient.presentation.characters.state.CharactersStateEvent
 import es.i12capea.rickandmortyapiclient.presentation.common.BaseViewModel
 import es.i12capea.rickandmortyapiclient.presentation.entities.Character
 import es.i12capea.rickandmortyapiclient.presentation.entities.Location
 import es.i12capea.rickandmortyapiclient.presentation.entities.Page
 import es.i12capea.rickandmortyapiclient.presentation.entities.mappers.characterListToPresentation
-import es.i12capea.rickandmortyapiclient.presentation.entities.mappers.locationListToPresentation
 import es.i12capea.rickandmortyapiclient.presentation.entities.mappers.locationPageEntityToPresentation
 import es.i12capea.rickandmortyapiclient.presentation.entities.mappers.toDomain
 import es.i12capea.rickandmortyapiclient.presentation.locations.state.LocationStateEvent
 import es.i12capea.rickandmortyapiclient.presentation.locations.state.LocationViewState
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class LocationViewModel @ViewModelInject constructor (
     private val getLocationsInPage: GetLocationsInPage,
     private val getCharactersInLocationUseCase: GetCharactersInLocationUseCase
 ) : BaseViewModel<LocationStateEvent, LocationViewState>() {
 
-    @ExperimentalCoroutinesApi
-    override fun setStateEvent(stateEvent: LocationStateEvent) {
-
-        val jobName = when(stateEvent){
+    override fun getJobNameForEvent(stateEvent: LocationStateEvent): String? {
+        return when(stateEvent){
             is LocationStateEvent.GetNextLocationPage -> {
                 LocationStateEvent.GetNextLocationPage::class.java.name + getNextPage()
             }
@@ -39,57 +32,46 @@ class LocationViewModel @ViewModelInject constructor (
                 LocationStateEvent.GetCharactersInLocation::class.java.name + stateEvent.location.id
             }
         }
+    }
 
-        getJob(jobName)?.let {
-
-        } ?: kotlin.run {
-
-            val job = launch {
-                dataState.postValue(DataState.loading(true))
-
-                when(stateEvent){
-                    is LocationStateEvent.GetNextLocationPage -> {
-                        try {
-                            getNextPage()?.let {nextPage ->
-                                getLocationsInPage.invoke(nextPage)
-                                    .flowOn(Dispatchers.IO)
-                                    .onCompletion { cause -> withContext(Dispatchers.Main){
-                                        handleCompletion(cause)
-                                    } }
-                                    .collect{
-                                        handleCollectEpisodes(it.locationPageEntityToPresentation())
-                                    }
-                            }
-
-                        }catch (t: Throwable){
-                            handleError(t)
-                        }
-
-                    }
-
-                    is LocationStateEvent.GetCharactersInLocation -> {
-                        try {
-                            getCharactersInLocationUseCase.invoke(stateEvent.location.toDomain())
+    override fun getJobForEvent(stateEvent: LocationStateEvent): Job? {
+        return launch {
+            when(stateEvent){
+                is LocationStateEvent.GetNextLocationPage -> {
+                    try {
+                        getNextPage()?.let { nextPage ->
+                            getLocationsInPage.invoke(nextPage)
                                 .flowOn(Dispatchers.IO)
-                                .onCompletion { cause -> withContext(Dispatchers.Main){
+                                .onCompletion { cause ->
                                     handleCompletion(cause)
-                                } }
-                                .collect {
-                                    handleCollectCharacters(it.characterListToPresentation())
                                 }
-                        } catch (t: Throwable){
-                            handleError(t)
+                                .collect{
+                                    handleCollectEpisodes(it.locationPageEntityToPresentation())
+                                }
                         }
+                    }catch (t: Throwable){
+                        handleError(t)
+                    }
+                }
+
+                is LocationStateEvent.GetCharactersInLocation -> {
+                    try {
+                        getCharactersInLocationUseCase.invoke(stateEvent.location.toDomain())
+                            .flowOn(Dispatchers.IO)
+                            .onCompletion { cause ->
+                                handleCompletion(cause)
+                            }
+                            .collect {
+                                handleCollectCharacters(it.characterListToPresentation())
+                            }
+                    } catch (t: Throwable){
+                        handleError(t)
                     }
                 }
             }
-            job.invokeOnCompletion {
-                removeJobFromList(jobName)
-            }
-
-            addJob(jobName, job)
         }
     }
+
 
     private fun handleCollectCharacters(characters: List<Character>) {
         dataState.postValue(

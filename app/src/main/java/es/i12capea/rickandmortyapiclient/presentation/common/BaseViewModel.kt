@@ -5,6 +5,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import es.i12capea.rickandmortyapiclient.common.DataState
+import es.i12capea.rickandmortyapiclient.common.ErrorRym
+import es.i12capea.rickandmortyapiclient.common.Event
 import es.i12capea.rickandmortyapiclient.domain.exceptions.PredicateNotSatisfiedException
 import es.i12capea.rickandmortyapiclient.domain.exceptions.RequestException
 import es.i12capea.rickandmortyapiclient.domain.exceptions.ResponseException
@@ -20,6 +22,14 @@ abstract class BaseViewModel<StateEvent, ViewState> : ViewModel(),
 
     val TAG: String = "Pruebas"
 
+    private val isLoading : MutableLiveData<Boolean> = MutableLiveData(false)
+    fun isLoading() : LiveData<Boolean> = isLoading
+    fun setLoadingTrue() = isLoading.postValue(true)
+
+    private val error: MutableLiveData<Event<ErrorRym>> = MutableLiveData()
+
+    private val successMessage: MutableLiveData<Event<String>> = MutableLiveData()
+
     protected val _stateEvent: MutableLiveData<StateEvent> = MutableLiveData()
     protected val _viewState: MutableLiveData<ViewState> = MutableLiveData()
 
@@ -33,34 +43,64 @@ abstract class BaseViewModel<StateEvent, ViewState> : ViewModel(),
     }
 
     fun setViewState(viewState: ViewState) {
-        _viewState.value = (viewState)
+        _viewState.postValue(viewState)
     }
 
-    abstract fun setStateEvent(stateEvent: StateEvent)
+    open fun setStateEvent(stateEvent: StateEvent){
+        getJobNameForEvent(stateEvent)?.let { jobName ->
+            Log.d("JOB", "Jobname -> $jobName")
+            getJob(jobName)?.let {
+                Log.d("JOB", "Job $jobName already running")
+            } ?: kotlin.run {
+                isLoading.postValue(true)
+                Log.d("JOB", "Job $jobName not running, lets start")
+                getJobForEvent(stateEvent)?.let { job ->
+                    addJob(jobName,job)
+                    job.invokeOnCompletion {
+                        removeJobFromList(jobName)
+                    }
+                }
+            }
+        }
+    }
+
+    abstract fun getJobNameForEvent(stateEvent: StateEvent) : String?
+    abstract fun getJobForEvent(stateEvent: StateEvent) : Job?
 
     abstract fun initNewViewState(): ViewState
 
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO
 
-
     private val jobs: HashMap<String, Job> = HashMap()
 
-    fun addJob(methodName: String, job: Job){
+    private fun addJob(methodName: String, job: Job){
         cancelJob(methodName)
         jobs[methodName] = job
     }
 
-    fun removeJobFromList(methodName: String){
+    private fun logJobsName(){
+        for((methodName, job) in jobs) {
+            Log.d("JOB", "Job: $methodName")
+        }
+    }
+
+    private fun removeJobFromList(methodName: String){
         Log.d("JOB", "Remove from list")
         jobs.remove(methodName)
+        if (jobs.isEmpty()){
+            isLoading.postValue(false)
+        }
     }
 
-    fun cancelJob(methodName: String){
-        getJob(methodName)?.cancel()
+    private fun cancelJob(methodName: String){
+        getJob(methodName)?.let {
+            removeJobFromList(methodName)
+            it.cancel()
+        }
     }
 
-    fun clearCompletedJobs(){
+    private fun clearCompletedJobs(){
         Log.d("JOB", "Clear completed jobs")
         for((methodName, job) in jobs){
             if(job.isCompleted){
@@ -69,7 +109,7 @@ abstract class BaseViewModel<StateEvent, ViewState> : ViewModel(),
         }
     }
 
-    fun getJob(methodName: String): Job? {
+    private fun getJob(methodName: String): Job? {
         if(jobs.containsKey(methodName)){
             jobs[methodName]?.let {
                 return it
@@ -89,7 +129,7 @@ abstract class BaseViewModel<StateEvent, ViewState> : ViewModel(),
 
     override fun onCleared() {
         super.onCleared()
-        Log.d(TAG, "Se limpia")
+        Log.d(TAG, "Se limpia base viewModel")
         cancelActiveJobs()
     }
 
@@ -122,6 +162,5 @@ abstract class BaseViewModel<StateEvent, ViewState> : ViewModel(),
         cause?.let {
             handleError(it)
         }
-        dataState.postValue(DataState.loading(false))
     }
 }

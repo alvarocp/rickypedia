@@ -7,7 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -31,7 +31,7 @@ class CharacterListFragment (
     lateinit var requestManager: RequestManager
 
 
-    private val viewModel : CharactersViewModel by  activityViewModels()
+    private val viewModel : CharactersViewModel by viewModels()
 
     @Inject
     lateinit var characterListAdapter : CharacterListAdapter
@@ -41,7 +41,7 @@ class CharacterListFragment (
         super.onViewCreated(view, savedInstanceState)
 
         Log.d(TAG, "onViewCreated")
-
+        Log.d(TAG, savedInstanceState?.let { "savedInstanceState" } ?: "savedInstanceState null")
         subscribeObservers()
 
         rv_characters.adapter?.let {
@@ -50,6 +50,7 @@ class CharacterListFragment (
             initRecyclerView()
             handleCharacters()
         }
+
     }
 
     override fun onCreateView(
@@ -69,26 +70,22 @@ class CharacterListFragment (
                 }
             }
 
-            dataState.loading.let {
-                if(it){
-                    progress_bar.visibility = View.VISIBLE
-                }else{
-                    progress_bar.visibility = View.INVISIBLE
-                }
-            }
-
             dataState.error?.let {
                 this.displayErrorDialog(it.desc)
+            }
+        })
+
+        viewModel.isLoading().observe(viewLifecycleOwner, Observer {
+            if(it){
+                progress_bar.visibility = View.VISIBLE
+            }else{
+                progress_bar.visibility = View.INVISIBLE
             }
         })
 
         viewModel.viewState.observe(viewLifecycleOwner, Observer { viewState ->
             viewState.characters?.let {
                 characterListAdapter.submitList(it)
-            }
-
-            viewState.character?.let {
-
             }
         })
     }
@@ -123,11 +120,14 @@ class CharacterListFragment (
     @ExperimentalCoroutinesApi
     fun handleCharacters(){
         viewModel.getCharacterList()?.let { characters ->
-            viewModel.getRecyclerState()?.let { parcel ->
-                characterListAdapter.submitList(characters)
-                rv_characters.layoutManager?.onRestoreInstanceState(parcel)
-                viewModel.setRecyclerState(null)
+            viewModel.getActualPage()?.let { actualPage ->
+                viewModel.getRecyclerState()?.let { parcel ->
+                    characterListAdapter.submitList(characters)
+                    rv_characters.layoutManager?.onRestoreInstanceState(parcel)
+                    viewModel.setRecyclerState(null)
+                }
             }
+
         } ?: kotlin.run {
             viewModel.setStateEvent(CharactersStateEvent.GetNextCharacterPage())
             Log.d(TAG, "onViewCreated without characters")

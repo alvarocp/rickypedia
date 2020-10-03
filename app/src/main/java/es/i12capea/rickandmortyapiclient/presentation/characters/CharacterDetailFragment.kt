@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
@@ -29,6 +28,7 @@ import es.i12capea.rickandmortyapiclient.presentation.episodes.EpisodeListAdapte
 import es.i12capea.rickandmortyapiclient.presentation.episodes.EpisodeListAdapterDeepLink
 import kotlinx.android.synthetic.main.character_detail_scroll_layout.*
 import kotlinx.android.synthetic.main.fragment_character_detail.*
+import kotlinx.android.synthetic.main.fragment_character_detail.toolbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
 
@@ -41,7 +41,7 @@ class CharacterDetailFragment : Fragment() {
     @Inject
     lateinit var episodeListAdapter : EpisodeListAdapterDeepLink
 
-    private val viewModel : CharactersViewModel by  activityViewModels()
+    private val viewModel : CharactersViewModel by viewModels()
 
     private val args: CharacterDetailFragmentArgs by navArgs()
 
@@ -55,14 +55,7 @@ class CharacterDetailFragment : Fragment() {
             .inflateTransition(android.R.transition.move)
             .addListener(object : Transition.TransitionListener{
                 override fun onTransitionEnd(transition: Transition) {
-                    args.character?.let {
-                        viewModel.setCharacterDetails(it)
-                        viewModel.setStateEvent(CharactersStateEvent.GetEpisodesFromCharacter(it))
-                    } ?: kotlin.run {
-                        viewModel.setStateEvent(CharactersStateEvent.GetCharacter(args.characterId))
-                    }
-
-                    collapsing_toolbar.title = args.characterName
+                    viewModel.setImageLoad(true)
                 }
                 override fun onTransitionResume(transition: Transition) {}
                 override fun onTransitionPause(transition: Transition) {}
@@ -137,25 +130,41 @@ class CharacterDetailFragment : Fragment() {
                 }
                 viewState.character?.let {
                     viewModel.setCharacterDetails(it)
+                    viewModel.setStateEvent(CharactersStateEvent.GetEpisodesFromCharacter(it))
                 }
-            }
-            dataState.loading.let {
-
-            }
-            dataState.error?.let {
-                this.displayErrorDialog(it.desc)
-            }
+                viewState.isImageLoaded?.let { isImageLoaded ->
+                    isImageLoaded.let {bool ->
+                        if(bool){
+                            args.character?.let {
+                                viewModel.setCharacterDetails(it)
+                                viewModel.setStateEvent(CharactersStateEvent.GetEpisodesFromCharacter(it))
+                            } ?: kotlin.run {
+                                viewModel.setStateEvent(CharactersStateEvent.GetCharacter(args.characterId))
+                            }
+                        }
+                    }
+                    }
+                }
         })
 
-        viewModel.viewState.observe(viewLifecycleOwner, Observer { viewState ->
+        viewModel.viewState.observe(viewLifecycleOwner, Observer {viewState ->
+            viewState.character?.let {
+                setCharacterView(it)
+            }
             viewState.episodes?.let {
                 episodeListAdapter.submitList(it)
             }
-            viewState.character?.let {
-                setCharacterView(it)
-                viewModel.setStateEvent(CharactersStateEvent.GetEpisodesFromCharacter(it))
+
+        })
+
+        viewModel.isLoading().observe(viewLifecycleOwner, Observer {
+            if(it){
+                progress_bar.visibility = View.VISIBLE
+            }else{
+                progress_bar.visibility = View.INVISIBLE
             }
         })
+
     }
 
     private fun setCharacterView(character: Character) {

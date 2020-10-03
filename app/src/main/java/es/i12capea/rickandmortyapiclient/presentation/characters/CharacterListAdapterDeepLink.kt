@@ -56,7 +56,7 @@ class CharacterListAdapterDeepLink @Inject constructor(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is CharacterViewHolder -> {
-                holder.bind(differ.currentList.get(position))
+                holder.bind(differ.currentList[position])
             }
         }
     }
@@ -84,10 +84,6 @@ class CharacterListAdapterDeepLink @Inject constructor(
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .into(this)
             }
-
-            //itemView.setOnClickListener {
-            //    interaction?.onItemSelected(absoluteAdapterPosition, item, img_character)
-            //}
 
             itemView.txt_name.text = item.name
 

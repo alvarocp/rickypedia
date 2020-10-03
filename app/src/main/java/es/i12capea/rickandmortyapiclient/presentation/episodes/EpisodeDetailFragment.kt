@@ -5,7 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.navArgs
@@ -32,7 +32,7 @@ class EpisodeDetailFragment : Fragment()
     @Inject
     lateinit var characterListAdapterDeepLink : CharacterListAdapterDeepLink
 
-    private val viewModel : EpisodesViewModel by  activityViewModels()
+    private val viewModel : EpisodesViewModel by viewModels()
 
     private val args: EpisodeDetailFragmentArgs by navArgs()
 
@@ -49,8 +49,13 @@ class EpisodeDetailFragment : Fragment()
         super.onViewCreated(view, savedInstanceState)
 
         subscribeObservers()
+
         initRecyclerView()
 
+    }
+
+    override fun onResume() {
+        super.onResume()
         args.episode?.let {
             onEpisodeChange(it)
         } ?: kotlin.run {
@@ -58,7 +63,6 @@ class EpisodeDetailFragment : Fragment()
                 viewModel.setStateEvent(EpisodesStateEvent.GetEpisode(args.episodeId))
             }
         }
-
     }
 
     private fun initRecyclerView(){
@@ -79,9 +83,7 @@ class EpisodeDetailFragment : Fragment()
                     onEpisodeChange(it)
                 }
             }
-            dataState.loading.let {
 
-            }
             dataState.error?.let {
                 this.displayErrorDialog(it.desc)
             }
