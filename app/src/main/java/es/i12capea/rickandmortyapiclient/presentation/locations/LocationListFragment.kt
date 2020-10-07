@@ -54,20 +54,24 @@ class LocationListFragment : Fragment() ,
 
     private fun subscribeObservers() {
         viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
-            dataState.data?.let { viewState ->
+            dataState.getContentIfNotHandled()?.let { viewState ->
                 viewState.lastPage?.let {
                     viewModel.setActualPage(it)
                     viewModel.addToLocationList(it.list)
                 }
             }
-            dataState.loading.let { isLoading ->
-                if (isLoading){
-                    progress_bar.visibility = View.VISIBLE
-                }else{
-                    progress_bar.visibility = View.INVISIBLE
-                }
+        })
+
+        viewModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading ->
+            if (isLoading){
+                progress_bar.visibility = View.VISIBLE
+            }else{
+                progress_bar.visibility = View.INVISIBLE
             }
-            dataState.error?.let {
+        })
+
+        viewModel.error.observe(viewLifecycleOwner, Observer { event ->
+            event.getContentIfNotHandled()?.let {
                 displayToast(it.desc)
             }
         })

@@ -1,23 +1,18 @@
 package es.i12capea.rickandmortyapiclient.presentation.characters
 
 import android.net.Uri
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import androidx.core.view.ViewCompat
-import androidx.navigation.NavOptions
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import dagger.Component
-import dagger.hilt.android.AndroidEntryPoint
 import es.i12capea.rickandmortyapiclient.R
 import es.i12capea.rickandmortyapiclient.presentation.common.navigateUriWithDefaultOptions
 import es.i12capea.rickandmortyapiclient.presentation.entities.Character
@@ -98,7 +93,6 @@ class CharacterListAdapterDeepLink @Inject constructor(
                     extras
                 )
             }
-
         }
 
     }

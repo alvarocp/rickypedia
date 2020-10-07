@@ -40,16 +40,11 @@ class CharacterListFragment (
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        Log.d(TAG, "onViewCreated")
-        Log.d(TAG, savedInstanceState?.let { "savedInstanceState" } ?: "savedInstanceState null")
         subscribeObservers()
 
-        rv_characters.adapter?.let {
-            handleCharacters()
-        }?: kotlin.run {
-            initRecyclerView()
-            handleCharacters()
-        }
+        initRecyclerView()
+
+        handleCharacters()
 
     }
 
@@ -63,23 +58,25 @@ class CharacterListFragment (
 
     fun subscribeObservers() {
         viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
-            dataState.data?.let { data ->
+            dataState.getContentIfNotHandled()?.let { data ->
                 data.lastPage?.let {
                     viewModel.setActualPage(it)
                     viewModel.addToCharacterList(it.list)
                 }
             }
-
-            dataState.error?.let {
-                this.displayErrorDialog(it.desc)
-            }
         })
 
-        viewModel.isLoading().observe(viewLifecycleOwner, Observer {
-            if(it){
+        viewModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading ->
+            if(isLoading){
                 progress_bar.visibility = View.VISIBLE
             }else{
                 progress_bar.visibility = View.INVISIBLE
+            }
+        })
+
+        viewModel.error.observe(viewLifecycleOwner, Observer { event ->
+            event.getContentIfNotHandled()?.let {
+                displayErrorDialog(it.desc)
             }
         })
 

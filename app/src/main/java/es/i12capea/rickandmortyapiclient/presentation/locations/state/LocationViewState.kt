@@ -12,5 +12,6 @@ data class LocationViewState(
         0,
         emptyList()
     ),
-    var characters: List<Character> ? = null
+    var characters: List<Character> ? = null,
+    var location: Location? = null
 )

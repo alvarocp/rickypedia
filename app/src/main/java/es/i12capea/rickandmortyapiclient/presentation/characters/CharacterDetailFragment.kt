@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -19,14 +20,19 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
 import es.i12capea.rickandmortyapiclient.R
 import es.i12capea.rickandmortyapiclient.presentation.characters.state.CharactersStateEvent
 import es.i12capea.rickandmortyapiclient.presentation.common.displayErrorDialog
+import es.i12capea.rickandmortyapiclient.presentation.common.makeStatusBarTransparent
+import es.i12capea.rickandmortyapiclient.presentation.common.setMarginTop
 import es.i12capea.rickandmortyapiclient.presentation.entities.Character
 import es.i12capea.rickandmortyapiclient.presentation.episodes.EpisodeListAdapter
 import es.i12capea.rickandmortyapiclient.presentation.episodes.EpisodeListAdapterDeepLink
 import kotlinx.android.synthetic.main.character_detail_scroll_layout.*
+import kotlinx.android.synthetic.main.character_detail_scroll_layout.progress_bar
+import kotlinx.android.synthetic.main.character_list_fragment.*
 import kotlinx.android.synthetic.main.fragment_character_detail.*
 import kotlinx.android.synthetic.main.fragment_character_detail.toolbar
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -71,9 +77,11 @@ class CharacterDetailFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         postponeEnterTransition()
 
         toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
+
         toolbar.setNavigationOnClickListener {
             activity?.onBackPressed()
         }
@@ -124,7 +132,7 @@ class CharacterDetailFragment : Fragment() {
     @ExperimentalCoroutinesApi
     private fun subscribeObservers() {
         viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
-            dataState.data?.let { viewState ->
+            dataState.getContentIfNotHandled()?.let { viewState ->
                 viewState.episodes?.let {
                     viewModel.setEpisodeList(it)
                 }
@@ -157,7 +165,7 @@ class CharacterDetailFragment : Fragment() {
 
         })
 
-        viewModel.isLoading().observe(viewLifecycleOwner, Observer {
+        viewModel.isLoading.observe(viewLifecycleOwner, Observer {
             if(it){
                 progress_bar.visibility = View.VISIBLE
             }else{

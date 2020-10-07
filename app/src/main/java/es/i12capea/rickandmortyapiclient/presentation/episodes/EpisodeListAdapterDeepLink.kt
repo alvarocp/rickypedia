@@ -1,7 +1,6 @@
 package es.i12capea.rickandmortyapiclient.presentation.episodes
 
 import android.net.Uri
-import android.os.Bundle
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -10,7 +9,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import es.i12capea.rickandmortyapiclient.R
-import es.i12capea.rickandmortyapiclient.presentation.common.navigateUriWithDefaultOptions
+import es.i12capea.rickandmortyapiclient.presentation.common.navigateUriWithSlideInOptions
 import es.i12capea.rickandmortyapiclient.presentation.entities.Episode
 import kotlinx.android.synthetic.main.episode_item.view.*
 
@@ -73,11 +72,9 @@ class EpisodeListAdapterDeepLink() :
             itemView.tv_episode.text = item.episode
 
             setOnClickListener{
-
-                findNavController().navigate(
+                findNavController().navigateUriWithSlideInOptions(
                     Uri.parse("https://www.rickandmortyapiclient.com/episodeDetail/${item.id}")
                 )
-
             }
         }
     }

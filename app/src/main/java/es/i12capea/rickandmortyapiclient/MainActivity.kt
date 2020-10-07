@@ -1,15 +1,18 @@
 package es.i12capea.rickandmortyapiclient
 
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import dagger.hilt.android.AndroidEntryPoint
+import es.i12capea.rickandmortyapiclient.presentation.common.makeStatusBarTransparent
 import kotlinx.android.synthetic.main.activity_main.*
 
 
@@ -21,6 +24,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        makeStatusBarTransparent()
 
         bottom_navigation.setupWithNavController(navController)
 

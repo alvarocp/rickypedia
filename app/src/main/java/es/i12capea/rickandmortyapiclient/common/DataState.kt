@@ -12,30 +12,30 @@ data class DataState<T>(
         fun <T> error(
             code: Int,
             message: String
-        ): DataState<T> {
-            return DataState(
+        ): Event<DataState<T>> {
+            return Event(DataState<T>(
                 loading = false,
                 error = ErrorRym(code, message)
-            )
+            ))
         }
 
         fun <T> loading(
             loading: Boolean,
             cachedData: T? = null
-        ): DataState<T> {
-            return DataState(
+        ): Event<DataState<T>> {
+            return Event(DataState(
                 loading = loading,
                 data = cachedData
-            )
+            ))
         }
 
         fun <T> success(
             data: T
-        ): DataState<T> {
-            return DataState(
+        ): Event<DataState<T>> {
+            return Event(DataState(
                 loading = false,
                 data = data
-            )
+            ))
         }
     }
 }

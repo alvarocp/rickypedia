@@ -2,6 +2,7 @@ package es.i12capea.rickandmortyapiclient.presentation.episodes
 
 import androidx.hilt.lifecycle.ViewModelInject
 import es.i12capea.rickandmortyapiclient.common.DataState
+import es.i12capea.rickandmortyapiclient.common.Event
 import es.i12capea.rickandmortyapiclient.presentation.entities.Character
 import es.i12capea.rickandmortyapiclient.domain.usecases.GetAllEpisodesUseCase
 import es.i12capea.rickandmortyapiclient.domain.usecases.GetCharactersInEpisodeUseCase
@@ -82,7 +83,7 @@ class EpisodesViewModel @ViewModelInject constructor(
 
     private fun handleCollectEpisode(episode: Episode) {
         dataState.postValue(
-            DataState.success(
+            Event(
                 EpisodesViewState(
                     episode = episode
                 )
@@ -92,7 +93,7 @@ class EpisodesViewModel @ViewModelInject constructor(
 
     private fun handleCollectCharacters(characters: List<Character>) {
         dataState.postValue(
-            DataState.success(
+            Event(
                 EpisodesViewState(
                     characters = characters
                 )
@@ -102,7 +103,7 @@ class EpisodesViewModel @ViewModelInject constructor(
 
     private fun handleCollectEpisodes(episodeList: List<Episode>) {
         dataState.postValue(
-            DataState.success(
+            Event(
                 EpisodesViewState(
                     episodes = episodeList
                 )
@@ -165,7 +166,6 @@ class EpisodesViewModel @ViewModelInject constructor(
             handleError(it)
         }
         setActualPage(page)
-        dataState.postValue(DataState.loading(false))
     }
 
 

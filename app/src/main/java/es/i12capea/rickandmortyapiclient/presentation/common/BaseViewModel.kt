@@ -13,6 +13,7 @@ import es.i12capea.rickandmortyapiclient.domain.exceptions.ResponseException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
 
@@ -22,11 +23,12 @@ abstract class BaseViewModel<StateEvent, ViewState> : ViewModel(),
 
     val TAG: String = "Pruebas"
 
-    private val isLoading : MutableLiveData<Boolean> = MutableLiveData(false)
-    fun isLoading() : LiveData<Boolean> = isLoading
-    fun setLoadingTrue() = isLoading.postValue(true)
+    private val _isLoading : MutableLiveData<Boolean> = MutableLiveData(false)
+    val isLoading: LiveData<Boolean> = _isLoading
+    fun setLoadingTrue() = _isLoading.postValue(true)
 
-    private val error: MutableLiveData<Event<ErrorRym>> = MutableLiveData()
+    private val _error: MutableLiveData<Event<ErrorRym>> = MutableLiveData()
+    val error : LiveData<Event<ErrorRym>> = _error
 
     private val successMessage: MutableLiveData<Event<String>> = MutableLiveData()
 
@@ -36,7 +38,7 @@ abstract class BaseViewModel<StateEvent, ViewState> : ViewModel(),
     val viewState: LiveData<ViewState>
         get() = _viewState
 
-    val dataState: MutableLiveData<DataState<ViewState>> = MutableLiveData()
+    val dataState: MutableLiveData<Event<ViewState>> = MutableLiveData()
 
     fun getCurrentViewStateOrNew(): ViewState{
         return viewState.value ?: initNewViewState()
@@ -47,17 +49,19 @@ abstract class BaseViewModel<StateEvent, ViewState> : ViewModel(),
     }
 
     open fun setStateEvent(stateEvent: StateEvent){
-        getJobNameForEvent(stateEvent)?.let { jobName ->
-            Log.d("JOB", "Jobname -> $jobName")
-            getJob(jobName)?.let {
-                Log.d("JOB", "Job $jobName already running")
-            } ?: kotlin.run {
-                isLoading.postValue(true)
-                Log.d("JOB", "Job $jobName not running, lets start")
-                getJobForEvent(stateEvent)?.let { job ->
-                    addJob(jobName,job)
-                    job.invokeOnCompletion {
-                        removeJobFromList(jobName)
+        launch {
+            getJobNameForEvent(stateEvent)?.let { jobName ->
+                Log.d("JOB", "Jobname -> $jobName")
+                getJob(jobName)?.let {
+                    Log.d("JOB", "Job $jobName already running")
+                } ?: kotlin.run {
+                    _isLoading.postValue(true)
+                    Log.d("JOB", "Job $jobName not running, lets start")
+                    getJobForEvent(stateEvent)?.let { job ->
+                        addJob(jobName,job)
+                        job.invokeOnCompletion {
+                            removeJobFromList(jobName)
+                        }
                     }
                 }
             }
@@ -89,7 +93,7 @@ abstract class BaseViewModel<StateEvent, ViewState> : ViewModel(),
         Log.d("JOB", "Remove from list")
         jobs.remove(methodName)
         if (jobs.isEmpty()){
-            isLoading.postValue(false)
+            _isLoading.postValue(false)
         }
     }
 
@@ -136,29 +140,25 @@ abstract class BaseViewModel<StateEvent, ViewState> : ViewModel(),
     fun handleError(cause: Throwable){
         when(cause){
             is RequestException -> {
-                dataState.postValue(
-                    DataState.error(1, "No se ha podido realizar la conexión.")
-                )
+                _error.postValue(Event(ErrorRym(1, "No se ha podido realizar la conexión.")))
             }
             is ResponseException -> {
-                dataState.postValue(
-                    DataState.error(2, "Error en la respuesta de servidor.")
-                )
+                _error.postValue(Event(ErrorRym(2, "Error en la respuesta de servidor.")))
             }
             is PredicateNotSatisfiedException -> {
-                dataState.postValue(
-                    DataState.error(3, "No se ha cumplido los predicados.")
-                )
+                _error.postValue(Event(ErrorRym(3, "No se ha cumplido los predicados.")))
             }
             else -> {
-                dataState.postValue(
-                    DataState.error(9999, "Error desconocido")
-                )
+                _error.postValue(Event(ErrorRym(9999, "Error desconocido")))
             }
         }
     }
 
     fun handleCompletion(cause: Throwable?){
+        handleThrowable(cause)
+    }
+
+    fun handleThrowable(cause: Throwable?){
         cause?.let {
             handleError(it)
         }

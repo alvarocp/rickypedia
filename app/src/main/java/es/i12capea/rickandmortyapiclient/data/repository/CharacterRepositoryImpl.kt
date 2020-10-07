@@ -9,6 +9,7 @@ import es.i12capea.rickandmortyapiclient.domain.entities.PageEntity
 import es.i12capea.rickandmortyapiclient.domain.repositories.CharacterRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import java.lang.Exception
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -19,11 +20,10 @@ class CharacterRepositoryImpl @Inject constructor(
 
     override suspend fun getCharactersAtPage(page: Int?): Flow<PageEntity<CharacterEntity>> {
         return flow{
+                val result = characterApi.getAllCharacters(page)
+                    .call()
 
-            val result = characterApi.getAllCharacters(page)
-                .call()
-
-            emit(result.characterPageToDomain())
+                emit(result.characterPageToDomain())
         }
     }
 

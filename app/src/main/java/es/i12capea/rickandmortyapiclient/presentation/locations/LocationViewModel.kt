@@ -2,6 +2,7 @@ package es.i12capea.rickandmortyapiclient.presentation.locations
 
 import androidx.hilt.lifecycle.ViewModelInject
 import es.i12capea.rickandmortyapiclient.common.DataState
+import es.i12capea.rickandmortyapiclient.common.Event
 import es.i12capea.rickandmortyapiclient.domain.usecases.GetLocationsInPage
 import es.i12capea.rickandmortyapiclient.domain.usecases.GetCharactersInLocationUseCase
 import es.i12capea.rickandmortyapiclient.presentation.common.BaseViewModel
@@ -75,7 +76,7 @@ class LocationViewModel @ViewModelInject constructor (
 
     private fun handleCollectCharacters(characters: List<Character>) {
         dataState.postValue(
-            DataState.success(
+            Event(
                 LocationViewState(
                     characters = characters
                 )
@@ -85,12 +86,20 @@ class LocationViewModel @ViewModelInject constructor (
 
     private fun handleCollectEpisodes(page: Page<Location>) {
         dataState.postValue(
-            DataState.success(
-                LocationViewState(
+            Event(LocationViewState(
                     lastPage = page
-                )
-            )
+                ))
         )
+    }
+
+    fun setLocation(location: Location){
+        val update = getCurrentViewStateOrNew()
+        update.location = location
+        setViewState(update)
+    }
+
+    fun getLocation() : Location?{
+        return getCurrentViewStateOrNew().location
     }
 
     private fun handleCompletion(cause: Throwable?, page: Page<Location>){

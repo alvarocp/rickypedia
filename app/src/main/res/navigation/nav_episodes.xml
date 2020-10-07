@@ -9,7 +9,12 @@
         android:label="EpisodeListFragment" >
         <action
             android:id="@+id/action_episodeListFragment_to_episodeDetailFragment"
-            app:destination="@id/episodeDetailFragment" />
+            app:destination="@id/episodeDetailFragment"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            />
     </fragment>
     <fragment
         android:id="@+id/episodeDetailFragment"

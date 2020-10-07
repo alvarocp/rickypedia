@@ -5,6 +5,7 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import es.i12capea.rickandmortyapiclient.common.DataState
+import es.i12capea.rickandmortyapiclient.common.Event
 import es.i12capea.rickandmortyapiclient.domain.usecases.GetCharacterUseCase
 import es.i12capea.rickandmortyapiclient.presentation.entities.Character
 import es.i12capea.rickandmortyapiclient.domain.usecases.GetCharactersInPage
@@ -21,6 +22,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onCompletion
+import java.lang.Exception
 
 class CharactersViewModel @ViewModelInject constructor(
     private val getCharacters: GetCharactersInPage,
@@ -40,8 +42,6 @@ class CharactersViewModel @ViewModelInject constructor(
         setViewState(update)
     }
 
-
-
     override fun getJobNameForEvent(stateEvent: CharactersStateEvent) : String?{
         return when(stateEvent){
             is CharactersStateEvent.GetNextCharacterPage -> {
@@ -58,14 +58,19 @@ class CharactersViewModel @ViewModelInject constructor(
     }
 
     private suspend fun getNextCharacterFlow(nextPage: Int){
-        getCharacters.invoke(nextPage)
-            .flowOn(Dispatchers.IO)
-            .onCompletion { cause ->
-                handleCompletion(cause)
-            }
-            .collect {
-                handleCollectCharacters(it.characterPageEntityToPresentation())
-            }
+        try {
+            getCharacters.invoke(nextPage)
+                .flowOn(Dispatchers.IO)
+                .onCompletion { cause ->
+                    handleCompletion(cause)
+                }
+                .collect {
+                    handleCollectCharacters(it.characterPageEntityToPresentation())
+                }
+        } catch (t: Throwable){
+            handleThrowable(t)
+        }
+
     }
 
     override fun getJobForEvent(stateEvent: CharactersStateEvent): Job? {
@@ -108,7 +113,7 @@ class CharactersViewModel @ViewModelInject constructor(
     }
 
     private fun handleCollectCharacter(character: Character) {
-        dataState.postValue(DataState.success(
+        dataState.postValue(Event(
             CharactersViewState(
                 character = character
             )
@@ -116,7 +121,7 @@ class CharactersViewModel @ViewModelInject constructor(
     }
 
     fun setImageLoad(isLoad: Boolean){
-        dataState.postValue(DataState.success(
+        dataState.postValue(Event(
             CharactersViewState(
                 isImageLoaded = isLoad
             )
@@ -124,11 +129,13 @@ class CharactersViewModel @ViewModelInject constructor(
     }
 
     private fun handleCollectEpisodes(episodes: List<Episode>) {
-        dataState.postValue(DataState.success(
+        dataState.postValue(
+            Event(
             CharactersViewState(
                 episodes = episodes
             )
-        ))
+        )
+        )
     }
 
     fun getEpisodeList() : List<Episode>?{
@@ -181,7 +188,7 @@ class CharactersViewModel @ViewModelInject constructor(
     }
 
     fun handleCollectCharacters(page: Page<Character> ){
-        dataState.postValue(DataState.success(
+        dataState.postValue(Event(
             CharactersViewState(
                 lastPage = page
             )

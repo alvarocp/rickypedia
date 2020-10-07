@@ -50,7 +50,7 @@ class CharacterListAdapter @Inject constructor(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is CharacterViewHolder -> {
-                holder.bind(differ.currentList.get(position))
+                holder.bind(differ.currentList[position])
             }
         }
     }
@@ -84,7 +84,7 @@ class CharacterListAdapter @Inject constructor(
             setOnClickListener {
                 val navController = findNavController()
                 if (navController.currentDestination?.id == R.id.characterListFragment) {
-
+                    //Este if arregla el bug del doble click antes de navegar.
                     val extras = FragmentNavigatorExtras(
                         img_character to img_character.transitionName
                     )

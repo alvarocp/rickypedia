@@ -50,21 +50,23 @@ class EpisodeListFragment (
 
     fun subscribeObservers() {
         viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
-            dataState.data?.let { data ->
+            dataState.getContentIfNotHandled()?.let { data ->
                 data.episodes?.let {
                     viewModel.addToEpisodeList(it)
                 }
             }
+        })
 
-            dataState.loading.let {
-                if(it){
-                    progress_bar.visibility = View.VISIBLE
-                }else{
-                    progress_bar.visibility = View.INVISIBLE
-                }
+        viewModel.isLoading.observe(viewLifecycleOwner, Observer {
+            if(it){
+                progress_bar.visibility = View.VISIBLE
+            }else{
+                progress_bar.visibility = View.INVISIBLE
             }
+        })
 
-            dataState.error?.let {
+        viewModel.error.observe(viewLifecycleOwner, Observer { event ->
+            event.getContentIfNotHandled()?.let {
                 this.displayErrorDialog(it.desc)
             }
         })
