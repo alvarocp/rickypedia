@@ -7,15 +7,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.bumptech.glide.RequestManager
 import dagger.hilt.android.AndroidEntryPoint
 import es.i12capea.rickandmortyapiclient.R
+import es.i12capea.rickandmortyapiclient.presentation.BaseFragment
 import es.i12capea.rickandmortyapiclient.presentation.characters.state.CharactersStateEvent
 import es.i12capea.rickandmortyapiclient.presentation.common.displayErrorDialog
+import es.i12capea.rickandmortyapiclient.presentation.common.displayToast
 import kotlinx.android.synthetic.main.character_list_fragment.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import javax.inject.Inject
@@ -24,27 +28,26 @@ import javax.inject.Inject
 class CharacterListFragment (
 ) : Fragment()
 {
-
     val TAG = "Pruebas"
+
+    private val viewModel : CharactersViewModel by activityViewModels()
 
     @Inject
     lateinit var requestManager: RequestManager
-
-
-    private val viewModel : CharactersViewModel by viewModels()
 
     @Inject
     lateinit var characterListAdapter : CharacterListAdapter
 
     @ExperimentalCoroutinesApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
 
         subscribeObservers()
 
         initRecyclerView()
 
         handleCharacters()
+
+        super.onViewCreated(view, savedInstanceState)
 
     }
 
@@ -57,14 +60,6 @@ class CharacterListFragment (
     }
 
     fun subscribeObservers() {
-        viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
-            dataState.getContentIfNotHandled()?.let { data ->
-                data.lastPage?.let {
-                    viewModel.setActualPage(it)
-                    viewModel.addToCharacterList(it.list)
-                }
-            }
-        })
 
         viewModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading ->
             if(isLoading){

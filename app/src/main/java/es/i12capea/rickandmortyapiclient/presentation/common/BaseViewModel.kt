@@ -1,10 +1,11 @@
 package es.i12capea.rickandmortyapiclient.presentation.common
 
+import android.app.Application
 import android.util.Log
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import es.i12capea.rickandmortyapiclient.common.DataState
 import es.i12capea.rickandmortyapiclient.common.ErrorRym
 import es.i12capea.rickandmortyapiclient.common.Event
 import es.i12capea.rickandmortyapiclient.domain.exceptions.PredicateNotSatisfiedException
@@ -35,6 +36,9 @@ abstract class BaseViewModel<StateEvent, ViewState> : ViewModel(),
     protected val _stateEvent: MutableLiveData<StateEvent> = MutableLiveData()
     protected val _viewState: MutableLiveData<ViewState> = MutableLiveData()
 
+    private val _networkAvailable : MutableLiveData<Boolean> = MutableLiveData(false)
+    val networkAvailable : LiveData<Boolean> = _networkAvailable
+
     val viewState: LiveData<ViewState>
         get() = _viewState
 
@@ -44,8 +48,16 @@ abstract class BaseViewModel<StateEvent, ViewState> : ViewModel(),
         return viewState.value ?: initNewViewState()
     }
 
-    fun setViewState(viewState: ViewState) {
+    fun postViewState(viewState: ViewState) {
         _viewState.postValue(viewState)
+    }
+
+    fun setViewState(viewState: ViewState){
+        _viewState.value = viewState
+    }
+
+    fun setNetworkAvailable(available: Boolean){
+        _networkAvailable.postValue(available)
     }
 
     open fun setStateEvent(stateEvent: StateEvent){
@@ -58,7 +70,7 @@ abstract class BaseViewModel<StateEvent, ViewState> : ViewModel(),
                     _isLoading.postValue(true)
                     Log.d("JOB", "Job $jobName not running, lets start")
                     getJobForEvent(stateEvent)?.let { job ->
-                        addJob(jobName,job)
+                        addJob(jobName, job)
                         job.invokeOnCompletion {
                             removeJobFromList(jobName)
                         }

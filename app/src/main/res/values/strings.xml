@@ -112,4 +112,5 @@
     <string name="toolbar_episode_list">Episodes</string>
     <string name="toolbar_location_list">Localizaciones</string>
     <string name="characters_belongin_there">Personajes de esta localización</string>
+    <string name="splash_imange_content_description">Splash image rick and morty</string>
 </resources>

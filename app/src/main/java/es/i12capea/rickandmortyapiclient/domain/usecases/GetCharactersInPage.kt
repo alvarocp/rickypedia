@@ -10,7 +10,7 @@ import java.lang.Exception
 class GetCharactersInPage(
     private val characterRepository: CharacterRepository
 ) {
-    suspend operator fun invoke(page: Int = 1) : Flow<PageEntity<CharacterEntity>> {
+    suspend operator fun invoke(page: Int) : Flow<PageEntity<CharacterEntity>> {
         return flow {
                 characterRepository.getCharactersAtPage(page)
                     .flowOn(Dispatchers.IO)

@@ -1,6 +1,8 @@
 package es.i12capea.rickandmortyapiclient.presentation.di
 
 import android.app.Application
+import androidx.lifecycle.LiveData
+import androidx.room.Room
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
 import com.bumptech.glide.request.RequestOptions
@@ -12,11 +14,15 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
+import es.i12capea.rickandmortyapiclient.App
 import es.i12capea.rickandmortyapiclient.common.Constants
 import es.i12capea.rickandmortyapiclient.R
 import es.i12capea.rickandmortyapiclient.data.api.CharacterApi
 import es.i12capea.rickandmortyapiclient.data.api.EpisodesApi
 import es.i12capea.rickandmortyapiclient.data.api.LocationApi
+import es.i12capea.rickandmortyapiclient.data.local.RymDatabase
+import es.i12capea.rickandmortyapiclient.data.local.dao.LocalCharacterPageDao
+import es.i12capea.rickandmortyapiclient.data.local.dao.RemoteCharacterDao
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -119,5 +125,26 @@ class AppModule {
     fun provideGlideInstance(application: Application, requestOptions: RequestOptions): RequestManager {
         return Glide.with(application)
             .setDefaultRequestOptions(requestOptions)
+    }
+
+    @Singleton
+    @Provides
+    fun provideAppDb(app: Application): RymDatabase {
+        return Room
+            .databaseBuilder(app, RymDatabase::class.java, Constants.DB_NAME)
+            .fallbackToDestructiveMigration() // get correct db version if schema changed
+            .build()
+    }
+
+    @Singleton
+    @Provides
+    fun provideLocalCharacterPageDao(db: RymDatabase): LocalCharacterPageDao {
+        return db.getLocalCharacterPageDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideLocalCharacterDao(db: RymDatabase): RemoteCharacterDao {
+        return db.getRemoteCharacterDao()
     }
 }

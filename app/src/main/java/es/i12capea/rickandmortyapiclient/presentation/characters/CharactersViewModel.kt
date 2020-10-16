@@ -2,9 +2,6 @@ package es.i12capea.rickandmortyapiclient.presentation.characters
 
 import android.os.Parcelable
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import es.i12capea.rickandmortyapiclient.common.DataState
 import es.i12capea.rickandmortyapiclient.common.Event
 import es.i12capea.rickandmortyapiclient.domain.usecases.GetCharacterUseCase
 import es.i12capea.rickandmortyapiclient.presentation.entities.Character
@@ -22,7 +19,6 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onCompletion
-import java.lang.Exception
 
 class CharactersViewModel @ViewModelInject constructor(
     private val getCharacters: GetCharactersInPage,
@@ -38,7 +34,7 @@ class CharactersViewModel @ViewModelInject constructor(
             actual = 0,
             list = emptyList()
         )
-        update.characters = emptyList()
+        update.characters = null
         setViewState(update)
     }
 
@@ -58,6 +54,7 @@ class CharactersViewModel @ViewModelInject constructor(
     }
 
     private suspend fun getNextCharacterFlow(nextPage: Int){
+        val currentCharacters = getCharacterList()
         try {
             getCharacters.invoke(nextPage)
                 .flowOn(Dispatchers.IO)
@@ -65,7 +62,7 @@ class CharactersViewModel @ViewModelInject constructor(
                     handleCompletion(cause)
                 }
                 .collect {
-                    handleCollectCharacters(it.characterPageEntityToPresentation())
+                    handleCollectCharacters(currentCharacters, it.characterPageEntityToPresentation())
                 }
         } catch (t: Throwable){
             handleThrowable(t)
@@ -81,10 +78,10 @@ class CharactersViewModel @ViewModelInject constructor(
                         currentPage.next?.let { nextPage ->
                             getNextCharacterFlow(nextPage)
                         }
-                    } ?: kotlin.run {
+                    } /*?: kotlin.run {
                         setEpisodeList(emptyList())
                         getNextCharacterFlow(1)
-                    }
+                    }*/
                 }
 
                 is CharactersStateEvent.GetEpisodesFromCharacter -> {
@@ -145,13 +142,13 @@ class CharactersViewModel @ViewModelInject constructor(
     fun setEpisodeList(episodes: List<Episode>){
         val update = getCurrentViewStateOrNew()
         update.episodes = episodes
-        setViewState(update)
+        postViewState(update)
     }
 
     fun setCharacterDetails(character: Character){
         val update = getCurrentViewStateOrNew()
         update.character = character
-        setViewState(update)
+        postViewState(update)
     }
 
     fun getCharacterDetails() : Character?{
@@ -161,7 +158,7 @@ class CharactersViewModel @ViewModelInject constructor(
     fun setCharacterList(cl: List<Character>){
         val update = getCurrentViewStateOrNew()
         update.characters = cl
-        setViewState(update)
+        postViewState(update)
     }
 
     fun getActualPage() : Page<Character>?{
@@ -171,29 +168,37 @@ class CharactersViewModel @ViewModelInject constructor(
     fun setActualPage(page: Page<Character>){
         val update = getCurrentViewStateOrNew()
         update.lastPage = page
-        setViewState(update)
+        postViewState(update)
     }
 
     fun getCharacterList() : List<Character>?{
         return getCurrentViewStateOrNew().characters
     }
 
-    fun addToCharacterList(cl: List<Character>){
-        val list = getCharacterList()?.toMutableList()
-            ?: arrayListOf()
-        list.addAll(cl)
+    fun addToCharacterList(list: List<Character>){
         val update = getCurrentViewStateOrNew()
         update.characters = list
-        setViewState(update)
+        postViewState(update)
     }
 
-    fun handleCollectCharacters(page: Page<Character> ){
+    fun handleCollectCharacters(currentList: List<Character>?, page: Page<Character> ){
+        setActualPage(page)
+
+        val list = currentList?.toMutableList()
+            ?: arrayListOf()
+        list.addAll(page.list)
+
+        addToCharacterList(list)
+    }
+
+    private fun postLastPage(lastPage: Page<Character>) {
         dataState.postValue(Event(
             CharactersViewState(
-                lastPage = page
+                lastPage = lastPage
             )
         ))
     }
+
 
     override fun initNewViewState(): CharactersViewState {
         return CharactersViewState()
@@ -202,7 +207,7 @@ class CharactersViewModel @ViewModelInject constructor(
     fun setRecyclerState(state: Parcelable?){
         val update = getCurrentViewStateOrNew()
         update.layoutManagerState = state
-        setViewState(update)
+        postViewState(update)
     }
 
     fun getRecyclerState() : Parcelable? {

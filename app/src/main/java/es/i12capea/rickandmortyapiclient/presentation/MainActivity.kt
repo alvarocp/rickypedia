@@ -1,17 +1,13 @@
-package es.i12capea.rickandmortyapiclient
+package es.i12capea.rickandmortyapiclient.presentation
 
-import android.graphics.Color
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import android.view.WindowManager
+import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import dagger.hilt.android.AndroidEntryPoint
+import es.i12capea.rickandmortyapiclient.R
 import es.i12capea.rickandmortyapiclient.presentation.common.makeStatusBarTransparent
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -32,10 +28,21 @@ class MainActivity : AppCompatActivity() {
         bottom_navigation.setOnNavigationItemReselectedListener {
 
         }
+        bottom_navigation.itemIconTintList = null;
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
-                R.id.characterListFragment, R.id.locationListFragment, R.id.episodeListFragment -> bottom_navigation.visibility = View.VISIBLE
+                R.id.characterListFragment -> {
+                    bottom_navigation.visibility = View.VISIBLE
+                }
+                R.id.locationListFragment -> {
+                    bottom_navigation.visibility = View.VISIBLE
+
+                }
+                R.id.episodeListFragment -> {
+                    bottom_navigation.visibility = View.VISIBLE
+                }
+
                 else -> bottom_navigation.visibility = View.GONE
             }
         }

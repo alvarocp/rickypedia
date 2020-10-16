@@ -1,7 +1,6 @@
 package es.i12capea.rickandmortyapiclient.presentation.locations
 
 import androidx.hilt.lifecycle.ViewModelInject
-import es.i12capea.rickandmortyapiclient.common.DataState
 import es.i12capea.rickandmortyapiclient.common.Event
 import es.i12capea.rickandmortyapiclient.domain.usecases.GetLocationsInPage
 import es.i12capea.rickandmortyapiclient.domain.usecases.GetCharactersInLocationUseCase
@@ -95,7 +94,7 @@ class LocationViewModel @ViewModelInject constructor (
     fun setLocation(location: Location){
         val update = getCurrentViewStateOrNew()
         update.location = location
-        setViewState(update)
+        postViewState(update)
     }
 
     fun getLocation() : Location?{
@@ -118,13 +117,13 @@ class LocationViewModel @ViewModelInject constructor (
     fun setLocations(locations: List<Location>){
         val update = getCurrentViewStateOrNew()
         update.locations = locations
-        setViewState(update)
+        postViewState(update)
     }
 
     fun setActualPage(page: Page<Location>) {
         val update = getCurrentViewStateOrNew()
         update.lastPage = page
-        setViewState(update)
+        postViewState(update)
     }
 
     fun getActualPage() : Page<Location>? {
@@ -137,13 +136,13 @@ class LocationViewModel @ViewModelInject constructor (
         list.addAll(locations)
         val update = getCurrentViewStateOrNew()
         update.locations = list
-        setViewState(update)
+        postViewState(update)
     }
 
     fun setCharactersInLocation(characters: List<Character>){
         val update = getCurrentViewStateOrNew()
         update.characters = characters
-        setViewState(update)
+        postViewState(update)
     }
 
     fun getCharactersInLocation() : List<Character>? {

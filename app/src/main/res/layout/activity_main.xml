@@ -34,9 +34,11 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:background="@color/colorPrimary"
-        app:itemIconTint="@drawable/bottom_navigation_text_color"
         app:itemTextColor="@drawable/bottom_navigation_text_color"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:menu="@menu/menu_bottom_navigation_main" />
+        app:menu="@menu/menu_bottom_navigation_main"
+        app:itemHorizontalTranslationEnabled="true"
+        app:itemIconSize="30dp"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

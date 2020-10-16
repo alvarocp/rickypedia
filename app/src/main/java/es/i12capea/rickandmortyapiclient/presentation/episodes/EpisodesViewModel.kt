@@ -1,7 +1,6 @@
 package es.i12capea.rickandmortyapiclient.presentation.episodes
 
 import androidx.hilt.lifecycle.ViewModelInject
-import es.i12capea.rickandmortyapiclient.common.DataState
 import es.i12capea.rickandmortyapiclient.common.Event
 import es.i12capea.rickandmortyapiclient.presentation.entities.Character
 import es.i12capea.rickandmortyapiclient.domain.usecases.GetAllEpisodesUseCase
@@ -119,13 +118,13 @@ class EpisodesViewModel @ViewModelInject constructor(
     fun setEpisodeList(episodes: List<Episode>){
         val update = getCurrentViewStateOrNew()
         update.episodes = episodes
-        setViewState(update)
+        postViewState(update)
     }
 
     fun setCharacterDetails(character: Character){
         val update = getCurrentViewStateOrNew()
         update.character = character
-        setViewState(update)
+        postViewState(update)
     }
 
     fun getCharacterDetails() : Character?{
@@ -135,7 +134,7 @@ class EpisodesViewModel @ViewModelInject constructor(
     fun setCharacterList(cl: List<Character>){
         val update = getCurrentViewStateOrNew()
         update.characters = cl
-        setViewState(update)
+        postViewState(update)
     }
 
     fun getActualPage() : Int{
@@ -145,7 +144,7 @@ class EpisodesViewModel @ViewModelInject constructor(
     fun setActualPage(page: Int){
         val update = getCurrentViewStateOrNew()
         update.page = page
-        setViewState(update)
+        postViewState(update)
     }
 
     fun getCharacterList() : List<Character>?{
@@ -158,7 +157,7 @@ class EpisodesViewModel @ViewModelInject constructor(
         list.addAll(cl)
         val update = getCurrentViewStateOrNew()
         update.episodes = list
-        setViewState(update)
+        postViewState(update)
     }
 
     fun handleCompletion(cause: Throwable?, page: Int){
@@ -176,7 +175,7 @@ class EpisodesViewModel @ViewModelInject constructor(
     fun setEpisode(episode: Episode){
         val update = getCurrentViewStateOrNew()
         update.episode = episode
-        setViewState(update)
+        postViewState(update)
     }
 
     fun getEpisode() : Episode?{

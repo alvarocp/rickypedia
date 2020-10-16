@@ -1,16 +1,28 @@
 package es.i12capea.rickandmortyapiclient.data.mappers
 
 import android.net.Uri
+import es.i12capea.rickandmortyapiclient.data.api.models.Info
 import es.i12capea.rickandmortyapiclient.data.api.models.PageableResponse
 import es.i12capea.rickandmortyapiclient.data.api.models.character.RemoteCharacter
 import es.i12capea.rickandmortyapiclient.data.api.models.episode.RemoteEpisode
 import es.i12capea.rickandmortyapiclient.data.api.models.location.RemoteLocation
+import es.i12capea.rickandmortyapiclient.data.local.dao.LocalCharacterPageDao
+import es.i12capea.rickandmortyapiclient.data.local.model.LocalCharacterPage
 import es.i12capea.rickandmortyapiclient.domain.entities.*
 import java.net.URL
 
-fun PageableResponse<RemoteCharacter>.characterPageToDomain() : PageEntity<CharacterEntity>{
-    val next = getIdFromPage(this.info.next)
-    val prev = getIdFromPage(this.info.prev)
+fun LocalCharacterPage.toDomain() : PageEntity<CharacterEntity>{
+    return PageEntity(
+        getIdFromPage(this.info.next),
+        getIdFromPage(this.info.prev),
+        info.getActualPage(),
+        this.results.charactersToDomain()
+    )
+}
+
+fun Info.getActualPage() : Int{
+    val next = getIdFromPage(this.next)
+    val prev = getIdFromPage(this.prev)
 
     var actual = -1
     next?.let {
@@ -19,11 +31,14 @@ fun PageableResponse<RemoteCharacter>.characterPageToDomain() : PageEntity<Chara
     prev?.let {
         actual = it +1
     }
+    return actual
+}
 
+fun PageableResponse<RemoteCharacter>.characterPageToDomain() : PageEntity<CharacterEntity>{
     return PageEntity(
-        next,
-        prev,
-        actual,
+        getIdFromPage(this.info.next),
+        getIdFromPage(this.info.prev),
+        info.getActualPage(),
         this.results.charactersToDomain()
     )
 }
