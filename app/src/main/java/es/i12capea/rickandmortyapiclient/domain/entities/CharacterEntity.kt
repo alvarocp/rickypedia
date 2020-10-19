@@ -11,7 +11,5 @@ data class CharacterEntity(
     val origin: LocationShortEntity,
     val location : LocationShortEntity,
     val image: String,
-    val episode: List<Int>
-) {
-
-}
+    val episodes: List<Int>
+)

@@ -1,7 +1,6 @@
 package es.i12capea.rickandmortyapiclient.presentation.di
 
 import android.app.Application
-import androidx.lifecycle.LiveData
 import androidx.room.Room
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
@@ -9,20 +8,17 @@ import com.bumptech.glide.request.RequestOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
-import es.i12capea.rickandmortyapiclient.App
 import es.i12capea.rickandmortyapiclient.common.Constants
 import es.i12capea.rickandmortyapiclient.R
 import es.i12capea.rickandmortyapiclient.data.api.CharacterApi
 import es.i12capea.rickandmortyapiclient.data.api.EpisodesApi
 import es.i12capea.rickandmortyapiclient.data.api.LocationApi
 import es.i12capea.rickandmortyapiclient.data.local.RymDatabase
-import es.i12capea.rickandmortyapiclient.data.local.dao.LocalCharacterPageDao
-import es.i12capea.rickandmortyapiclient.data.local.dao.RemoteCharacterDao
+import es.i12capea.rickandmortyapiclient.data.local.dao.*
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -144,7 +140,32 @@ class AppModule {
 
     @Singleton
     @Provides
-    fun provideLocalCharacterDao(db: RymDatabase): RemoteCharacterDao {
-        return db.getRemoteCharacterDao()
+    fun provideLocalCharacterDao(db: RymDatabase): LocalCharacterDao {
+        return db.getLocalCharacterDao()
     }
+
+    @Singleton
+    @Provides
+    fun provideLocalEpisodeDao(db: RymDatabase): LocalEpisodeDao {
+        return db.getLocalEpisodeDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideLocalEpisodePageDao(db: RymDatabase): LocalEpisodePageDao {
+        return db.getLocalEpisodePageDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideLocalLocationDao(db: RymDatabase): LocalLocationDao {
+        return db.getLocalLocationDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideLocalLocationPageDao(db: RymDatabase): LocalLocationPageDao {
+        return db.getLocalLocationPageDao()
+    }
+
 }

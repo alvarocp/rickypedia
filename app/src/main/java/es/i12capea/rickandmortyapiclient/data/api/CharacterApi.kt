@@ -9,7 +9,7 @@ import retrofit2.http.Query
 
 interface CharacterApi {
     @GET("character/")
-    fun getAllCharacters(@Query("page") page: Int? = null) : Call<PageableResponse<RemoteCharacter>>
+    fun getCharactersAtPage(@Query("page") page: Int? = null) : Call<PageableResponse<RemoteCharacter>>
 
     @GET("character/{characterIds}")
     fun getCharacters(@Path("characterIds") characterIds: List<Int>) : Call<List<RemoteCharacter>>

@@ -9,5 +9,5 @@ data class Episode (
     val name: String,
     val air_date: String,
     val episode: String,
-    val characters: ArrayList<Int>
+    val characters: List<Int>
 ) : Parcelable

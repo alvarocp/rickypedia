@@ -32,7 +32,8 @@ class CharactersViewModel @ViewModelInject constructor(
             next = 1,
             prev = null,
             actual = 0,
-            list = emptyList()
+            list = emptyList(),
+            count = 0
         )
         update.characters = null
         setViewState(update)

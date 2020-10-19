@@ -96,7 +96,7 @@ class LocationListFragment : Fragment() ,
                     val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                     val lastPosition = layoutManager.findLastVisibleItemPosition()
                     if (lastPosition == locationListAdapter.itemCount.minus(1)) {
-                        viewModel.setStateEvent(LocationStateEvent.GetNextLocationPage( ))
+                        viewModel.setStateEvent(LocationStateEvent.GetNextLocationPage())
                         Log.d("A", "LastPositionReached")
                     }
                 }

@@ -11,6 +11,7 @@ fun PageEntity<CharacterEntity>.characterPageEntityToPresentation() : Page<Chara
         this.nextPage,
         this.prevPage,
         this.actualPage,
+        count,
         this.list.characterListToPresentation()
     )
 }
@@ -20,6 +21,7 @@ fun PageEntity<LocationEntity>.locationPageEntityToPresentation() : Page<Locatio
         this.nextPage,
         this.prevPage,
         this.actualPage,
+        count,
         this.list.locationListToPresentation()
     )
 }
@@ -30,6 +32,16 @@ fun List<CharacterEntity>.characterListToPresentation() : List<Character>{
         characterList.add(ch.toPresentation())
     }
     return characterList
+}
+
+fun PageEntity<EpisodeEntity>.episodePageToPresentation() : Page<Episode>{
+    return Page(
+        this.nextPage,
+        this.prevPage,
+        this.actualPage,
+        count,
+        this.list.episodeListToPresentation()
+    )
 }
 
 fun List<EpisodeEntity>.episodeListToPresentation() : List<Episode>{
@@ -59,7 +71,7 @@ fun CharacterEntity.toPresentation() : Character{
         origin= LocationShort(origin.id, origin.name),
         location = LocationShort(location.id, location.name),
         image= image,
-        episodes= episode
+        episodes= episodes
     )
 }
 

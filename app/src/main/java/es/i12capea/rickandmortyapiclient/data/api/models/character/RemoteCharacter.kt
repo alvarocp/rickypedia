@@ -6,9 +6,7 @@ import androidx.room.PrimaryKey
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-@Entity(tableName = "remote_character")
 data class RemoteCharacter(
-    @PrimaryKey(autoGenerate = false)
     val id: Int,
     val name: String,
     val status: String,

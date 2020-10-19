@@ -1,52 +1,113 @@
 package es.i12capea.rickandmortyapiclient.data.repository
 
+import android.util.Log
+import es.i12capea.rickandmortyapiclient.common.Constants
 import es.i12capea.rickandmortyapiclient.data.api.EpisodesApi
 import es.i12capea.rickandmortyapiclient.data.api.call
-import es.i12capea.rickandmortyapiclient.data.mappers.episodesToDomain
-import es.i12capea.rickandmortyapiclient.data.mappers.toDomain
+import es.i12capea.rickandmortyapiclient.data.local.dao.LocalEpisodeDao
+import es.i12capea.rickandmortyapiclient.data.local.dao.LocalEpisodePageDao
+import es.i12capea.rickandmortyapiclient.data.mappers.*
 import es.i12capea.rickandmortyapiclient.domain.entities.EpisodeEntity
+import es.i12capea.rickandmortyapiclient.domain.entities.PageEntity
+import es.i12capea.rickandmortyapiclient.domain.exceptions.RequestException
 import es.i12capea.rickandmortyapiclient.domain.repositories.EpisodeRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import java.lang.Exception
 import javax.inject.Inject
 import javax.inject.Singleton
 
 
 @Singleton
 class EpisodeRepositoryImpl @Inject constructor (
-    private val episodesApi: EpisodesApi
+    private val episodesApi: EpisodesApi,
+    private val episodeDao: LocalEpisodeDao,
+    private val episodePageDao: LocalEpisodePageDao
 ): EpisodeRepository{
-    override suspend fun getAllEpisodes(page: Int?): Flow<List<EpisodeEntity>> {
+    override suspend fun getEpisodesAtPage(page: Int): Flow<PageEntity<EpisodeEntity>> {
         return flow{
 
-            val result = episodesApi.getAllEpisodes(page)
-                .call()
+            episodePageDao.searchPageById(page)?.let {
+                emit(it.toDomain())
+                if (it.page.count != Constants.MAX_ITEM_PER_PAGE){
+                    emit(retrieveAndSaveEpisodePage(page))
+                }
+            } ?: kotlin.run {
+                emit(retrieveAndSaveEpisodePage(page))
+            }
 
-            val episodeEntities = result.results.episodesToDomain()
-
-            emit(episodeEntities)
         }
     }
 
     override suspend fun getEpisodes(episodes: List<Int>): Flow<List<EpisodeEntity>> {
         return flow{
-
-            val result = episodesApi.getEpisodes(episodes)
-                .call()
-
-            val episodeEntities = result.episodesToDomain()
-
-            emit(episodeEntities)
+            episodeDao.searchEpisodesByIds(episodes)?.let { localEpisodes ->
+                if (localEpisodes.size == episodes.size){
+                    emit(localEpisodes.toDomain())
+                }else{
+                    try {
+                        emit(retrieveAndSaveEpisodes(episodes))
+                    }catch (t: Throwable){
+                        throw t
+                    }
+                }
+            } ?: kotlin.run {
+                try {
+                    emit(retrieveAndSaveEpisodes(episodes))
+                }catch (t: Throwable){
+                    throw t
+                }
+            }
         }
     }
 
     override suspend fun getEpisode(id: Int): Flow<EpisodeEntity> {
         return flow {
-            val result = episodesApi.getEpisode(id)
+            episodeDao.searchEpisodeById(id)?.let {
+                emit(it.toDomain())
+            } ?: kotlin.run {
+                val result = episodesApi.getEpisode(id)
                 .call()
 
-            val episodeEntity = result.toDomain()
-            emit(episodeEntity)
+                val episodeEntity = result.toDomain()
+                episodeDao.insertEpisode(episodeEntity.toLocal(null))
+                emit(episodeEntity)
+            }
         }
     }
+
+    suspend fun retrieveAndSaveEpisodePage(page: Int) : PageEntity<EpisodeEntity>{
+        try{
+            val result = episodesApi.getAllEpisodes(page)
+                .call()
+
+            val episodeEntities = result.episodePageToDomain()
+
+            try {
+                episodeDao.insertListEpisode(episodeEntities.list.toLocal(episodeEntities.actualPage))
+                episodePageDao.insertPage(episodeEntities.toLocalEpisodePage())
+            }catch (e: Exception){
+                Log.d("BDD", "Error insertando lista de episodios")
+            }
+            return episodeEntities
+        }catch (t: Throwable){
+            throw t
+        }
+    }
+
+    suspend fun retrieveAndSaveEpisodes(episodes: List<Int>) : List<EpisodeEntity>{
+        val result = episodesApi.getEpisodes(episodes)
+            .call()
+
+        val episodesEntities = result.episodesToDomain()
+
+        try {
+            episodeDao.insertListEpisode(episodesEntities.toLocal(null))
+        }catch (e: Exception){
+            Log.d("BDD", "Cant Insert list")
+        }
+        return episodesEntities
+    }
+
+
 }

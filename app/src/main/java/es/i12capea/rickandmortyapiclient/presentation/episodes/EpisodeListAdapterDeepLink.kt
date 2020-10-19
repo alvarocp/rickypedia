@@ -82,4 +82,8 @@ class EpisodeListAdapterDeepLink() :
     interface Interaction {
         fun onItemSelected(position: Int, item: Episode)
     }
+
+    override fun getItemId(position: Int): Long {
+        return differ.currentList[position].id.toLong()
+    }
 }

@@ -6,6 +6,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityRetainedComponent
 import es.i12capea.rickandmortyapiclient.data.api.CharacterApi
+import es.i12capea.rickandmortyapiclient.data.local.dao.LocalCharacterDao
 import es.i12capea.rickandmortyapiclient.data.local.dao.LocalCharacterPageDao
 import es.i12capea.rickandmortyapiclient.data.repository.CharacterRepositoryImpl
 import es.i12capea.rickandmortyapiclient.domain.repositories.CharacterRepository
@@ -23,11 +24,13 @@ class CharactersModule {
     @Provides
     fun provideCharacterRepository(
         characterApi: CharacterApi,
-        localCharacterPageDao: LocalCharacterPageDao
+        localCharacterPageDao: LocalCharacterPageDao,
+        localCharacterDao: LocalCharacterDao
     ) : CharacterRepository{
         return CharacterRepositoryImpl(
             characterApi,
-            localCharacterPageDao
+            localCharacterPageDao,
+            localCharacterDao
         )
     }
 

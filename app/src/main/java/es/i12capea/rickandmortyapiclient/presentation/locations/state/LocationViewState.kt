@@ -10,6 +10,7 @@ data class LocationViewState(
         1,
         null,
         0,
+        0,
         emptyList()
     ),
     var characters: List<Character> ? = null,

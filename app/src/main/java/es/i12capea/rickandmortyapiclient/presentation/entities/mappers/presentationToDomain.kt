@@ -25,7 +25,7 @@ fun Character.toDomain() : CharacterEntity {
             location.name
         ),
         image = image,
-        episode = episodes
+        episodes = episodes
     )
 }
 

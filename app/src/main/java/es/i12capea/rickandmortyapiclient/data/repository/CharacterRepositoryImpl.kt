@@ -1,31 +1,30 @@
 package es.i12capea.rickandmortyapiclient.data.repository
 
-import android.graphics.pdf.PdfDocument
-import es.i12capea.rickandmortyapiclient.data.NetworkBoundResource
+import android.util.Log
 import es.i12capea.rickandmortyapiclient.data.api.CharacterApi
 import es.i12capea.rickandmortyapiclient.data.api.call
-import es.i12capea.rickandmortyapiclient.data.api.models.PageableResponse
-import es.i12capea.rickandmortyapiclient.data.api.models.character.RemoteCharacter
+import es.i12capea.rickandmortyapiclient.data.local.dao.LocalCharacterDao
 import es.i12capea.rickandmortyapiclient.data.local.dao.LocalCharacterPageDao
-import es.i12capea.rickandmortyapiclient.data.local.model.LocalCharacterPage
-import es.i12capea.rickandmortyapiclient.data.mappers.characterPageToDomain
-import es.i12capea.rickandmortyapiclient.data.mappers.getActualPage
-import es.i12capea.rickandmortyapiclient.data.mappers.toDomain
+import es.i12capea.rickandmortyapiclient.data.local.model.LocalCharacter
+import es.i12capea.rickandmortyapiclient.data.mappers.*
 import es.i12capea.rickandmortyapiclient.domain.entities.CharacterEntity
 import es.i12capea.rickandmortyapiclient.domain.entities.PageEntity
 import es.i12capea.rickandmortyapiclient.domain.exceptions.RequestException
 import es.i12capea.rickandmortyapiclient.domain.repositories.CharacterRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import retrofit2.Call
-import java.lang.Exception
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class CharacterRepositoryImpl @Inject constructor(
     private val characterApi: CharacterApi,
-    private val characterPageDao: LocalCharacterPageDao
+    private val characterPageDao: LocalCharacterPageDao,
+    private val characterDao : LocalCharacterDao
 ) : CharacterRepository{
 
     override suspend fun getCharactersAtPage(page: Int): Flow<PageEntity<CharacterEntity>> {
@@ -34,18 +33,21 @@ class CharacterRepositoryImpl @Inject constructor(
                 emit(it.toDomain())
             }
             try {
-                val result = characterApi.getAllCharacters(page)
+                val result = characterApi.getCharactersAtPage(page)
                     .call()
 
-                val localCharacterPage = LocalCharacterPage(
-                    id = result.info.getActualPage(),
-                    info = result.info,
-                    results = result.results
-                )
-                val insertResult = characterPageDao.insertPage(localCharacterPage)
-                if(insertResult.toInt() == localCharacterPage.id){
-                    emit(result.characterPageToDomain())
+                val domainResult = result.characterPageToDomain()
+                emit(domainResult)
+
+                val localCharacterPage = domainResult.toLocal()
+
+                try {
+                    characterDao.insertListOfCharactersOrReplace(localCharacterPage.characters)
+                    characterPageDao.insertPage(localCharacterPage.page)
+                }catch (e: Exception){
+                    Log.d("BDD", "No se ha podido insertar la página")
                 }
+
             }catch (t: Throwable){
                 if (t !is RequestException){
                     throw t
@@ -56,21 +58,29 @@ class CharacterRepositoryImpl @Inject constructor(
 
     override suspend fun getCharacters(ids: List<Int>): Flow<List<CharacterEntity>> {
         return flow {
+            characterDao.searchCharactersByIds(ids)?.let {
+                emit(it.localCharactersToDomain())
+            }
             val result = characterApi.getCharacters(ids)
                 .call()
 
-            val list = ArrayList<CharacterEntity>()
+            val domainCharacters = result.charactersToDomain()
 
-            for (c in result) {
-                list.add(c.toDomain())
+            emit(domainCharacters)
+
+            coroutineScope {
+                characterDao.insertListOfCharactersOrUpdate(
+                    domainCharacters.listCharacterEntityToLocal(null)
+                )
             }
-
-            emit(list)
         }
     }
 
     override suspend  fun getCharacter(id: Int): Flow<CharacterEntity> {
         return flow {
+            characterDao.searchCharacterById(id)?.let {
+                emit(it.toDomain())
+            }
 
             val result = characterApi.getCharacter(id)
                 .call()
@@ -78,4 +88,5 @@ class CharacterRepositoryImpl @Inject constructor(
             emit(result.toDomain())
         }
     }
+    
 }

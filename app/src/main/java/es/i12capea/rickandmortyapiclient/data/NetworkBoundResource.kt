@@ -24,7 +24,6 @@ abstract class NetworkBoundResource<RemoteType, LocalType, DomainType> {
 
     protected abstract fun localToDomain(item: LocalType) : DomainType
 
-
     fun call() : Flow<DomainType>{
         return flow {
             if (shouldLoadFromCache()){

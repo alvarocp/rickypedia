@@ -6,6 +6,8 @@ import com.google.gson.reflect.TypeToken
 import es.i12capea.rickandmortyapiclient.data.api.models.Info
 import es.i12capea.rickandmortyapiclient.data.api.models.character.RemoteCharacter
 import es.i12capea.rickandmortyapiclient.data.api.models.character.RemoteLocationShort
+import es.i12capea.rickandmortyapiclient.data.local.model.LocalLocationShort
+import java.lang.NumberFormatException
 import java.lang.reflect.Type
 
 class Converters {
@@ -20,28 +22,46 @@ class Converters {
         return Gson().fromJson(str, listType)
     }
 
+
     @TypeConverter
-    fun fromRemoteLocationShort(locationShort: RemoteLocationShort) : String{
-        return "${locationShort.url};${locationShort.name}"
+    fun fromRemoteLocationShort(locationShort: LocalLocationShort) : String{
+        return "${locationShort.locationId};${locationShort.name}"
     }
 
     @TypeConverter
-    fun stringToRemoteLocationShort(str: String) : RemoteLocationShort {
-        return RemoteLocationShort(
-            str.split(";")[0],
-            str.split(";")[1]
-
+    fun stringToRemoteLocationShort(str: String) : LocalLocationShort {
+        val split = str.split(';')
+        val id = try {
+            split[0].toInt()
+        }catch (e: NumberFormatException){
+            0
+        }
+        return LocalLocationShort(
+            id,
+            split[1]
         )
     }
 
+
     @TypeConverter
-    fun fromString(value: String): ArrayList<String> {
+    fun fromListInt(list: List<Int>) : String{
+        return Gson().toJson(list)
+    }
+
+    @TypeConverter
+    fun fromStringToListIn(value : String) : List<Int>{
+        val listType: Type = object : TypeToken<List<Int>>() {}.type
+        return Gson().fromJson(value, listType)
+    }
+
+    @TypeConverter
+    fun fromString(value: String): List<String> {
         val listType: Type = object : TypeToken<List<String>>() {}.type
         return Gson().fromJson(value, listType)
     }
 
     @TypeConverter
-    fun fromArrayList(list: ArrayList<String>): String {
+    fun fromArrayList(list: List<String>): String {
         return Gson().toJson(list)
     }
 

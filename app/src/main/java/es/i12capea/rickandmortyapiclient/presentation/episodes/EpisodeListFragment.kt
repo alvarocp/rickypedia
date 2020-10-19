@@ -12,9 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import es.i12capea.rickandmortyapiclient.R
-import es.i12capea.rickandmortyapiclient.presentation.common.BaseListAdapter
 import es.i12capea.rickandmortyapiclient.presentation.common.displayErrorDialog
-import es.i12capea.rickandmortyapiclient.presentation.entities.Episode
 import es.i12capea.rickandmortyapiclient.presentation.episodes.state.EpisodesStateEvent
 import kotlinx.android.synthetic.main.episode_list_fragment.*
 import javax.inject.Inject
@@ -35,7 +33,7 @@ class EpisodeListFragment (
         subscribeObservers()
         viewModel.getEpisodeList()?.let {
 
-        } ?: viewModel.setStateEvent(EpisodesStateEvent.GetAllEpisodes())
+        } ?: viewModel.setStateEvent(EpisodesStateEvent.GetNextPage())
         //(activity as AppCompatActivity).setSupportActionBar()
 
     }
@@ -49,14 +47,6 @@ class EpisodeListFragment (
     }
 
     fun subscribeObservers() {
-        viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
-            dataState.getContentIfNotHandled()?.let { data ->
-                data.episodes?.let {
-                    viewModel.addToEpisodeList(it)
-                }
-            }
-        })
-
         viewModel.isLoading.observe(viewLifecycleOwner, Observer {
             if(it){
                 progress_bar.visibility = View.VISIBLE
@@ -94,7 +84,7 @@ class EpisodeListFragment (
                     val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                     val lastPosition = layoutManager.findLastVisibleItemPosition()
                     if (lastPosition == episodeListAdapter.itemCount.minus(1)) {
-                        viewModel.setStateEvent(EpisodesStateEvent.GetAllEpisodes(viewModel.getActualPage() + 1 ))
+                        viewModel.setStateEvent(EpisodesStateEvent.GetNextPage())
                         Log.d("A", "LastPositionReached")
                     }
                 }

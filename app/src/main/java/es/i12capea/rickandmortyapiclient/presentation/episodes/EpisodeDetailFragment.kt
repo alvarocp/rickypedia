@@ -20,7 +20,6 @@ import es.i12capea.rickandmortyapiclient.presentation.episodes.state.EpisodesSta
 import kotlinx.android.synthetic.main.episode_item.view.*
 import kotlinx.android.synthetic.main.fragment_episode_detail.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -54,7 +53,7 @@ class EpisodeDetailFragment : Fragment()
         postponeEnterTransition()
 
         //vengo del back?
-        viewModel.getEpisode()?.let { episode ->
+        viewModel.getCurrentEpisode()?.let { episode ->
             viewModel.getCharacterList()?.let { characters ->
                 setEpisodeView(episode)
                 characterListAdapterDeepLink.submitList(characters)
@@ -121,7 +120,7 @@ class EpisodeDetailFragment : Fragment()
     @ExperimentalCoroutinesApi
     fun onEpisodeChange(it: Episode){
         setEpisodeView(it)
-        viewModel.setEpisode(it)
+        viewModel.setCurrentEpisode(it)
         viewModel.setStateEvent(EpisodesStateEvent.GetCharactersInEpisode(it))
     }
 

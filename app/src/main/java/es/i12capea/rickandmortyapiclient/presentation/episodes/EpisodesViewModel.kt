@@ -8,10 +8,8 @@ import es.i12capea.rickandmortyapiclient.domain.usecases.GetCharactersInEpisodeU
 import es.i12capea.rickandmortyapiclient.domain.usecases.GetEpisodeUseCase
 import es.i12capea.rickandmortyapiclient.presentation.common.BaseViewModel
 import es.i12capea.rickandmortyapiclient.presentation.entities.Episode
-import es.i12capea.rickandmortyapiclient.presentation.entities.mappers.characterListToPresentation
-import es.i12capea.rickandmortyapiclient.presentation.entities.mappers.episodeListToPresentation
-import es.i12capea.rickandmortyapiclient.presentation.entities.mappers.toDomain
-import es.i12capea.rickandmortyapiclient.presentation.entities.mappers.toPresentation
+import es.i12capea.rickandmortyapiclient.presentation.entities.Page
+import es.i12capea.rickandmortyapiclient.presentation.entities.mappers.*
 import es.i12capea.rickandmortyapiclient.presentation.episodes.state.EpisodesStateEvent
 import es.i12capea.rickandmortyapiclient.presentation.episodes.state.EpisodesViewState
 import kotlinx.coroutines.*
@@ -26,10 +24,23 @@ class EpisodesViewModel @ViewModelInject constructor(
 ) : BaseViewModel<EpisodesStateEvent, EpisodesViewState>(){
 
 
+    init {
+        val update = getCurrentViewStateOrNew()
+        update.lastPage = Page(
+            next = 1,
+            prev = null,
+            actual = 0,
+            list = emptyList(),
+            count = 0
+        )
+        update.episodes = null
+        setViewState(update)
+    }
+
     override fun getJobNameForEvent(stateEvent: EpisodesStateEvent): String? {
         return when(stateEvent){
-            is EpisodesStateEvent.GetAllEpisodes -> {
-                EpisodesStateEvent.GetAllEpisodes::class.java.name + stateEvent.page
+            is EpisodesStateEvent.GetNextPage -> {
+                EpisodesStateEvent.GetNextPage::class.java.name + getNextPage()
             }
             is EpisodesStateEvent.GetCharactersInEpisode -> {
                 EpisodesStateEvent.GetCharactersInEpisode::class.java.name + stateEvent.episode.id
@@ -44,15 +55,21 @@ class EpisodesViewModel @ViewModelInject constructor(
     override fun getJobForEvent(stateEvent: EpisodesStateEvent): Job? {
         return launch {
             when(stateEvent){
-                is EpisodesStateEvent.GetAllEpisodes -> {
-                    getAllEpisodesUseCase.invoke(stateEvent.page)
-                        .flowOn(Dispatchers.IO)
-                        .onCompletion { cause ->
-                            handleCompletion(cause)
+                is EpisodesStateEvent.GetNextPage -> {
+                    val currentEpisodes = getCurrentEpisodes()
+                    getLastPage()?.let { currentPage ->
+                        currentPage.next?.let { nextPage ->
+                            getAllEpisodesUseCase.invoke(nextPage)
+                                .flowOn(Dispatchers.IO)
+                                .onCompletion { cause ->
+                                    handleCompletion(cause)
+                                }
+                                .collect{
+                                    handleCollectEpisodes(currentEpisodes, it.episodePageToPresentation())
+                                }
                         }
-                        .collect{
-                            handleCollectEpisodes(it.episodeListToPresentation())
-                        }
+                    }
+
                 }
                 is EpisodesStateEvent.GetCharactersInEpisode -> {
                     getCharactersInEpisodeUseCase.invoke(stateEvent.episode.toDomain())
@@ -100,14 +117,15 @@ class EpisodesViewModel @ViewModelInject constructor(
         )
     }
 
-    private fun handleCollectEpisodes(episodeList: List<Episode>) {
-        dataState.postValue(
-            Event(
-                EpisodesViewState(
-                    episodes = episodeList
-                )
-            )
-        )
+    private fun handleCollectEpisodes(currentList: List<Episode>? ,page: Page<Episode>) {
+
+        setActualEpisodePage(page)
+
+        val list = currentList?.toMutableList()
+            ?: arrayListOf()
+        list.addAll(page.list)
+
+        setEpisodeList(list)
     }
 
 
@@ -115,11 +133,6 @@ class EpisodesViewModel @ViewModelInject constructor(
         return getCurrentViewStateOrNew().episodes
     }
 
-    fun setEpisodeList(episodes: List<Episode>){
-        val update = getCurrentViewStateOrNew()
-        update.episodes = episodes
-        postViewState(update)
-    }
 
     fun setCharacterDetails(character: Character){
         val update = getCurrentViewStateOrNew()
@@ -137,13 +150,13 @@ class EpisodesViewModel @ViewModelInject constructor(
         postViewState(update)
     }
 
-    fun getActualPage() : Int{
-        return getCurrentViewStateOrNew().page
+    fun getActualPage() : Page<Episode>?{
+        return getCurrentViewStateOrNew().lastPage
     }
 
-    fun setActualPage(page: Int){
+    fun setActualEpisodePage(page: Page<Episode>){
         val update = getCurrentViewStateOrNew()
-        update.page = page
+        update.lastPage = page
         postViewState(update)
     }
 
@@ -151,34 +164,35 @@ class EpisodesViewModel @ViewModelInject constructor(
         return getCurrentViewStateOrNew().characters
     }
 
-    fun addToEpisodeList(cl: List<Episode>){
-        val list = getEpisodeList()?.toMutableList()
-            ?: arrayListOf()
-        list.addAll(cl)
-        val update = getCurrentViewStateOrNew()
-        update.episodes = list
-        postViewState(update)
-    }
-
-    fun handleCompletion(cause: Throwable?, page: Int){
-        cause?.let {
-            handleError(it)
-        }
-        setActualPage(page)
-    }
-
-
     override fun initNewViewState(): EpisodesViewState {
         return EpisodesViewState()
     }
 
-    fun setEpisode(episode: Episode){
+    fun setCurrentEpisode(episode: Episode){
         val update = getCurrentViewStateOrNew()
         update.episode = episode
         postViewState(update)
     }
 
-    fun getEpisode() : Episode?{
+    fun getCurrentEpisode() : Episode?{
         return getCurrentViewStateOrNew().episode
     }
+
+    fun getCurrentEpisodes() : List<Episode>?{
+        return getCurrentViewStateOrNew().episodes
+    }
+
+    fun setEpisodeList(episodes: List<Episode>){
+        val update = getCurrentViewStateOrNew()
+        update.episodes = episodes
+        postViewState(update)
+    }
+
+    fun getNextPage() : Int? {
+        return getCurrentViewStateOrNew().lastPage?.next
+    }
+    fun getLastPage() : Page<Episode>?{
+        return getCurrentViewStateOrNew().lastPage
+    }
+
 }
