@@ -7,7 +7,7 @@ object Constants {
     val BASE_URL = "https://rickandmortyapi.com/api/"
 
 
-    const val DB_VERSION = 6
+    const val DB_VERSION = 7
     const val DB_NAME = "rym_db"
     const val MAX_ITEM_PER_PAGE = 20
 

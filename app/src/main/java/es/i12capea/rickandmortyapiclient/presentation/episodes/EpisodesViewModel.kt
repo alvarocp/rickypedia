@@ -117,7 +117,7 @@ class EpisodesViewModel @ViewModelInject constructor(
         )
     }
 
-    private fun handleCollectEpisodes(currentList: List<Episode>? ,page: Page<Episode>) {
+    private fun handleCollectEpisodes(currentList: List<Episode>? , page: Page<Episode>) {
 
         setActualEpisodePage(page)
 

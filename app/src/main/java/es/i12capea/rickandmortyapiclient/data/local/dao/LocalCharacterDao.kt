@@ -18,7 +18,6 @@ interface LocalCharacterDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertListOfCharactersOrReplace(characters: List<LocalCharacter>)
 
-    @Transaction
     suspend fun insertOrUpdate(character: LocalCharacter){
         try {
             insertCharacter(character)

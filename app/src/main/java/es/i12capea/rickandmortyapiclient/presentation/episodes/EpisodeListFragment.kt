@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,7 +22,7 @@ import javax.inject.Inject
 class EpisodeListFragment (
 ) : Fragment(){
 
-    private val viewModel : EpisodesViewModel by viewModels()
+    private val viewModel : EpisodesViewModel by activityViewModels()
 
     @Inject
     lateinit var episodeListAdapter : EpisodeListAdapter
@@ -31,10 +32,8 @@ class EpisodeListFragment (
 
         initRecyclerView()
         subscribeObservers()
-        viewModel.getEpisodeList()?.let {
 
-        } ?: viewModel.setStateEvent(EpisodesStateEvent.GetNextPage())
-        //(activity as AppCompatActivity).setSupportActionBar()
+        viewModel.setStateEvent(EpisodesStateEvent.GetNextPage())
 
     }
 
@@ -64,10 +63,6 @@ class EpisodeListFragment (
         viewModel.viewState.observe(viewLifecycleOwner, Observer { viewState ->
             viewState.episodes?.let {
                 episodeListAdapter.submitList(it)
-            }
-
-            viewState.character?.let {
-
             }
         })
     }

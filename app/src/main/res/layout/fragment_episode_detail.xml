@@ -16,6 +16,7 @@
         app:layout_constraintTop_toBottomOf="@id/layout_episode"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="28 diciembre 2020"
+        android:paddingStart="@dimen/card_padding"
         />
 
     <androidx.recyclerview.widget.RecyclerView

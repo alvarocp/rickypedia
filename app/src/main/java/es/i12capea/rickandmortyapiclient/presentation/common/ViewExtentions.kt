@@ -121,6 +121,7 @@ fun Fragment.areYouSureDialog(message: String, callback: AreYouSureCallback){
             }
         }
 }
+
 interface AreYouSureCallback {
     fun proceed()
 

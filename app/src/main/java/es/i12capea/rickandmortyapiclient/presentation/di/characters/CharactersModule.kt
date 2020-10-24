@@ -46,11 +46,15 @@ class CharactersModule {
 
     @Provides
     fun provideCharacterAdapter(requestManager: RequestManager) : CharacterListAdapter {
-        return CharacterListAdapter(requestManager)
+        val c = CharacterListAdapter(requestManager)
+        c.setHasStableIds(true)
+        return c
     }
     @Provides
     fun provideCharacterAdapterDeepLink(requestManager: RequestManager) : CharacterListAdapterDeepLink {
-        return CharacterListAdapterDeepLink(requestManager)
+        val c = CharacterListAdapterDeepLink(requestManager)
+        c.setHasStableIds(true)
+        return c
     }
 
 }

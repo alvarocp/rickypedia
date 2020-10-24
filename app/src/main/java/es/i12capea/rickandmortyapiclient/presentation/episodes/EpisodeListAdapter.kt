@@ -78,7 +78,7 @@ class EpisodeListAdapter(private val interaction: Interaction? = null) :
                 bundle.putParcelable("episode", item)
                 findNavController().navigate(R.id.action_episodeListFragment_to_episodeDetailFragment, bundle)
 
-                interaction?.onItemSelected(absoluteAdapterPosition, item)
+                //interaction?.onItemSelected(absoluteAdapterPosition, item)
             }
         }
     }
@@ -90,4 +90,5 @@ class EpisodeListAdapter(private val interaction: Interaction? = null) :
     override fun getItemId(position: Int): Long {
         return differ.currentList[position].id.toLong()
     }
+
 }

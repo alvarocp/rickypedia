@@ -6,13 +6,13 @@
     android:layout_height="wrap_content"
     android:clickable="true"
     android:focusable="true"
-    android:layout_marginTop="6dp"
+    android:layout_margin="3dp"
     >
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp"
+        android:padding="@dimen/card_padding"
         >
 
         <TextView
@@ -20,8 +20,8 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
             tools:text="Titulo"
-            android:textSize="24sp"
             android:id="@+id/tv_title"
             />
 
@@ -30,9 +30,9 @@
             android:layout_height="wrap_content"
             app:layout_constraintTop_toBottomOf="@id/tv_title"
             app:layout_constraintStart_toStartOf="parent"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
             android:id="@+id/tv_episode"
             tools:text="S01E06"
-            android:textSize="16sp"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

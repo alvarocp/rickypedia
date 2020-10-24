@@ -26,7 +26,6 @@ class EpisodeRepositoryImpl @Inject constructor (
 ): EpisodeRepository{
     override suspend fun getEpisodesAtPage(page: Int): Flow<PageEntity<EpisodeEntity>> {
         return flow{
-
             episodePageDao.searchPageById(page)?.let {
                 emit(it.toDomain())
                 if (it.page.count != Constants.MAX_ITEM_PER_PAGE){
@@ -87,7 +86,7 @@ class EpisodeRepositoryImpl @Inject constructor (
                 episodeDao.insertListEpisode(episodeEntities.list.toLocal(episodeEntities.actualPage))
                 episodePageDao.insertPage(episodeEntities.toLocalEpisodePage())
             }catch (e: Exception){
-                Log.d("BDD", "Error insertando lista de episodios")
+                Log.d("BD", "Error insertando lista de episodios")
             }
             return episodeEntities
         }catch (t: Throwable){
@@ -104,7 +103,7 @@ class EpisodeRepositoryImpl @Inject constructor (
         try {
             episodeDao.insertListEpisode(episodesEntities.toLocal(null))
         }catch (e: Exception){
-            Log.d("BDD", "Cant Insert list")
+            Log.d("BD", "Cant Insert list")
         }
         return episodesEntities
     }

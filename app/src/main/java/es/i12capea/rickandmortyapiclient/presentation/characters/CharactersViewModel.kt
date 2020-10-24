@@ -79,10 +79,7 @@ class CharactersViewModel @ViewModelInject constructor(
                         currentPage.next?.let { nextPage ->
                             getNextCharacterFlow(nextPage)
                         }
-                    } /*?: kotlin.run {
-                        setEpisodeList(emptyList())
-                        getNextCharacterFlow(1)
-                    }*/
+                    }
                 }
 
                 is CharactersStateEvent.GetEpisodesFromCharacter -> {

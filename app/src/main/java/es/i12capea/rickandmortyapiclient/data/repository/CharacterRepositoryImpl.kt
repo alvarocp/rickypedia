@@ -11,12 +11,9 @@ import es.i12capea.rickandmortyapiclient.domain.entities.CharacterEntity
 import es.i12capea.rickandmortyapiclient.domain.entities.PageEntity
 import es.i12capea.rickandmortyapiclient.domain.exceptions.RequestException
 import es.i12capea.rickandmortyapiclient.domain.repositories.CharacterRepository
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -30,7 +27,9 @@ class CharacterRepositoryImpl @Inject constructor(
     override suspend fun getCharactersAtPage(page: Int): Flow<PageEntity<CharacterEntity>> {
         return flow{
             characterPageDao.searchPageById(page)?.let {
-                emit(it.toDomain())
+                if (it.page.count == it.characters.size){
+                    emit(it.toDomain())
+                }
             }
             try {
                 val result = characterApi.getCharactersAtPage(page)
@@ -39,15 +38,19 @@ class CharacterRepositoryImpl @Inject constructor(
                 val domainResult = result.characterPageToDomain()
                 emit(domainResult)
 
-                val localCharacterPage = domainResult.toLocal()
+                Thread{
+                    CoroutineScope(Dispatchers.IO).launch {
+                        val localCharacterPage = domainResult.toLocal()
 
-                try {
-                    characterDao.insertListOfCharactersOrReplace(localCharacterPage.characters)
-                    characterPageDao.insertPage(localCharacterPage.page)
-                }catch (e: Exception){
-                    Log.d("BDD", "No se ha podido insertar la página")
-                }
-
+                        try {
+                            characterDao.insertListOfCharactersOrReplace(localCharacterPage.characters)
+                            characterPageDao.insertPage(localCharacterPage.page)
+                            Log.d("BD", "Base de datos actualizada en segundo plano")
+                        }catch (e: Exception){
+                            Log.d("BD", "No se ha podido insertar la página")
+                        }
+                    }
+                }.start()
             }catch (t: Throwable){
                 if (t !is RequestException){
                     throw t
@@ -61,17 +64,27 @@ class CharacterRepositoryImpl @Inject constructor(
             characterDao.searchCharactersByIds(ids)?.let {
                 emit(it.localCharactersToDomain())
             }
-            val result = characterApi.getCharacters(ids)
-                .call()
+            try {
+                val result = characterApi.getCharacters(ids)
+                    .call()
 
-            val domainCharacters = result.charactersToDomain()
+                val domainCharacters = result.charactersToDomain()
 
-            emit(domainCharacters)
+                emit(domainCharacters)
 
-            coroutineScope {
-                characterDao.insertListOfCharactersOrUpdate(
-                    domainCharacters.listCharacterEntityToLocal(null)
-                )
+                //Update DB in background
+                Thread{
+                    CoroutineScope(Dispatchers.IO).launch {
+                        characterDao.insertListOfCharactersOrUpdate(
+                            domainCharacters.listCharacterEntityToLocal(null)
+                        )
+                        Log.d("BD", "Personaje actualizado en segundo plano")
+                    }
+                }.start()
+            }catch (t: Throwable){
+                if (t !is RequestException){
+                    throw t
+                }
             }
         }
     }
@@ -82,10 +95,17 @@ class CharacterRepositoryImpl @Inject constructor(
                 emit(it.toDomain())
             }
 
-            val result = characterApi.getCharacter(id)
-                .call()
+            try {
+                val result = characterApi.getCharacter(id)
+                    .call()
 
-            emit(result.toDomain())
+                emit(result.toDomain())
+            }catch (t: Throwable){
+                if (t !is RequestException){
+                    throw t
+                }
+            }
+
         }
     }
     
