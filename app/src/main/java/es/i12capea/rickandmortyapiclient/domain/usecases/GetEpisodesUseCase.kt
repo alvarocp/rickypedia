@@ -1,6 +1,5 @@
 package es.i12capea.rickandmortyapiclient.domain.usecases
 
-import es.i12capea.rickandmortyapiclient.data.api.models.episode.RemoteEpisode
 import es.i12capea.rickandmortyapiclient.domain.entities.EpisodeEntity
 import es.i12capea.rickandmortyapiclient.domain.repositories.EpisodeRepository
 import kotlinx.coroutines.Dispatchers

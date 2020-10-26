@@ -1,8 +1,6 @@
 package es.i12capea.rickandmortyapiclient.data.api.models.character
 
 import android.os.Parcelable
-import androidx.room.Entity
-import androidx.room.PrimaryKey
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize

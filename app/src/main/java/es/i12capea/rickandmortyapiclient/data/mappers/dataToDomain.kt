@@ -6,12 +6,11 @@ import es.i12capea.rickandmortyapiclient.data.api.models.PageableResponse
 import es.i12capea.rickandmortyapiclient.data.api.models.character.RemoteCharacter
 import es.i12capea.rickandmortyapiclient.data.api.models.episode.RemoteEpisode
 import es.i12capea.rickandmortyapiclient.data.api.models.location.RemoteLocation
-import es.i12capea.rickandmortyapiclient.data.local.model.*
-import es.i12capea.rickandmortyapiclient.data.repository.EpisodeRepositoryImpl
+import es.i12capea.rickandmortyapiclient.data.local.model.LocalCharacter
+import es.i12capea.rickandmortyapiclient.data.local.model.LocalEpisode
+import es.i12capea.rickandmortyapiclient.data.local.model.PageAndCharacters
+import es.i12capea.rickandmortyapiclient.data.local.model.PageAndEpisodes
 import es.i12capea.rickandmortyapiclient.domain.entities.*
-import es.i12capea.rickandmortyapiclient.presentation.entities.Character
-import es.i12capea.rickandmortyapiclient.presentation.entities.Episode
-import es.i12capea.rickandmortyapiclient.presentation.entities.Page
 
 
 fun PageAndEpisodes.toDomain() : PageEntity<EpisodeEntity>{

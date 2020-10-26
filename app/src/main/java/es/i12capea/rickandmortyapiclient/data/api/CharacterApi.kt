@@ -2,7 +2,6 @@ package es.i12capea.rickandmortyapiclient.data.api
 import es.i12capea.rickandmortyapiclient.data.api.models.PageableResponse
 import es.i12capea.rickandmortyapiclient.data.api.models.character.RemoteCharacter
 import retrofit2.Call
-import retrofit2.http.Field
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query

@@ -5,15 +5,16 @@ import es.i12capea.rickandmortyapiclient.data.api.CharacterApi
 import es.i12capea.rickandmortyapiclient.data.api.call
 import es.i12capea.rickandmortyapiclient.data.local.dao.LocalCharacterDao
 import es.i12capea.rickandmortyapiclient.data.local.dao.LocalCharacterPageDao
-import es.i12capea.rickandmortyapiclient.data.local.model.LocalCharacter
 import es.i12capea.rickandmortyapiclient.data.mappers.*
 import es.i12capea.rickandmortyapiclient.domain.entities.CharacterEntity
 import es.i12capea.rickandmortyapiclient.domain.entities.PageEntity
 import es.i12capea.rickandmortyapiclient.domain.exceptions.RequestException
 import es.i12capea.rickandmortyapiclient.domain.repositories.CharacterRepository
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 

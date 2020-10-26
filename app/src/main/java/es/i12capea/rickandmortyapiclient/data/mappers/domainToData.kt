@@ -4,7 +4,6 @@ import es.i12capea.rickandmortyapiclient.data.local.model.*
 import es.i12capea.rickandmortyapiclient.domain.entities.CharacterEntity
 import es.i12capea.rickandmortyapiclient.domain.entities.EpisodeEntity
 import es.i12capea.rickandmortyapiclient.domain.entities.PageEntity
-import es.i12capea.rickandmortyapiclient.presentation.entities.Episode
 
 
 fun List<CharacterEntity>.listCharacterEntityToLocal(page: Int?) : List<LocalCharacter>{

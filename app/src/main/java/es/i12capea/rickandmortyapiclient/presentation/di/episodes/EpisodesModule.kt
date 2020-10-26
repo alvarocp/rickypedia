@@ -10,14 +10,14 @@ import es.i12capea.rickandmortyapiclient.data.local.dao.LocalEpisodePageDao
 import es.i12capea.rickandmortyapiclient.data.repository.EpisodeRepositoryImpl
 import es.i12capea.rickandmortyapiclient.domain.repositories.CharacterRepository
 import es.i12capea.rickandmortyapiclient.domain.repositories.EpisodeRepository
-import es.i12capea.rickandmortyapiclient.domain.usecases.*
-import es.i12capea.rickandmortyapiclient.presentation.episodes.EpisodeListAdapter
-import es.i12capea.rickandmortyapiclient.presentation.episodes.EpisodeListAdapterDeepLink
+import es.i12capea.rickandmortyapiclient.domain.usecases.GetAllEpisodesUseCase
+import es.i12capea.rickandmortyapiclient.domain.usecases.GetCharactersInEpisodeUseCase
+import es.i12capea.rickandmortyapiclient.domain.usecases.GetEpisodeUseCase
+import es.i12capea.rickandmortyapiclient.domain.usecases.GetEpisodesUseCase
 
 @Module
 @InstallIn(ActivityRetainedComponent::class)
 class EpisodesModule {
-
 
     @Provides
     fun provideEpisodeRepository(episodesApi: EpisodesApi, episodeDao: LocalEpisodeDao, episodesPageDao: LocalEpisodePageDao ) : EpisodeRepository{
@@ -40,17 +40,8 @@ class EpisodesModule {
     }
 
     @Provides
-    fun provideEpisodeAdapter() : EpisodeListAdapter{
-        return EpisodeListAdapter()
-    }
-
-    @Provides
     fun provideGetEpisodeUseCase(episodeRepository: EpisodeRepository) : GetEpisodeUseCase{
         return GetEpisodeUseCase(episodeRepository)
     }
 
-    @Provides
-    fun provideEpisodeAdapterDeepLink() : EpisodeListAdapterDeepLink{
-        return EpisodeListAdapterDeepLink()
-    }
 }

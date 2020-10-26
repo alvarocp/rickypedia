@@ -5,7 +5,7 @@
 
     <fragment
         android:id="@+id/episodeListFragment"
-        android:name="es.i12capea.rickandmortyapiclient.presentation.episodes.EpisodeListFragment"
+        android:name="es.i12capea.rickandmortyapiclient.presentation.episodes.episode_list.EpisodeListFragment"
         android:label="EpisodeListFragment" >
         <action
             android:id="@+id/action_episodeListFragment_to_episodeDetailFragment"
@@ -18,7 +18,7 @@
     </fragment>
     <fragment
         android:id="@+id/episodeDetailFragment"
-        android:name="es.i12capea.rickandmortyapiclient.presentation.episodes.EpisodeDetailFragment"
+        android:name="es.i12capea.rickandmortyapiclient.presentation.episodes.episode_detail.EpisodeDetailFragment"
         android:label="EpisodeDetailFragment">
         <argument
             android:name="episode"

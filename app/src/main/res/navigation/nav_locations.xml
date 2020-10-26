@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/locationListFragment"
-        android:name="es.i12capea.rickandmortyapiclient.presentation.locations.LocationListFragment"
+        android:name="es.i12capea.rickandmortyapiclient.presentation.locations.location_list.LocationListFragment"
         android:label="fragment_location_list"
         tools:layout="@layout/fragment_location_list">
         <action
@@ -21,7 +21,7 @@
     </fragment>
     <fragment
         android:id="@+id/locationDetailFragment"
-        android:name="es.i12capea.rickandmortyapiclient.presentation.locations.LocationDetailFragment"
+        android:name="es.i12capea.rickandmortyapiclient.presentation.locations.location_detail.LocationDetailFragment"
         android:label="fragment_location_detail"
         tools:layout="@layout/fragment_location_detail">
         <argument

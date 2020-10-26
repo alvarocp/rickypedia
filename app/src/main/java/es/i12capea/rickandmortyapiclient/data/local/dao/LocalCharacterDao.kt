@@ -1,12 +1,8 @@
 package es.i12capea.rickandmortyapiclient.data.local.dao
 
-import android.util.Log
 import androidx.room.*
-import es.i12capea.rickandmortyapiclient.data.api.models.character.RemoteCharacter
 import es.i12capea.rickandmortyapiclient.data.local.converters.Converters
 import es.i12capea.rickandmortyapiclient.data.local.model.LocalCharacter
-import es.i12capea.rickandmortyapiclient.data.local.model.LocalEpisode
-import java.lang.Exception
 
 @Dao
 interface LocalCharacterDao {

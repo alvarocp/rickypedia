@@ -9,11 +9,9 @@ import es.i12capea.rickandmortyapiclient.data.local.dao.LocalEpisodePageDao
 import es.i12capea.rickandmortyapiclient.data.mappers.*
 import es.i12capea.rickandmortyapiclient.domain.entities.EpisodeEntity
 import es.i12capea.rickandmortyapiclient.domain.entities.PageEntity
-import es.i12capea.rickandmortyapiclient.domain.exceptions.RequestException
 import es.i12capea.rickandmortyapiclient.domain.repositories.EpisodeRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import java.lang.Exception
 import javax.inject.Inject
 import javax.inject.Singleton
 

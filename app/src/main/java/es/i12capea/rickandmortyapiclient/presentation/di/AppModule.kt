@@ -12,8 +12,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
-import es.i12capea.rickandmortyapiclient.common.Constants
 import es.i12capea.rickandmortyapiclient.R
+import es.i12capea.rickandmortyapiclient.common.Constants
 import es.i12capea.rickandmortyapiclient.data.api.CharacterApi
 import es.i12capea.rickandmortyapiclient.data.api.EpisodesApi
 import es.i12capea.rickandmortyapiclient.data.api.LocationApi

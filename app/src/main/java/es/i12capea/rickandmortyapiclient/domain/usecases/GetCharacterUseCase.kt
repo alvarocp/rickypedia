@@ -2,7 +2,6 @@ package es.i12capea.rickandmortyapiclient.domain.usecases
 
 import es.i12capea.rickandmortyapiclient.domain.entities.CharacterEntity
 import es.i12capea.rickandmortyapiclient.domain.repositories.CharacterRepository
-import es.i12capea.rickandmortyapiclient.presentation.entities.Character
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
