@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_locations"
+    app:startDestination="@id/locationListFragment">
+
+    <fragment
+        android:id="@+id/locationListFragment"
+        android:name="es.i12capea.rickandmortyapiclient.presentation.locations.location_list.LocationListFragment"
+        android:label="fragment_location_list"
+        tools:layout="@layout/fragment_location_list">
+        <action
+            android:id="@+id/action_locationListFragment_to_locationDetailFragment"
+            app:destination="@id/locationDetailFragment"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/locationDetailFragment"
+        android:name="es.i12capea.rickandmortyapiclient.presentation.locations.location_detail.LocationDetailFragment"
+        android:label="fragment_location_detail"
+        tools:layout="@layout/fragment_location_detail">
+        <argument
+            android:name="location"
+            android:defaultValue="@null"
+            app:argType="es.i12capea.rickandmortyapiclient.presentation.entities.Location"
+            app:nullable="true" />
+        <deepLink
+            android:id="@+id/deepLink2"
+            app:uri="https://www.rickandmortyapiclient.com/locations/{id}" />
+    </fragment>
+    <deepLink
+        android:id="@+id/deepLink3"
+        app:uri="https://www.rickandmortyapiclient.com/episodeDetail/{episodeId}" />
+</navigation>

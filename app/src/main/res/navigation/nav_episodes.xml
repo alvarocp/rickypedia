@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/nav_episodes"
+    app:startDestination="@id/episodeListFragment">
+
+    <fragment
+        android:id="@+id/episodeListFragment"
+        android:name="es.i12capea.rickandmortyapiclient.presentation.episodes.episode_list.EpisodeListFragment"
+        android:label="EpisodeListFragment" >
+        <action
+            android:id="@+id/action_episodeListFragment_to_episodeDetailFragment"
+            app:destination="@id/episodeDetailFragment"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            />
+    </fragment>
+    <fragment
+        android:id="@+id/episodeDetailFragment"
+        android:name="es.i12capea.rickandmortyapiclient.presentation.episodes.episode_detail.EpisodeDetailFragment"
+        android:label="EpisodeDetailFragment">
+        <argument
+            android:name="episode"
+            android:defaultValue="@null"
+            app:argType="es.i12capea.rickandmortyapiclient.presentation.entities.Episode"
+            app:nullable="true" />
+        <deepLink
+            android:id="@+id/deepLink4"
+            app:uri="https://www.rickandmortyapiclient.com/episodeDetail/{episodeId}" />
+        <argument
+            android:name="episodeId"
+            app:argType="integer"
+            android:defaultValue="0" />
+    </fragment>
+</navigation>
