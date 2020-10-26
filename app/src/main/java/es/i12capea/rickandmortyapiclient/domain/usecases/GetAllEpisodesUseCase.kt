@@ -3,7 +3,6 @@ package es.i12capea.rickandmortyapiclient.domain.usecases
 import es.i12capea.rickandmortyapiclient.domain.entities.EpisodeEntity
 import es.i12capea.rickandmortyapiclient.domain.entities.PageEntity
 import es.i12capea.rickandmortyapiclient.domain.repositories.EpisodeRepository
-import es.i12capea.rickandmortyapiclient.presentation.entities.Page
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect

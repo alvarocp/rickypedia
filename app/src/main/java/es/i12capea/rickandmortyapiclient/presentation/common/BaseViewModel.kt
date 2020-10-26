@@ -1,8 +1,6 @@
 package es.i12capea.rickandmortyapiclient.presentation.common
 
-import android.app.Application
 import android.util.Log
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

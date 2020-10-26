@@ -1,7 +1,8 @@
 package es.i12capea.rickandmortyapiclient.data.local.dao
 
 import androidx.room.*
-import es.i12capea.rickandmortyapiclient.data.local.model.*
+import es.i12capea.rickandmortyapiclient.data.local.model.LocalEpisodePage
+import es.i12capea.rickandmortyapiclient.data.local.model.PageAndEpisodes
 
 @Dao
 interface LocalEpisodePageDao {

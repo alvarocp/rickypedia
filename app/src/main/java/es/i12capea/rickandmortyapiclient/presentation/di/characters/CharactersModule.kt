@@ -1,6 +1,5 @@
 package es.i12capea.rickandmortyapiclient.presentation.di.characters
 
-import com.bumptech.glide.RequestManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -11,15 +10,12 @@ import es.i12capea.rickandmortyapiclient.data.local.dao.LocalCharacterPageDao
 import es.i12capea.rickandmortyapiclient.data.repository.CharacterRepositoryImpl
 import es.i12capea.rickandmortyapiclient.domain.repositories.CharacterRepository
 import es.i12capea.rickandmortyapiclient.domain.usecases.GetCharacterUseCase
-import es.i12capea.rickandmortyapiclient.domain.usecases.GetCharactersInPage
-import es.i12capea.rickandmortyapiclient.presentation.characters.CharacterListAdapter
-import es.i12capea.rickandmortyapiclient.presentation.characters.CharacterListAdapterDeepLink
+import es.i12capea.rickandmortyapiclient.domain.usecases.GetCharactersInPageUseCase
 
 
 @Module
 @InstallIn(ActivityRetainedComponent::class)
 class CharactersModule {
-
 
     @Provides
     fun provideCharacterRepository(
@@ -35,26 +31,13 @@ class CharactersModule {
     }
 
     @Provides
-    fun provideGetAllCharactersUseCase(charactersRepository: CharacterRepository) : GetCharactersInPage{
-        return GetCharactersInPage(charactersRepository)
+    fun provideGetAllCharactersUseCase(charactersRepository: CharacterRepository) : GetCharactersInPageUseCase{
+        return GetCharactersInPageUseCase(charactersRepository)
     }
 
     @Provides
     fun provideGetCharacterUseCase(charactersRepository: CharacterRepository) : GetCharacterUseCase {
         return GetCharacterUseCase(charactersRepository)
-    }
-
-    @Provides
-    fun provideCharacterAdapter(requestManager: RequestManager) : CharacterListAdapter {
-        val c = CharacterListAdapter(requestManager)
-        c.setHasStableIds(true)
-        return c
-    }
-    @Provides
-    fun provideCharacterAdapterDeepLink(requestManager: RequestManager) : CharacterListAdapterDeepLink {
-        val c = CharacterListAdapterDeepLink(requestManager)
-        c.setHasStableIds(true)
-        return c
     }
 
 }

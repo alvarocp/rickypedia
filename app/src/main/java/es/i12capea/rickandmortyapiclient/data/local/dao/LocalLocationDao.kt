@@ -1,7 +1,6 @@
 package es.i12capea.rickandmortyapiclient.data.local.dao
 
 import androidx.room.*
-import es.i12capea.rickandmortyapiclient.data.local.model.LocalEpisode
 import es.i12capea.rickandmortyapiclient.data.local.model.LocalLocation
 
 @Dao

@@ -5,9 +5,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import es.i12capea.rickandmortyapiclient.data.api.models.Info
 import es.i12capea.rickandmortyapiclient.data.api.models.character.RemoteCharacter
-import es.i12capea.rickandmortyapiclient.data.api.models.character.RemoteLocationShort
 import es.i12capea.rickandmortyapiclient.data.local.model.LocalLocationShort
-import java.lang.NumberFormatException
 import java.lang.reflect.Type
 
 class Converters {

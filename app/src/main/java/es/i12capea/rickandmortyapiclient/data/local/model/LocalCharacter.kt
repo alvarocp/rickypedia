@@ -1,11 +1,8 @@
 package es.i12capea.rickandmortyapiclient.data.local.model
 
 import android.os.Parcelable
-import androidx.room.Embedded
 import androidx.room.Entity
-import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
-import es.i12capea.rickandmortyapiclient.data.api.models.character.RemoteLocationShort
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
