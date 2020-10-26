@@ -7,6 +7,7 @@ import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,7 +21,7 @@ import kotlinx.android.synthetic.main.location_item.view.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @AndroidEntryPoint
-class LocationDetailFragment constructor()
+class LocationDetailFragment
     : Fragment(R.layout.fragment_location_detail)
 {
     private val listViewModel : LocationDetailViewModel by viewModels()
@@ -51,6 +52,9 @@ class LocationDetailFragment constructor()
             }
         }
 
+        iv_back.setOnClickListener {
+            findNavController().popBackStack()
+        }
 
     }
 

@@ -18,11 +18,11 @@ class LocationListAdapter(private val interaction: Interaction? = null) :
     val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Location>() {
 
         override fun areItemsTheSame(oldItem: Location, newItem: Location): Boolean {
-            return oldItem == newItem
+            return oldItem.id == newItem.id
         }
 
         override fun areContentsTheSame(oldItem: Location, newItem: Location): Boolean {
-            return oldItem.id == newItem.id
+            return oldItem == newItem
         }
 
     }
@@ -82,5 +82,9 @@ class LocationListAdapter(private val interaction: Interaction? = null) :
 
     interface Interaction {
         fun onItemSelected(position: Int, item: Location)
+    }
+
+    override fun getItemId(position: Int): Long {
+        return differ.currentList[position].id.toLong()
     }
 }
