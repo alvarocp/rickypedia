@@ -14,7 +14,8 @@
         android:layout_height="wrap_content"
         android:padding="@dimen/card_padding">
 
-        <ImageView
+
+        <ImageButton
             android:padding="6dp"
             android:id="@+id/iv_back"
             android:layout_width="wrap_content"
@@ -24,6 +25,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tv_location_name"
             android:src="@drawable/ic_baseline_arrow_back_24"
+            android:background="?attr/selectableItemBackgroundBorderless"
             />
 
         <TextView
@@ -79,7 +81,8 @@
         android:layout_height="0dp"
         android:layout_marginTop="4dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_characters_header" />
+        app:layout_constraintTop_toBottomOf="@id/tv_characters_header"
+        tools:layout_editor_absoluteX="48dp" />
 
     <ProgressBar
         android:layout_width="wrap_content"
