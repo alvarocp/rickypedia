@@ -3,8 +3,37 @@ package es.i12capea.rickandmortyapiclient.data.mappers
 import es.i12capea.rickandmortyapiclient.data.local.model.*
 import es.i12capea.rickandmortyapiclient.domain.entities.CharacterEntity
 import es.i12capea.rickandmortyapiclient.domain.entities.EpisodeEntity
+import es.i12capea.rickandmortyapiclient.domain.entities.LocationEntity
 import es.i12capea.rickandmortyapiclient.domain.entities.PageEntity
 
+
+fun LocationEntity.toLocal(pageId: Int?) : LocalLocation{
+    return LocalLocation(
+        id = id,
+        pageId= pageId,
+        name= name,
+        type= type,
+        dimension= dimension,
+        residents= residents
+    )
+}
+
+fun List<LocationEntity>.listLocationEntityToLocal(page: Int?) : List<LocalLocation>{
+    val list = ArrayList<LocalLocation>()
+    for (location in this){
+        list.add(location.toLocal(page))
+    }
+    return list
+}
+
+fun PageEntity<LocationEntity>.toLocal() : LocalLocationPage{
+    return LocalLocationPage(
+        actualPage = actualPage,
+        nextPage = nextPage,
+        prevPage = prevPage,
+        count = count
+    )
+}
 
 fun List<CharacterEntity>.listCharacterEntityToLocal(page: Int?) : List<LocalCharacter>{
     val list = ArrayList<LocalCharacter>()

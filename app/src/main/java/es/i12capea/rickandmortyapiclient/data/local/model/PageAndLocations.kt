@@ -10,5 +10,5 @@ data class PageAndLocations(
         parentColumn = "actualPage",
         entityColumn = "pageId"
     )
-    val characters: List<LocalLocation>
+    val locations: List<LocalLocation>
 )

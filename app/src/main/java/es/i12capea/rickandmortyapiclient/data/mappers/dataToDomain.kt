@@ -6,12 +6,37 @@ import es.i12capea.rickandmortyapiclient.data.api.models.PageableResponse
 import es.i12capea.rickandmortyapiclient.data.api.models.character.RemoteCharacter
 import es.i12capea.rickandmortyapiclient.data.api.models.episode.RemoteEpisode
 import es.i12capea.rickandmortyapiclient.data.api.models.location.RemoteLocation
-import es.i12capea.rickandmortyapiclient.data.local.model.LocalCharacter
-import es.i12capea.rickandmortyapiclient.data.local.model.LocalEpisode
-import es.i12capea.rickandmortyapiclient.data.local.model.PageAndCharacters
-import es.i12capea.rickandmortyapiclient.data.local.model.PageAndEpisodes
+import es.i12capea.rickandmortyapiclient.data.local.model.*
 import es.i12capea.rickandmortyapiclient.domain.entities.*
 
+
+fun PageAndLocations.toDomain() : PageEntity<LocationEntity>{
+    return PageEntity(
+        nextPage =  this.page.nextPage,
+        prevPage = this.page.prevPage,
+        actualPage = this.page.actualPage,
+        count = this.page.count,
+        list = this.locations.localLocationsToDomain()
+    )
+}
+
+fun List<LocalLocation>.localLocationsToDomain() : List<LocationEntity>{
+    val list = ArrayList<LocationEntity>()
+    for (location in this){
+        list.add(location.toDomain())
+    }
+    return list
+}
+
+fun LocalLocation.toDomain() : LocationEntity{
+    return LocationEntity(
+        id = id,
+        name= name,
+        type= type,
+        dimension= dimension,
+        residents= residents
+    )
+}
 
 fun PageAndEpisodes.toDomain() : PageEntity<EpisodeEntity>{
     return PageEntity(

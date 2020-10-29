@@ -11,7 +11,7 @@ interface CharacterApi {
     fun getCharactersAtPage(@Query("page") page: Int? = null) : Call<PageableResponse<RemoteCharacter>>
 
     @GET("character/{characterIds}")
-    fun getCharacters(@Path("characterIds") characterIds: List<Int>) : Call<List<RemoteCharacter>>
+    fun getCharacters(@Path(value = "characterIds", encoded = false) characterIds: List<Int>) : Call<List<RemoteCharacter>>
 
     @GET("character/{characterId}")
     fun getCharacter(@Path("characterId") characterId: Int) : Call<RemoteCharacter>
