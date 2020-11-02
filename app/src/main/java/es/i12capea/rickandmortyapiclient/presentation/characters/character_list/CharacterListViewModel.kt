@@ -10,6 +10,7 @@ import es.i12capea.rickandmortyapiclient.presentation.common.BaseViewModel
 import es.i12capea.rickandmortyapiclient.presentation.entities.Character
 import es.i12capea.rickandmortyapiclient.presentation.entities.Page
 import es.i12capea.rickandmortyapiclient.presentation.entities.mappers.characterPageEntityToPresentation
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
@@ -18,8 +19,9 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 
 class CharacterListViewModel @ViewModelInject constructor(
-    private val getCharacters: GetCharactersInPageUseCase
-) : BaseViewModel<CharacterListStateEvent, CharacterListViewState>(){
+    private val getCharacters: GetCharactersInPageUseCase,
+    private val dispatcher: CoroutineDispatcher
+) : BaseViewModel<CharacterListStateEvent, CharacterListViewState>(dispatcher){
 
     init {
         val update = getCurrentViewStateOrNew()

@@ -9,15 +9,12 @@ import es.i12capea.rickandmortyapiclient.common.Event
 import es.i12capea.rickandmortyapiclient.domain.exceptions.PredicateNotSatisfiedException
 import es.i12capea.rickandmortyapiclient.domain.exceptions.RequestException
 import es.i12capea.rickandmortyapiclient.domain.exceptions.ResponseException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlin.coroutines.CoroutineContext
 
 
-abstract class BaseViewModel<StateEvent, ViewState> : ViewModel(),
-        CoroutineScope
+abstract class BaseViewModel<StateEvent, ViewState>(private val dispatcher: CoroutineDispatcher)
+    : ViewModel(), CoroutineScope
 {
 
     val TAG: String = "Pruebas"
@@ -84,7 +81,7 @@ abstract class BaseViewModel<StateEvent, ViewState> : ViewModel(),
     abstract fun initNewViewState(): ViewState
 
     override val coroutineContext: CoroutineContext
-        get() = Dispatchers.IO
+        get() = dispatcher
 
     private val jobs: HashMap<String, Job> = HashMap()
 

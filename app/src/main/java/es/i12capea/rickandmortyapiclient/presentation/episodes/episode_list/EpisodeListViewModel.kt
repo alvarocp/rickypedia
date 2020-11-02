@@ -15,6 +15,7 @@ import es.i12capea.rickandmortyapiclient.presentation.entities.mappers.episodePa
 import es.i12capea.rickandmortyapiclient.presentation.entities.mappers.toPresentation
 import es.i12capea.rickandmortyapiclient.presentation.episodes.episode_list.state.EpisodeListStateEvent
 import es.i12capea.rickandmortyapiclient.presentation.episodes.episode_list.state.EpisodeListViewState
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
@@ -25,8 +26,9 @@ import kotlinx.coroutines.launch
 class EpisodeListViewModel @ViewModelInject constructor(
     private val getAllEpisodesUseCase: GetAllEpisodesUseCase,
     private val getCharactersInEpisodeUseCase: GetCharactersInEpisodeUseCase,
-    private val getEpisodeUseCase: GetEpisodeUseCase
-) : BaseViewModel<EpisodeListStateEvent, EpisodeListViewState>(){
+    private val getEpisodeUseCase: GetEpisodeUseCase,
+    private val dispatcher: CoroutineDispatcher
+) : BaseViewModel<EpisodeListStateEvent, EpisodeListViewState>(dispatcher){
 
 
     init {

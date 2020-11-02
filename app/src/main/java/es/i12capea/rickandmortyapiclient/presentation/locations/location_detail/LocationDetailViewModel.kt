@@ -10,6 +10,7 @@ import es.i12capea.rickandmortyapiclient.presentation.entities.mappers.character
 import es.i12capea.rickandmortyapiclient.presentation.entities.mappers.toDomain
 import es.i12capea.rickandmortyapiclient.presentation.locations.location_detail.state.LocationDetailStateEvent
 import es.i12capea.rickandmortyapiclient.presentation.locations.location_detail.state.LocationDetailViewState
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
@@ -18,8 +19,9 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 
 class LocationDetailViewModel @ViewModelInject constructor (
-    private val getCharactersInLocationUseCase: GetCharactersInLocationUseCase
-) : BaseViewModel<LocationDetailStateEvent, LocationDetailViewState>() {
+    private val getCharactersInLocationUseCase: GetCharactersInLocationUseCase,
+    private val dispatcher: CoroutineDispatcher
+) : BaseViewModel<LocationDetailStateEvent, LocationDetailViewState>(dispatcher) {
 
 
     override fun getJobNameForEvent(stateEvent: LocationDetailStateEvent): String? {

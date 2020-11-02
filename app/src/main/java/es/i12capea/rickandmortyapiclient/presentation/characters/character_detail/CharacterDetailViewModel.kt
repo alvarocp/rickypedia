@@ -11,22 +11,18 @@ import es.i12capea.rickandmortyapiclient.presentation.entities.Character
 import es.i12capea.rickandmortyapiclient.presentation.entities.Episode
 import es.i12capea.rickandmortyapiclient.presentation.entities.mappers.episodeListToPresentation
 import es.i12capea.rickandmortyapiclient.presentation.entities.mappers.toPresentation
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.launch
 
 
 class CharacterDetailViewModel @ViewModelInject constructor(
     private val getEpisodes: GetEpisodesUseCase,
-    private val getCharacter: GetCharacterUseCase
-) : BaseViewModel<CharacterDetailStateEvent, CharacterDetailViewState>(){
+    private val getCharacter: GetCharacterUseCase,
+    private val dispatcher: CoroutineDispatcher
+) : BaseViewModel<CharacterDetailStateEvent, CharacterDetailViewState>(dispatcher){
 
-    override fun setStateEvent(stateEvent: CharacterDetailStateEvent) {
-        super.setStateEvent(stateEvent)
-    }
 
     override fun getJobNameForEvent(stateEvent: CharacterDetailStateEvent): String? {
         return when(stateEvent){
@@ -36,10 +32,10 @@ class CharacterDetailViewModel @ViewModelInject constructor(
             is CharacterDetailStateEvent.GetCharacter -> {
                 CharacterDetailStateEvent.GetCharacter::class.java.name
             }
-            else -> null
         }
     }
 
+    @ExperimentalCoroutinesApi
     override fun getJobForEvent(stateEvent: CharacterDetailStateEvent): Job? {
         return launch {
             when (stateEvent) {

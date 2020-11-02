@@ -19,6 +19,8 @@ import es.i12capea.rickandmortyapiclient.data.api.EpisodesApi
 import es.i12capea.rickandmortyapiclient.data.api.LocationApi
 import es.i12capea.rickandmortyapiclient.data.local.RymDatabase
 import es.i12capea.rickandmortyapiclient.data.local.dao.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -166,6 +168,12 @@ class AppModule {
     @Provides
     fun provideLocalLocationPageDao(db: RymDatabase): LocalLocationPageDao {
         return db.getLocalLocationPageDao()
+    }
+
+    @Singleton
+    @Provides
+    fun provideIoDispatcher() : CoroutineDispatcher{
+        return Dispatchers.IO
     }
 
 }

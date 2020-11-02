@@ -12,6 +12,7 @@ import es.i12capea.rickandmortyapiclient.presentation.entities.mappers.toDomain
 import es.i12capea.rickandmortyapiclient.presentation.entities.mappers.toPresentation
 import es.i12capea.rickandmortyapiclient.presentation.episodes.episode_detail.state.EpisodeDetailStateEvent
 import es.i12capea.rickandmortyapiclient.presentation.episodes.episode_detail.state.EpisodeDetailViewState
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
@@ -21,8 +22,9 @@ import kotlinx.coroutines.launch
 
 class EpisodeDetailViewModel @ViewModelInject constructor(
     private val getCharactersInEpisodeUseCase: GetCharactersInEpisodeUseCase,
-    private val getEpisodeUseCase: GetEpisodeUseCase
-) : BaseViewModel<EpisodeDetailStateEvent, EpisodeDetailViewState>(){
+    private val getEpisodeUseCase: GetEpisodeUseCase,
+    private val dispatcher: CoroutineDispatcher
+) : BaseViewModel<EpisodeDetailStateEvent, EpisodeDetailViewState>(dispatcher){
 
 
     override fun getJobNameForEvent(stateEvent: EpisodeDetailStateEvent): String? {
