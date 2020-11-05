@@ -12,7 +12,7 @@ android {
     buildToolsVersion "29.0.3"
 
     defaultConfig {
-        applicationId "es.i12capea.rickandmortyapiclient"
+        applicationId "es.i12capea.rickypedia"
         minSdkVersion 26
         targetSdkVersion 29
         versionCode 1

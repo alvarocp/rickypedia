@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/characterListFragment"
-        android:name="es.i12capea.rickandmortyapiclient.presentation.characters.character_list.CharacterListFragment"
+        android:name="es.i12capea.rickypedia.presentation.characters.character_list.CharacterListFragment"
         android:label="CharacterListFragment"
         tools:layout="@layout/character_list_fragment"
         >
@@ -18,13 +18,13 @@
     </fragment>
     <fragment
         android:id="@+id/characterDetailFragment"
-        android:name="es.i12capea.rickandmortyapiclient.presentation.characters.character_detail.CharacterDetailFragment"
+        android:name="es.i12capea.rickypedia.presentation.characters.character_detail.CharacterDetailFragment"
         android:label="CharacterDetailFragment"
         tools:layout="@layout/character_detail_scroll_layout">
         <argument
             android:name="character"
             android:defaultValue="@null"
-            app:argType="es.i12capea.rickandmortyapiclient.presentation.entities.Character"
+            app:argType="es.i12capea.rickypedia.presentation.entities.Character"
             app:nullable="true" />
         <deepLink
             android:id="@+id/deepLink"

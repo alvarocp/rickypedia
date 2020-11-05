@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">rickandmortyapiclient</string>
+    <string name="app_name">RickyPedia</string>
     <string name="text_success">Correcto</string>
     <string name="text_ok">Ok</string>
     <string name="text_error">Error</string>

@@ -17,7 +17,7 @@
             android:id="@+id/fragment_nav_host"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:name="es.i12capea.rickandmortyapiclient.presentation.MainNavHostFragment"
+            android:name="es.i12capea.rickypedia.presentation.MainNavHostFragment"
             app:defaultNavHost="true"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
             app:navGraph="@navigation/nav_main" />
