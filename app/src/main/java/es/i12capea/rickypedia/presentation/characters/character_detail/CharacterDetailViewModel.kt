@@ -11,6 +11,7 @@ import es.i12capea.rickypedia.presentation.entities.Character
 import es.i12capea.rickypedia.presentation.entities.Episode
 import es.i12capea.rickypedia.presentation.entities.mappers.episodeListToPresentation
 import es.i12capea.rickypedia.presentation.entities.mappers.toPresentation
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
@@ -20,13 +21,11 @@ import kotlinx.coroutines.launch
 
 
 class CharacterDetailViewModel @ViewModelInject constructor(
+    private val getCharacter: GetCharacterUseCase,
     private val getEpisodes: GetEpisodesUseCase,
-    private val getCharacter: GetCharacterUseCase
-) : BaseViewModel<CharacterDetailStateEvent, CharacterDetailViewState>(){
+    private val dispatcher: CoroutineDispatcher
+    ) : BaseViewModel<CharacterDetailStateEvent, CharacterDetailViewState>(dispatcher){
 
-    override fun setStateEvent(stateEvent: CharacterDetailStateEvent) {
-        super.setStateEvent(stateEvent)
-    }
 
     override fun getJobNameForEvent(stateEvent: CharacterDetailStateEvent): String? {
         return when(stateEvent){
@@ -36,7 +35,6 @@ class CharacterDetailViewModel @ViewModelInject constructor(
             is CharacterDetailStateEvent.GetCharacter -> {
                 CharacterDetailStateEvent.GetCharacter::class.java.name
             }
-            else -> null
         }
     }
 
@@ -44,25 +42,27 @@ class CharacterDetailViewModel @ViewModelInject constructor(
         return launch {
             when (stateEvent) {
                 is CharacterDetailStateEvent.GetEpisodesFromCharacter -> {
-                    getEpisodes(stateEvent.character.episodes)
-                        .flowOn(Dispatchers.IO)
-                        .onCompletion { cause ->
-                            handleCompletion(cause)
-                        }
-                        .collect {
-                            handleCollectEpisodes(it.episodeListToPresentation())
-                        }
+                    try {
+                        getEpisodes(stateEvent.character.episodes)
+                            .flowOn(Dispatchers.IO)
+                            .collect {
+                                handleCollectEpisodes(it.episodeListToPresentation())
+                            }
+                    }catch (t: Throwable){
+                        handleThrowable(t)
+                    }
                 }
 
                 is CharacterDetailStateEvent.GetCharacter -> {
-                    getCharacter(stateEvent.id)
-                        .flowOn(Dispatchers.IO)
-                        .onCompletion { cause ->
-                            handleCompletion(cause)
-                        }
-                        .collect {
-                            handleCollectCharacter(it.toPresentation())
-                        }
+                    try {
+                        getCharacter(stateEvent.id)
+                            .flowOn(Dispatchers.IO)
+                            .collect {
+                                handleCollectCharacter(it.toPresentation())
+                            }
+                    }catch (t: Throwable){
+                        handleThrowable(t)
+                    }
                 }
             }
         }
@@ -76,10 +76,10 @@ class CharacterDetailViewModel @ViewModelInject constructor(
     private fun handleCollectCharacter(character: Character) {
         dataState.postValue(
             Event(
-            CharacterDetailViewState(
-                character = character
-            )
-        )
+                CharacterDetailViewState(
+                    character = character
+                    )
+                )
         )
     }
 

@@ -41,7 +41,7 @@ class SplashScreen : AppCompatActivity() {
         override fun onTransitionCompleted(p0: MotionLayout?, p1: Int) {
             Log.d("Transition", "Transition: completed")
             lifecycleScope.launch(Dispatchers.IO){
-                delay(500)
+                delay(250)
                 withContext(Dispatchers.Main){
                     val intent = Intent(this@SplashScreen, MainActivity::class.java)
                     startActivity(intent)

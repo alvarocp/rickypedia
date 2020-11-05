@@ -9,6 +9,7 @@ import es.i12capea.rickypedia.presentation.entities.Page
 import es.i12capea.rickypedia.presentation.entities.mappers.locationPageEntityToPresentation
 import es.i12capea.rickypedia.presentation.locations.location_list.state.LocationListStateEvent
 import es.i12capea.rickypedia.presentation.locations.location_list.state.LocationListViewState
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
@@ -17,8 +18,9 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 
 class LocationListViewModel @ViewModelInject constructor (
-    private val getLocations: GetLocationsInPageUseCase
-) : BaseViewModel<LocationListStateEvent, LocationListViewState>() {
+    private val getLocations: GetLocationsInPageUseCase,
+    private val dispatcher: CoroutineDispatcher
+) : BaseViewModel<LocationListStateEvent, LocationListViewState>(dispatcher) {
 
     init {
         val update = getCurrentViewStateOrNew()
@@ -60,9 +62,6 @@ class LocationListViewModel @ViewModelInject constructor (
         try {
             getLocations.invoke(nextPage)
                 .flowOn(Dispatchers.IO)
-                .onCompletion { cause ->
-                    handleCompletion(cause)
-                }
                 .collect {
                     handleCollectLocations(currentCharacters, it.locationPageEntityToPresentation())
                 }

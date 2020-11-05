@@ -19,6 +19,8 @@ import es.i12capea.rickypedia.data.api.EpisodesApi
 import es.i12capea.rickypedia.data.api.LocationApi
 import es.i12capea.rickypedia.data.local.RymDatabase
 import es.i12capea.rickypedia.data.local.dao.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -37,6 +39,12 @@ class AppModule {
     @Named("fbAuth")
     fun getFirebaseAuth() : FirebaseAuth {
         return FirebaseAuth.getInstance()
+    }
+
+    @Singleton
+    @Provides
+    fun provideCoroutineDispatcher() : CoroutineDispatcher {
+        return Dispatchers.IO
     }
 
     @Provides

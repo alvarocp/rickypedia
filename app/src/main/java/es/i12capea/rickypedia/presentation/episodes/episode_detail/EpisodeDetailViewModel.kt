@@ -12,6 +12,7 @@ import es.i12capea.rickypedia.presentation.entities.mappers.toDomain
 import es.i12capea.rickypedia.presentation.entities.mappers.toPresentation
 import es.i12capea.rickypedia.presentation.episodes.episode_detail.state.EpisodeDetailStateEvent
 import es.i12capea.rickypedia.presentation.episodes.episode_detail.state.EpisodeDetailViewState
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
@@ -21,8 +22,9 @@ import kotlinx.coroutines.launch
 
 class EpisodeDetailViewModel @ViewModelInject constructor(
     private val getCharactersInEpisodeUseCase: GetCharactersInEpisodeUseCase,
-    private val getEpisodeUseCase: GetEpisodeUseCase
-) : BaseViewModel<EpisodeDetailStateEvent, EpisodeDetailViewState>(){
+    private val getEpisodeUseCase: GetEpisodeUseCase,
+    private val dispatcher: CoroutineDispatcher
+) : BaseViewModel<EpisodeDetailStateEvent, EpisodeDetailViewState>(dispatcher){
 
 
     override fun getJobNameForEvent(stateEvent: EpisodeDetailStateEvent): String? {
@@ -33,7 +35,6 @@ class EpisodeDetailViewModel @ViewModelInject constructor(
             is EpisodeDetailStateEvent.GetEpisode -> {
                 EpisodeDetailStateEvent.GetEpisode::class.java.name + stateEvent.episodeId
             }
-            else -> {null}
         }
     }
 
@@ -41,24 +42,26 @@ class EpisodeDetailViewModel @ViewModelInject constructor(
         return launch {
             when(stateEvent){
                 is EpisodeDetailStateEvent.GetCharactersInEpisode -> {
-                    getCharactersInEpisodeUseCase.invoke(stateEvent.episode.toDomain())
-                        .flowOn(Dispatchers.IO)
-                        .onCompletion { cause ->
-                                handleCompletion(cause)
-                        }
-                        .collect {
-                            handleCollectCharacters(it.characterListToPresentation())
-                        }
+                    try {
+                        getCharactersInEpisodeUseCase.invoke(stateEvent.episode.toDomain())
+                            .flowOn(Dispatchers.IO)
+                            .collect {
+                                handleCollectCharacters(it.characterListToPresentation())
+                            }
+                    }catch (t: Throwable){
+                        handleThrowable(t)
+                    }
                 }
                 is EpisodeDetailStateEvent.GetEpisode -> {
-                    getEpisodeUseCase.invoke(stateEvent.episodeId)
-                        .flowOn(Dispatchers.IO)
-                        .onCompletion { cause ->
-                                handleCompletion(cause)
+                    try {
+                        getEpisodeUseCase.invoke(stateEvent.episodeId)
+                            .flowOn(Dispatchers.IO)
+                            .collect {
+                                handleCollectEpisode(it.toPresentation())
                             }
-                        .collect {
-                            handleCollectEpisode(it.toPresentation())
-                        }
+                    }catch (t: Throwable){
+                        handleThrowable(t)
+                    }
                 }
             }
         }

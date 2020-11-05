@@ -9,15 +9,14 @@ import es.i12capea.rickypedia.common.Event
 import es.i12capea.rickypedia.domain.exceptions.PredicateNotSatisfiedException
 import es.i12capea.rickypedia.domain.exceptions.RequestException
 import es.i12capea.rickypedia.domain.exceptions.ResponseException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
 
-abstract class BaseViewModel<StateEvent, ViewState> : ViewModel(),
-        CoroutineScope
+abstract class BaseViewModel<StateEvent, ViewState> (
+    private val dispatcher: CoroutineDispatcher
+) : ViewModel(), CoroutineScope
 {
 
     val TAG: String = "Pruebas"
@@ -84,7 +83,7 @@ abstract class BaseViewModel<StateEvent, ViewState> : ViewModel(),
     abstract fun initNewViewState(): ViewState
 
     override val coroutineContext: CoroutineContext
-        get() = Dispatchers.IO
+        get() = dispatcher
 
     private val jobs: HashMap<String, Job> = HashMap()
 
@@ -162,10 +161,6 @@ abstract class BaseViewModel<StateEvent, ViewState> : ViewModel(),
                 _error.postValue(Event(ErrorRym(9999, "Error desconocido")))
             }
         }
-    }
-
-    fun handleCompletion(cause: Throwable?){
-        handleThrowable(cause)
     }
 
     fun handleThrowable(cause: Throwable?){

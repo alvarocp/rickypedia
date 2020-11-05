@@ -10,10 +10,10 @@ import es.i12capea.rickypedia.domain.usecases.GetEpisodesUseCase
 import es.i12capea.rickypedia.presentation.characters.character_detail.CharacterDetailViewModel
 import es.i12capea.rickypedia.presentation.characters.character_detail.state.CharacterDetailStateEvent
 import io.mockk.*
-import io.mockk.impl.annotations.MockK
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.setMain
@@ -29,7 +29,7 @@ import org.junit.runners.MethodSorters
  */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @RunWith(JUnit4::class)
-class UseCaseUnitTest {
+class CharacterDetailViewModelUnitTest {
 
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
@@ -38,18 +38,88 @@ class UseCaseUnitTest {
     @Before
     fun setup(){
         Dispatchers.setMain(Dispatchers.Unconfined)
+
+        val episodesUseCase = mockk<GetEpisodesUseCase>()
+
         MockKAnnotations.init(this)
     }
 
     @Test
-    fun `01`() {
+    fun `01 get character succes path`(){
         var loadingCount = 0
         var eventCount = 0
 
-        val getCharacterUseCase = mockk<GetCharacterUseCase>()
-        val episodesUseCase = mockk<GetEpisodesUseCase>()
+        val getCharacterUseCase = getCharacterUseCaseSuccessMock()
+        val getEpisodesUseCase = getEpisodesUseCaseDummy()
 
-        coEvery { getCharacterUseCase(2) } throws RequestException()
+        val characterDetailViewModel = CharacterDetailViewModel(
+            getCharacterUseCase,
+            getEpisodesUseCase,
+            Dispatchers.Unconfined
+        )
+
+        characterDetailViewModel.isLoading.observeForever {
+            loadingCount++
+            testLoading(loadingCount, it)
+        }
+
+        characterDetailViewModel.dataState.observeForever {
+            eventCount++
+            when(eventCount){
+                1 -> assert(it.getContentIfNotHandled()?.character?.id  == 1) //Emit local
+                2 -> assert(it.getContentIfNotHandled()?.character?.id  == 1) //Emit remote
+                else -> assert(false)
+            }
+        }
+
+        characterDetailViewModel.setStateEvent(CharacterDetailStateEvent.GetCharacter(1))
+
+        assert(eventCount == 2)
+        assert(loadingCount == 3)
+
+        coVerify { getCharacterUseCase(1) }
+    }
+
+    @Test
+    fun `02 get character throw response exception`(){
+        var errorCount = 0
+
+        val getCharacterUseCase = getCharacterUseCaseReponseThrow()
+        val getEpisodesUseCase = getEpisodesUseCaseDummy()
+
+        val characterDetailViewModel = CharacterDetailViewModel(
+            getCharacterUseCase,
+            getEpisodesUseCase,
+            Dispatchers.Unconfined
+        )
+
+        characterDetailViewModel.error.observeForever { event ->
+            event.getContentIfNotHandled()?.let{ error ->
+                errorCount++
+                assert(error.code == 2)
+            }
+        }
+
+        characterDetailViewModel.setStateEvent(CharacterDetailStateEvent.GetCharacter(1))
+
+        assert(errorCount == 1)
+        coVerify { getCharacterUseCase(1) }
+    }
+
+    private fun getEpisodesUseCaseDummy() : GetEpisodesUseCase{
+        return mockk<GetEpisodesUseCase>()
+    }
+
+    private fun getCharacterUseCaseReponseThrow() : GetCharacterUseCase{
+        val getCharacterUseCase = mockk<GetCharacterUseCase>()
+
+        coEvery { getCharacterUseCase(1) } throws ResponseException(1, "")
+
+        return getCharacterUseCase
+    }
+
+    private fun getCharacterUseCaseSuccessMock() : GetCharacterUseCase {
+        val getCharacterUseCase = mockk<GetCharacterUseCase>()
 
         coEvery { getCharacterUseCase(1) } returns flow {
             emit(CharacterEntity(
@@ -78,21 +148,24 @@ class UseCaseUnitTest {
                 listOf(1,2,3,4,5,6,7,8)
             ))
         }
+        return getCharacterUseCase
+    }
 
-        val characterDetailViewModel = CharacterDetailViewModel(getCharacterUseCase,episodesUseCase)
-
-        characterDetailViewModel.dataState.observeForever {
-            eventCount++
-            when(eventCount){
-                1 -> assert(it.getContentIfNotHandled()?.character?.id  == 1) //Emit local
-                2 -> assert(it.getContentIfNotHandled()?.character?.id  == 1) //Emit remote
-                else -> assert(false)
+    private fun testLoading(loadingCount: Int, it: Boolean){
+        when (loadingCount) {
+            1 -> {//Initial value, not loading
+                assert(!it)
+            }
+            2 -> {//Loading
+                assert(it)
+            }
+            3 -> {//Finished
+                assert(!it)
+            }
+            else -> {
+                assert(false)
             }
         }
-
-        characterDetailViewModel.setStateEvent(CharacterDetailStateEvent.GetCharacter(2))
-
-        coVerify { getCharacterUseCase(2) }
     }
 
     @ExperimentalCoroutinesApi

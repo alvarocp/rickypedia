@@ -12,6 +12,7 @@ import es.i12capea.rickypedia.presentation.entities.mappers.episodePageToPresent
 import es.i12capea.rickypedia.presentation.entities.mappers.locationPageEntityToPresentation
 import es.i12capea.rickypedia.presentation.episodes.episode_list.state.EpisodeListStateEvent
 import es.i12capea.rickypedia.presentation.episodes.episode_list.state.EpisodeListViewState
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
@@ -20,8 +21,9 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 
 class EpisodeListViewModel @ViewModelInject constructor(
-    private val getEpisodesInPageUseCase: GetEpisodesInPageUseCase
-) : BaseViewModel<EpisodeListStateEvent, EpisodeListViewState>(){
+    private val getEpisodesInPageUseCase: GetEpisodesInPageUseCase,
+    private val dispatcher: CoroutineDispatcher
+) : BaseViewModel<EpisodeListStateEvent, EpisodeListViewState>(dispatcher){
 
 
     init {
@@ -64,9 +66,6 @@ class EpisodeListViewModel @ViewModelInject constructor(
         try {
             getEpisodesInPageUseCase.invoke(nextPage)
                 .flowOn(Dispatchers.IO)
-                .onCompletion { cause ->
-                    handleCompletion(cause)
-                }
                 .collect {
                     handleCollectEpisodes(currentEpisodes, it.episodePageToPresentation())
                 }
@@ -84,16 +83,6 @@ class EpisodeListViewModel @ViewModelInject constructor(
         list.addAll(page.list)
 
         setEpisodeList(list)
-    }
-
-
-    fun getEpisodeList() : List<Episode>?{
-        return getCurrentViewStateOrNew().episodes
-    }
-
-
-    fun getActualPage() : Page<Episode>?{
-        return getCurrentViewStateOrNew().lastPage
     }
 
     fun setActualEpisodePage(page: Page<Episode>){
