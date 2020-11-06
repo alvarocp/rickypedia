@@ -1,9 +1,6 @@
 package es.i12capea.rickypedia
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import es.i12capea.rickypedia.domain.entities.CharacterEntity
-import es.i12capea.rickypedia.domain.entities.LocationShortEntity
-import es.i12capea.rickypedia.domain.exceptions.RequestException
 import es.i12capea.rickypedia.domain.exceptions.ResponseException
 import es.i12capea.rickypedia.domain.usecases.GetCharacterUseCase
 import es.i12capea.rickypedia.domain.usecases.GetEpisodesUseCase
@@ -12,10 +9,7 @@ import es.i12capea.rickypedia.presentation.characters.character_detail.state.Cha
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.setMain
 import org.junit.*
 import org.junit.runner.RunWith
@@ -49,7 +43,7 @@ class CharacterDetailViewModelUnitTest {
         var loadingCount = 0
         var eventCount = 0
 
-        val getCharacterUseCase = getCharacterUseCaseSuccessMock()
+        val getCharacterUseCase = getCharacterUseCase()
         val getEpisodesUseCase = getEpisodesUseCaseDummy()
 
         val characterDetailViewModel = CharacterDetailViewModel(
@@ -118,55 +112,9 @@ class CharacterDetailViewModelUnitTest {
         return getCharacterUseCase
     }
 
-    private fun getCharacterUseCaseSuccessMock() : GetCharacterUseCase {
-        val getCharacterUseCase = mockk<GetCharacterUseCase>()
 
-        coEvery { getCharacterUseCase(1) } returns flow {
-            emit(CharacterEntity(
-                1,
-                "Rick Sanchez",
-                "Alive",
-                "Human",
-                "",
-                "Male",
-                LocationShortEntity(1,"Earth (C-137)"),
-                LocationShortEntity(20, "Earth (Replacement Dimension)"),
-                "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
-                listOf(1,2,3,4,5,6,7,8)
-            ))
 
-            emit(CharacterEntity(
-                1,
-                "Rick Sanchez",
-                "Alive",
-                "Human",
-                "",
-                "Male",
-                LocationShortEntity(1,"Earth (C-137)"),
-                LocationShortEntity(20, "Earth (Replacement Dimension)"),
-                "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
-                listOf(1,2,3,4,5,6,7,8)
-            ))
-        }
-        return getCharacterUseCase
-    }
 
-    private fun testLoading(loadingCount: Int, it: Boolean){
-        when (loadingCount) {
-            1 -> {//Initial value, not loading
-                assert(!it)
-            }
-            2 -> {//Loading
-                assert(it)
-            }
-            3 -> {//Finished
-                assert(!it)
-            }
-            else -> {
-                assert(false)
-            }
-        }
-    }
 
     @ExperimentalCoroutinesApi
     @After
