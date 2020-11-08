@@ -41,21 +41,25 @@ class EpisodeRepositoryImpl @Inject constructor (
 
     override suspend fun getEpisodes(episodes: List<Int>): Flow<List<EpisodeEntity>> {
         return flow{
-            episodeDao.searchEpisodesByIds(episodes)?.let { localEpisodes ->
-                if (localEpisodes.size == episodes.size){
-                    emit(localEpisodes.toDomain())
-                }else{
+            if (episodes.isEmpty()){
+                emit(emptyList())
+            }else{
+                episodeDao.searchEpisodesByIds(episodes)?.let { localEpisodes ->
+                    if (localEpisodes.size == episodes.size){
+                        emit(localEpisodes.toDomain())
+                    }else{
+                        try {
+                            emit(retrieveAndSaveEpisodes(episodes))
+                        }catch (t: Throwable){
+                            throw t
+                        }
+                    }
+                } ?: kotlin.run {
                     try {
                         emit(retrieveAndSaveEpisodes(episodes))
                     }catch (t: Throwable){
                         throw t
                     }
-                }
-            } ?: kotlin.run {
-                try {
-                    emit(retrieveAndSaveEpisodes(episodes))
-                }catch (t: Throwable){
-                    throw t
                 }
             }
         }

@@ -55,13 +55,7 @@ class LocationDetailViewModel @ViewModelInject constructor (
     }
 
     private fun handleCollectCharacters(characters: List<Character>) {
-        dataState.postValue(
-            Event(
-                LocationDetailViewState(
-                    characters = characters
-                )
-            )
-        )
+        setCharactersInLocation(characters)
     }
 
     fun setLocation(location: Location){

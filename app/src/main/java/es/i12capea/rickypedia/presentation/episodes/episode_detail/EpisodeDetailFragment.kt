@@ -7,6 +7,7 @@ import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -17,6 +18,9 @@ import es.i12capea.rickypedia.presentation.entities.Episode
 import es.i12capea.rickypedia.presentation.episodes.episode_detail.state.EpisodeDetailStateEvent
 import kotlinx.android.synthetic.main.episode_item.view.*
 import kotlinx.android.synthetic.main.fragment_episode_detail.*
+import kotlinx.android.synthetic.main.fragment_episode_detail.iv_back
+import kotlinx.android.synthetic.main.fragment_episode_detail.progress_bar
+import kotlinx.android.synthetic.main.fragment_location_detail.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @AndroidEntryPoint
@@ -56,6 +60,10 @@ class EpisodeDetailFragment
         initRecyclerView()
 
         subscribeObservers()
+
+        iv_back.setOnClickListener {
+            findNavController().popBackStack()
+        }
     }
 
     @ExperimentalCoroutinesApi

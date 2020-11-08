@@ -62,29 +62,33 @@ class CharacterRepositoryImpl @Inject constructor(
 
     override suspend fun getCharacters(ids: List<Int>): Flow<List<CharacterEntity>> {
         return flow {
-            characterDao.searchCharactersByIds(ids)?.let {
-                emit(it.localCharactersToDomain())
-            }
-            try {
-                val result = characterApi.getCharacters(ids)
-                    .call()
+            if(ids.isEmpty()){
+                emit(emptyList())
+            }else{
+                characterDao.searchCharactersByIds(ids)?.let {
+                    emit(it.localCharactersToDomain())
+                }
+                try {
+                    val result = characterApi.getCharacters(ids)
+                        .call()
 
-                val domainCharacters = result.charactersToDomain()
+                    val domainCharacters = result.charactersToDomain()
 
-                emit(domainCharacters)
+                    emit(domainCharacters)
 
-                //Update DB in background
-                Thread{
-                    CoroutineScope(Dispatchers.IO).launch {
-                        characterDao.insertListOfCharactersOrUpdate(
-                            domainCharacters.listCharacterEntityToLocal(null)
-                        )
-                        Log.d("BD", "Personaje actualizado en segundo plano")
+                    //Update DB in background
+                    Thread{
+                        CoroutineScope(Dispatchers.IO).launch {
+                            characterDao.insertListOfCharactersOrUpdate(
+                                domainCharacters.listCharacterEntityToLocal(null)
+                            )
+                            Log.d("BD", "Personaje actualizado en segundo plano")
+                        }
+                    }.start()
+                }catch (t: Throwable){
+                    if (t !is RequestException){
+                        throw t
                     }
-                }.start()
-            }catch (t: Throwable){
-                if (t !is RequestException){
-                    throw t
                 }
             }
         }
@@ -106,7 +110,6 @@ class CharacterRepositoryImpl @Inject constructor(
                     throw t
                 }
             }
-
         }
     }
     

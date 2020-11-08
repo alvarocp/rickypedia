@@ -16,6 +16,7 @@ import es.i12capea.rickypedia.presentation.characters.character_list.CharacterLi
 import es.i12capea.rickypedia.presentation.common.displayToast
 import es.i12capea.rickypedia.presentation.entities.Location
 import es.i12capea.rickypedia.presentation.locations.location_detail.state.LocationDetailStateEvent
+import es.i12capea.rickypedia.presentation.locations.location_detail.state.LocationDetailStateEvent.*
 import kotlinx.android.synthetic.main.fragment_location_detail.*
 import kotlinx.android.synthetic.main.location_item.view.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -48,7 +49,7 @@ class LocationDetailFragment
         } ?: kotlin.run {
             args.location?.let {
                 setLocation(it)
-                listViewModel.setStateEvent(LocationDetailStateEvent.GetCharactersInLocation(it))
+                listViewModel.setStateEvent(GetCharactersInLocation(it))
             }
         }
 
@@ -59,15 +60,6 @@ class LocationDetailFragment
     }
 
     private fun subscribeObservers() {
-
-        listViewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
-            dataState.getContentIfNotHandled()?.let { viewState ->
-                viewState.characters?.let {
-                    listViewModel.setCharactersInLocation(it)
-                }
-            }
-        })
-
         listViewModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading ->
             if (isLoading){
                 progress_bar.visibility = View.VISIBLE
@@ -88,6 +80,11 @@ class LocationDetailFragment
                 (view?.parent as? ViewGroup)?.doOnPreDraw {
                     startPostponedEnterTransition()
                 }
+                if(it.isEmpty()){
+                    cl_empty_location.visibility = View.VISIBLE
+                }else{
+                    cl_empty_location.visibility = View.INVISIBLE
+                }
             }
         })
     }
@@ -102,7 +99,10 @@ class LocationDetailFragment
 
     private fun initRecyclerView() {
         rv_characters_location.apply {
-            layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+            layoutManager = StaggeredGridLayoutManager(
+                2,
+                StaggeredGridLayoutManager.VERTICAL
+            )
             characterListAdapterDeepLink = CharacterListAdapterDeepLink()
             characterListAdapterDeepLink.setHasStableIds(true)
             adapter = characterListAdapterDeepLink
