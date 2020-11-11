@@ -7,14 +7,16 @@ apply plugin: 'dagger.hilt.android.plugin'
 apply plugin: 'kotlin-kapt'
 apply plugin: "androidx.navigation.safeargs.kotlin"
 
+
 android {
-    compileSdkVersion 29
+
+    compileSdkVersion 30
     buildToolsVersion "29.0.3"
 
     defaultConfig {
         applicationId "es.i12capea.rickypedia"
         minSdkVersion 26
-        targetSdkVersion 29
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
 
@@ -22,9 +24,16 @@ android {
     }
 
     buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        buildTypes {
+            release {
+                debuggable false
+                minifyEnabled false
+                proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.txt'
+            }
+
+            debug {
+                debuggable true
+            }
         }
     }
 
@@ -36,9 +45,23 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
+
     testOptions {
         unitTests.returnDefaultValues = true
+
     }
+//    androidTestOptions{
+//        packagingOptions {
+//            exclude 'META-INF/DEPENDENCIES'
+//            exclude 'META-INF/LICENSE'
+//            exclude 'META-INF/LICENSE.txt'
+//            exclude 'META-INF/license.txt'
+//            exclude 'META-INF/NOTICE'
+//            exclude 'META-INF/NOTICE.txt'
+//            exclude 'META-INF/notice.txt'
+//            exclude 'META-INF/ASL2.0'
+//        }
+//    }
 }
 
 dependencies {
@@ -55,8 +78,13 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
     testImplementation "io.mockk:mockk-common:1.10.2"
-    androidTestImplementation "io.mockk:mockk-android:1.10.2"
     testImplementation "io.mockk:mockk:1.10.2"
+    testImplementation "io.mockk:mockk-android:1.10.2"
+
+    androidTestImplementation "io.mockk:mockk-common:1.10.2"
+    androidTestImplementation "io.mockk:mockk:1.10.2"
+    androidTestImplementation "io.mockk:mockk-android:1.10.2"
+
 
     //Instant task executor
     testImplementation "androidx.arch.core:core-testing:2.1.0"
@@ -78,6 +106,8 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version"
+    androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_version"
+
 
     // LiveData Coroutines
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycle_version"
@@ -124,6 +154,9 @@ dependencies {
     kapt "androidx.room:room-compiler:$room_version"
     // Kotlin Extensions and Coroutines support for Room
     implementation "androidx.room:room-ktx:$room_version"
+
+    testImplementation "androidx.room:room-testing:$room_version"
+    androidTestImplementation "androidx.room:room-testing:$room_version"
 
 
     implementation 'com.google.firebase:firebase-analytics:18.0.0'

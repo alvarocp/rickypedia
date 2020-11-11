@@ -8,7 +8,7 @@ import es.i12capea.rickypedia.data.local.model.LocalCharacter
 interface LocalCharacterDao {
 
     @Insert(onConflict = OnConflictStrategy.ABORT)
-    suspend fun insertCharacter(character: LocalCharacter) : Long
+    suspend fun insertCharacterOrAbort(character: LocalCharacter) : Long
 
     @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -16,9 +16,18 @@ interface LocalCharacterDao {
 
     suspend fun insertOrUpdate(character: LocalCharacter){
         try {
-            insertCharacter(character)
+            insertCharacterOrAbort(character)
         }catch (t: Throwable){
-            updateCharacter(character.id,  Converters().fromListInt(character.episodes) )
+            character.pageId?.let {
+                updateCharacterPageAndEpisodes(
+                    character.id,
+                    it,
+                    Converters().fromListInt(character.episodes)
+                )
+            } ?: updateCharacter(
+                character.id,
+                Converters().fromListInt(character.episodes)
+            )
         }
     }
 
@@ -36,21 +45,24 @@ interface LocalCharacterDao {
     """)
     fun updateCharacter(id: Int, episodes: String)
 
+    @Query("""
+        UPDATE local_character
+        SET pageId = :pageId,
+        episodes = :episodes
+        WHERE id = :id
+    """)
+    fun updateCharacterPageAndEpisodes(id: Int, pageId: Int, episodes: String)
 
-    @Query(
-        """
+    @Query("""
         SELECT * FROM local_character 
         WHERE id == :id
-    """
-    )
+        """)
     fun searchCharacterById(id: Int) : LocalCharacter?
 
-    @Query(
-        """
+    @Query("""
         SELECT * FROM local_character 
         WHERE id IN (:ids)
-    """
-    )
+    """)
     fun searchCharactersByIds(ids: List<Int>) : List<LocalCharacter>?
 
 }
