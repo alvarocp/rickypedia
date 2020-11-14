@@ -84,6 +84,36 @@
         app:layout_constraintTop_toBottomOf="@id/tv_characters_header"
         tools:layout_editor_absoluteX="48dp" />
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_marginTop="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/cl_empty_location"
+        android:visibility="visible"
+        app:layout_constraintTop_toBottomOf="@id/tv_characters_header"
+        >
+
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:src="@drawable/ic_location_empty"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:id="@+id/iv_head"
+            />
+
+        <TextView
+            android:textColor="@color/colorBlack"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@+id/iv_head"
+            app:layout_constraintTop_toTopOf="@id/iv_head"
+            app:layout_constraintBottom_toBottomOf="@id/iv_head"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="@string/empty_location"
+            />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <ProgressBar
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

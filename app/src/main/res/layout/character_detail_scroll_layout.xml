@@ -90,7 +90,7 @@
             app:layout_constraintTop_toBottomOf="@id/tv_location_info"
             android:id="@+id/tv_episodes_title"
             app:layout_constraintStart_toStartOf="parent"
-            android:text="@string/episode_title"
+            android:text="@string/episodes_title"
             android:textStyle="bold"
             />
 

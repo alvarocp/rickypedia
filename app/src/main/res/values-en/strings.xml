@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">RickyPedia</string>
+    <string name="text_success">Success</string>
+    <string name="text_ok">Ok</string>
+    <string name="text_error">Error</string>
+    <string name="text_info">Info</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="text_cancel">Cancel</string>
+    <string name="text_yes">Accept</string>
+    <string name="title_nav_characters">Characters</string>
+    <string name="title_nav_locations">Locations</string>
+    <string name="title_nav_episodes">Episodes</string>
+    <string name="title_activity_scrolling">ScrollingActivity</string>
+    <string name="action_settings">Settings</string>
+    <string name="episodes_title">Episodes</string>
+    <string name="toolbar_character_list">Characters</string>
+    <string name="tv_title_specie">Specie:</string>
+    <string name="tv_status_title">Status:</string>
+    <string name="tv_location_title">Location:</string>
+    <string name="toolbar_episode_list">Episodes</string>
+    <string name="toolbar_location_list">Locations</string>
+    <string name="characters_belongin_there">Characters at this location</string>
+    <string name="splash_imange_content_description">Splash image rick and morty</string>
+    <string name="empty_location">Without habitants. Show me what you got</string>
+</resources>
