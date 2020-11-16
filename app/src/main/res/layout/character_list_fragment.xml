@@ -4,24 +4,41 @@ android:id="@+id/main_content"
 xmlns:android="http://schemas.android.com/apk/res/android"
 xmlns:app="http://schemas.android.com/apk/res-auto"
 android:layout_width="match_parent"
-android:layout_height="match_parent">
+android:layout_height="match_parent" android:fitsSystemWindows="true"
+    >
 
 <com.google.android.material.appbar.AppBarLayout
     android:id="@+id/appBar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:theme="@style/ThemeOverlay.AppCompat.ActionBar">
-
+    android:theme="@style/AppBarOverlay"
+    android:fitsSystemWindows="true"
+    >
+    
+    <com.google.android.material.appbar.CollapsingToolbarLayout
+        android:id="@+id/toolbar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:toolbarId="@id/toolbar"
+        app:layout_scrollFlags="scroll|enterAlways|snap"
+        >
     <!-- Toolbar is the actual app bar with text and the action items -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
-        app:layout_scrollFlags="scroll|enterAlways"
-        app:title="@string/toolbar_character_list"
-        app:titleTextColor="@color/white"
-        />
+        style="@style/Widget.MaterialComponents.Toolbar.Primary"
+        >
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/toolbar_character_list"
+            android:textAppearance="?attr/textAppearanceHeadline6"
+            android:textStyle="bold"
+            />
+    </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.CollapsingToolbarLayout>
 </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout

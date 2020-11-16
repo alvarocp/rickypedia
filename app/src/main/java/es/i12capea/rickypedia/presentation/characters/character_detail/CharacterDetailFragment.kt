@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
@@ -64,6 +65,8 @@ class CharacterDetailFragment
         super.onViewCreated(view, savedInstanceState)
 
         postponeEnterTransition()
+
+        adjustInset()
 
         toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
 
@@ -169,5 +172,11 @@ class CharacterDetailFragment
         collapsing_toolbar.title = character.name
     }
 
+    private fun adjustInset(){
+        ViewCompat.setOnApplyWindowInsetsListener(app_bar) { _, insets ->
+            (toolbar.layoutParams as ViewGroup.MarginLayoutParams).topMargin = insets.systemWindowInsetTop
+            insets.consumeSystemWindowInsets()
+        }
+    }
 
 }

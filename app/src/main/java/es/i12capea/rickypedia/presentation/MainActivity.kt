@@ -8,7 +8,6 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import dagger.hilt.android.AndroidEntryPoint
 import es.i12capea.rickypedia.R
-import es.i12capea.rickypedia.presentation.common.makeStatusBarTransparent
 import kotlinx.android.synthetic.main.activity_main.*
 
 
@@ -20,8 +19,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
-        makeStatusBarTransparent()
 
         bottom_navigation.setupWithNavController(navController)
 
