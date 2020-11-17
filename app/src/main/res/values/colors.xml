@@ -5,6 +5,7 @@
     <color name="colorAccent">#03DAC5</color>
     <color name="white">#FFFFFF</color>
     <color name="transparent">#00FFFFFF</color>
+    <color name="pink">#FF00D5</color>
     <color name="colorBackgroundFragment">#F6F6F6</color>
     <color name="colorBlack">#000000</color>
 

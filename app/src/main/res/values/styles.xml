@@ -10,6 +10,7 @@
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
         <item name="android:statusBarColor">@color/colorAccent</item>
+        <item name="android:windowLightStatusBar">true</item>
         <item name="statusBarScrim">@color/colorAccent</item>
         <item name="android:windowTranslucentStatus">true</item>
         <item name="windowActionBar">false</item>

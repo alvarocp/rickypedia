@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import es.i12capea.rickypedia.common.ErrorRym
 import es.i12capea.rickypedia.common.Event
 import es.i12capea.rickypedia.domain.exceptions.PredicateNotSatisfiedException
@@ -102,7 +103,10 @@ abstract class BaseViewModel<StateEvent, ViewState> (
         Log.d("JOB", "Remove from list")
         jobs.remove(methodName)
         if (jobs.isEmpty()){
-            _isLoading.postValue(false)
+            viewModelScope.launch {
+                delay(300)
+                _isLoading.postValue(false)
+            }
         }
     }
 

@@ -7,6 +7,11 @@
 <p align="center">
     Rickypedia es un proyecto personal donde recopilo todo lo que he ido aprendiendo en desarrollo android y me gustaría compartirlo para ayudar a quien esté aprendiendo y para aprender los desarrolladores que quieran aportarme lo que creen que se debería corregir en este proyecto, así que, sentíos libres de bajar el código y analizarlo.
 </p>
+
+<p align="center">
+![Demo](demo.gif)
+</p>
+
 <p align="center">
     En este proyecto encontrarás
     

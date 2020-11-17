@@ -34,7 +34,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:menu="@menu/menu_bottom_navigation_main"
         app:itemHorizontalTranslationEnabled="true"
-        app:itemIconSize="30dp"
+        app:itemIconSize="40dp"
+        app:labelVisibilityMode="unlabeled"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
