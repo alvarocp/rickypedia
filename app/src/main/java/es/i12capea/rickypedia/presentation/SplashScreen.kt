@@ -6,8 +6,7 @@ import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.lifecycle.lifecycleScope
-import es.i12capea.rickypedia.R
-import kotlinx.android.synthetic.main.activity_splash_screen.*
+import es.i12capea.rickypedia.databinding.ActivitySplashScreenBinding
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -15,17 +14,21 @@ import kotlinx.coroutines.withContext
 
 class SplashScreen : AppCompatActivity() {
 
+    private lateinit var binding : ActivitySplashScreenBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_splash_screen)
+        binding = ActivitySplashScreenBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
-        motion_splash.addTransitionListener(transitionListener)
+        binding.motionSplash.addTransitionListener(transitionListener)
 
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        motion_splash.removeTransitionListener(transitionListener)
+        binding.motionSplash.removeTransitionListener(transitionListener)
     }
 
     private val transitionListener = object : MotionLayout.TransitionListener{

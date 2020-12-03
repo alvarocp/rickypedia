@@ -20,16 +20,20 @@ import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import dagger.hilt.android.AndroidEntryPoint
 import es.i12capea.rickypedia.R
+import es.i12capea.rickypedia.databinding.FragmentCharacterDetailBinding
 import es.i12capea.rickypedia.presentation.characters.character_detail.state.CharacterDetailStateEvent
 import es.i12capea.rickypedia.presentation.entities.Character
 import es.i12capea.rickypedia.presentation.episodes.episode_list.EpisodeListAdapterDeepLink
-import kotlinx.android.synthetic.main.character_detail_scroll_layout.*
-import kotlinx.android.synthetic.main.fragment_character_detail.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @AndroidEntryPoint
 class CharacterDetailFragment
     : Fragment() {
+
+    private var _binding: FragmentCharacterDetailBinding? = null
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+    private val binding get() = _binding!!
 
     private val viewModel : CharacterDetailViewModel by viewModels()
 
@@ -42,7 +46,7 @@ class CharacterDetailFragment
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         sharedElementEnterTransition = TransitionInflater.from(context)
             .inflateTransition(android.R.transition.move)
@@ -57,7 +61,13 @@ class CharacterDetailFragment
             })
         sharedElementReturnTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
 
-        return inflater.inflate(R.layout.fragment_character_detail, container, false)
+        _binding = FragmentCharacterDetailBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     @ExperimentalCoroutinesApi
@@ -68,9 +78,10 @@ class CharacterDetailFragment
 
         adjustInset()
 
-        toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
 
-        toolbar.setNavigationOnClickListener {
+        binding.toolbar.setNavigationIcon(R.drawable.ic_baseline_arrow_back_24)
+
+        binding.toolbar.setNavigationOnClickListener {
             activity?.onBackPressed()
         }
 
@@ -78,7 +89,7 @@ class CharacterDetailFragment
 
         subscribeObservers()
 
-        expandedImage.apply {
+        binding.expandedImage.apply {
             transitionName = args.characterId.toString()
             Glide.with(this)
                 .load(args.characterImage.replace("\\", "/"))
@@ -111,7 +122,7 @@ class CharacterDetailFragment
     }
 
     private fun initRecyclerView(){
-        rv_episodes.apply {
+        binding.scrollLayout.rvEpisodes.apply {
             layoutManager = LinearLayoutManager(this@CharacterDetailFragment.context)
             episodeListAdapter = EpisodeListAdapterDeepLink()
             episodeListAdapter.setHasStableIds(true)
@@ -157,24 +168,25 @@ class CharacterDetailFragment
 
         viewModel.isLoading.observe(viewLifecycleOwner, Observer {
             if(it){
-                progress_bar.visibility = View.VISIBLE
+
+                binding.scrollLayout.progressBar.visibility = View.VISIBLE
             }else{
-                progress_bar.visibility = View.INVISIBLE
+                binding.scrollLayout.progressBar.visibility = View.INVISIBLE
             }
         })
 
     }
 
     private fun setCharacterView(character: Character) {
-        tv_status.text = character.status
-        tv_specie.text = character.species
-        tv_location_info.text = character.location.name
-        collapsing_toolbar.title = character.name
+        binding.scrollLayout.tvStatus.text = character.status
+        binding.scrollLayout.tvSpecie.text = character.species
+        binding.scrollLayout.tvLocationInfo.text = character.location.name
+        binding.collapsingToolbar.title = character.name
     }
 
     private fun adjustInset(){
-        ViewCompat.setOnApplyWindowInsetsListener(app_bar) { _, insets ->
-            (toolbar.layoutParams as ViewGroup.MarginLayoutParams).topMargin = insets.systemWindowInsetTop
+        ViewCompat.setOnApplyWindowInsetsListener(binding.appBar) { _, insets ->
+            (binding.toolbar.layoutParams as ViewGroup.MarginLayoutParams).topMargin = insets.systemWindowInsetTop
             insets.consumeSystemWindowInsets()
         }
     }

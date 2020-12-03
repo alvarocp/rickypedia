@@ -2,26 +2,45 @@ package es.i12capea.rickypedia.presentation.locations.location_list
 
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
-import es.i12capea.rickypedia.R
+import es.i12capea.rickypedia.databinding.FragmentLocationListBinding
 import es.i12capea.rickypedia.presentation.common.displayToast
 import es.i12capea.rickypedia.presentation.entities.Location
 import es.i12capea.rickypedia.presentation.locations.location_list.state.LocationListStateEvent
-import kotlinx.android.synthetic.main.fragment_location_list.*
 
 @AndroidEntryPoint
 class LocationListFragment
-    : Fragment(R.layout.fragment_location_list)
+    : Fragment()
 {
+    private var _binding: FragmentLocationListBinding? = null
+    private val binding get() = _binding!!
+
     private val viewModel : LocationListViewModel by activityViewModels()
 
     lateinit var locationListAdapter : LocationListAdapter
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentLocationListBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewModel.setRecyclerState(binding.rvLocations.layoutManager?.onSaveInstanceState())
+        _binding = null
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -39,9 +58,9 @@ class LocationListFragment
     private fun subscribeObservers() {
         viewModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading ->
             if (isLoading){
-                progress_bar.visibility = View.VISIBLE
+                binding.progressBar.visibility = View.VISIBLE
             }else{
-                progress_bar.visibility = View.INVISIBLE
+                binding.progressBar.visibility = View.INVISIBLE
             }
         })
 
@@ -59,7 +78,7 @@ class LocationListFragment
     }
 
     private fun initRecyclerView(){
-        rv_locations.apply {
+        binding.rvLocations.apply {
             layoutManager = LinearLayoutManager(this@LocationListFragment.context)
             locationListAdapter = LocationListAdapter()
             locationListAdapter.setHasStableIds(true)
@@ -84,14 +103,10 @@ class LocationListFragment
         viewModel.getLastPage()?.let { actualPage ->
             viewModel.getRecyclerState()?.let { parcel ->
                 locationListAdapter.submitList(list)
-                rv_locations.layoutManager?.onRestoreInstanceState(parcel)
+                binding.rvLocations.layoutManager?.onRestoreInstanceState(parcel)
                 viewModel.setRecyclerState(null)
             }
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        viewModel.setRecyclerState(rv_locations.layoutManager?.onSaveInstanceState())
-    }
 }

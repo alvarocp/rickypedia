@@ -2,26 +2,45 @@ package es.i12capea.rickypedia.presentation.episodes.episode_list
 
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
-import es.i12capea.rickypedia.R
+import es.i12capea.rickypedia.databinding.FragmentEpisodeListBinding
 import es.i12capea.rickypedia.presentation.common.displayErrorDialog
 import es.i12capea.rickypedia.presentation.entities.Episode
 import es.i12capea.rickypedia.presentation.episodes.episode_list.state.EpisodeListStateEvent
-import kotlinx.android.synthetic.main.episode_list_fragment.*
 
 @AndroidEntryPoint
 class EpisodeListFragment
-    : Fragment(R.layout.episode_list_fragment){
+    : Fragment()
+{
+    private var _binding: FragmentEpisodeListBinding? = null
+    private val binding get() = _binding!!
 
     private val viewModel : EpisodeListViewModel by activityViewModels()
 
     lateinit var episodeListAdapter: EpisodeListAdapter
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentEpisodeListBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewModel.setRecyclerState(binding.rvEpisodes.layoutManager?.onSaveInstanceState())
+        _binding = null
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -39,9 +58,9 @@ class EpisodeListFragment
     fun subscribeObservers() {
         viewModel.isLoading.observe(viewLifecycleOwner, Observer {
             if(it){
-                progress_bar.visibility = View.VISIBLE
+                binding.progressBar.visibility = View.VISIBLE
             }else{
-                progress_bar.visibility = View.INVISIBLE
+                binding.progressBar.visibility = View.INVISIBLE
             }
         })
 
@@ -59,7 +78,7 @@ class EpisodeListFragment
     }
 
     private fun initRecyclerView(){
-        rv_episodes.apply {
+        binding.rvEpisodes.apply {
             layoutManager = LinearLayoutManager(this@EpisodeListFragment.context)
             episodeListAdapter = EpisodeListAdapter()
             episodeListAdapter.setHasStableIds(true)
@@ -84,14 +103,11 @@ class EpisodeListFragment
         viewModel.getLastPage()?.let { actualPage ->
             viewModel.getRecyclerState()?.let { parcel ->
                 episodeListAdapter.submitList(list)
-                rv_episodes.layoutManager?.onRestoreInstanceState(parcel)
+                binding.rvEpisodes.layoutManager?.onRestoreInstanceState(parcel)
                 viewModel.setRecyclerState(null)
             }
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        viewModel.setRecyclerState(rv_episodes.layoutManager?.onSaveInstanceState())
-    }
+
 }

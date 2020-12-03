@@ -10,7 +10,9 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/card_padding">
+        android:padding="@dimen/card_padding"
+        android:id="@+id/panel"
+        >
 
         <TextView
             android:id="@+id/tv_location_name"

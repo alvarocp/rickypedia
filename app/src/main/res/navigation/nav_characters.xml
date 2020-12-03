@@ -9,7 +9,7 @@
         android:id="@+id/characterListFragment"
         android:name="es.i12capea.rickypedia.presentation.characters.character_list.CharacterListFragment"
         android:label="CharacterListFragment"
-        tools:layout="@layout/character_list_fragment"
+        tools:layout="@layout/fragment_character_list"
         >
         <action
             android:id="@+id/action_characterListFragment_to_characterDetailFragment"

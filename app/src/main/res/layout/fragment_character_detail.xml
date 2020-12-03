@@ -56,6 +56,6 @@
         </com.google.android.material.appbar.CollapsingToolbarLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/character_detail_scroll_layout" />
+    <include layout="@layout/character_detail_scroll_layout" android:id="@+id/scroll_layout" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

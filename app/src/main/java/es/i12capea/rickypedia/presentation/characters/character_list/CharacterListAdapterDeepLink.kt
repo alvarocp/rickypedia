@@ -13,12 +13,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import es.i12capea.rickypedia.R
+import es.i12capea.rickypedia.databinding.CharacterItemBinding
+import es.i12capea.rickypedia.databinding.EpisodeItemBinding
 import es.i12capea.rickypedia.presentation.common.navigateUriWithDefaultOptions
 import es.i12capea.rickypedia.presentation.entities.Character
-import kotlinx.android.synthetic.main.character_item.view.*
 
 class CharacterListAdapterDeepLink :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    private lateinit var binding : CharacterItemBinding
 
     val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Character>() {
 
@@ -34,13 +37,8 @@ class CharacterListAdapterDeepLink :
     private val differ = AsyncListDiffer(this, DIFF_CALLBACK)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return CharacterViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.character_item,
-                parent,
-                false
-            )
-        )
+        binding = CharacterItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return CharacterViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -61,12 +59,12 @@ class CharacterListAdapterDeepLink :
 
     class CharacterViewHolder
     constructor(
-        itemView: View
-    ) : RecyclerView.ViewHolder(itemView) {
+        private val binding: CharacterItemBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: Character) = with(itemView) {
+        fun bind(item: Character){
 
-            img_character.apply {
+            binding.imgCharacter.apply {
                 transitionName = item.id.toString()
                 Glide.with(this)
                     .load(item.image)
@@ -74,15 +72,14 @@ class CharacterListAdapterDeepLink :
                     .into(this)
             }
 
-            itemView.txt_name.text = item.name
+            binding.txtName.text = item.name
 
-            setOnClickListener {
-
+            binding.panel.setOnClickListener {
                 val extras = FragmentNavigatorExtras(
-                    img_character to img_character.transitionName
+                    binding.imgCharacter to binding.imgCharacter.transitionName
                 )
 
-                findNavController().navigateUriWithDefaultOptions(
+                it.findNavController().navigateUriWithDefaultOptions(
                     Uri.parse("https://www.rickandmortyapiclient.com/characterDetail/${item.id}/${item.name}/${item.image.replace("/", "\\")}"),
                     extras
                 )

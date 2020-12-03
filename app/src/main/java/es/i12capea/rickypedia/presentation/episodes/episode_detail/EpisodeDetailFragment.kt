@@ -1,6 +1,7 @@
 package es.i12capea.rickypedia.presentation.episodes.episode_detail
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnPreDraw
@@ -11,28 +12,41 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
-import es.i12capea.rickypedia.R
+import es.i12capea.rickypedia.databinding.FragmentEpisodeDetailBinding
 import es.i12capea.rickypedia.presentation.characters.character_list.CharacterListAdapterDeepLink
 import es.i12capea.rickypedia.presentation.common.displayErrorDialog
 import es.i12capea.rickypedia.presentation.entities.Episode
 import es.i12capea.rickypedia.presentation.episodes.episode_detail.state.EpisodeDetailStateEvent
-import kotlinx.android.synthetic.main.episode_item.view.*
-import kotlinx.android.synthetic.main.fragment_episode_detail.*
-import kotlinx.android.synthetic.main.fragment_episode_detail.iv_back
-import kotlinx.android.synthetic.main.fragment_episode_detail.progress_bar
-import kotlinx.android.synthetic.main.fragment_location_detail.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @AndroidEntryPoint
 class EpisodeDetailFragment
-    : Fragment(R.layout.fragment_episode_detail)
+    : Fragment()
 {
+    private var _binding: FragmentEpisodeDetailBinding? = null
+    // This property is only valid between onCreateView and
+    // onDestroyView.
+    private val binding get() = _binding!!
 
     private val viewModel : EpisodeDetailViewModel by viewModels()
 
     private val args: EpisodeDetailFragmentArgs by navArgs()
 
     lateinit var characterListAdapterDeepLink: CharacterListAdapterDeepLink
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentEpisodeDetailBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
 
     @ExperimentalCoroutinesApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -61,7 +75,7 @@ class EpisodeDetailFragment
 
         subscribeObservers()
 
-        iv_back.setOnClickListener {
+        binding.ivBack.setOnClickListener {
             findNavController().popBackStack()
         }
     }
@@ -71,7 +85,7 @@ class EpisodeDetailFragment
         viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
             dataState.getContentIfNotHandled()?.let {viewState ->
                 viewState.characters?.let {
-                    rv_characters_episode.visibility = View.VISIBLE
+                    binding.rvCharactersEpisode.visibility = View.VISIBLE
                     viewModel.setCharacterList(it)
                 }
                 viewState.episode?.let {
@@ -88,9 +102,9 @@ class EpisodeDetailFragment
 
         viewModel.isLoading.observe(viewLifecycleOwner, Observer {
             if(it){
-                progress_bar.visibility = View.VISIBLE
+                binding.progressBar.visibility = View.VISIBLE
             }else{
-                progress_bar.visibility = View.INVISIBLE
+                binding.progressBar.visibility = View.INVISIBLE
             }
         })
 
@@ -112,13 +126,13 @@ class EpisodeDetailFragment
     }
 
     fun setEpisodeView(it: Episode){
-        layout_episode.tv_title.text = it.name
-        layout_episode.tv_episode.text = it.episode
-        tv_air_date.text = it.air_date
+        binding.tvTitle.text = it.name
+        binding.tvEpisode.text = it.episode
+        binding.tvAirDate.text = it.air_date
     }
 
     private fun initRecyclerView(){
-        rv_characters_episode.apply {
+        binding.rvCharactersEpisode.apply {
             layoutManager = GridLayoutManager(this@EpisodeDetailFragment.context, 2)
             characterListAdapterDeepLink = CharacterListAdapterDeepLink()
             characterListAdapterDeepLink.setHasStableIds(true)

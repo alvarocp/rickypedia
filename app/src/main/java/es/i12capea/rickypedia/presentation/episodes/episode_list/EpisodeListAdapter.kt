@@ -2,18 +2,19 @@ package es.i12capea.rickypedia.presentation.episodes.episode_list
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import es.i12capea.rickypedia.R
+import es.i12capea.rickypedia.databinding.EpisodeItemBinding
 import es.i12capea.rickypedia.presentation.entities.Episode
-import kotlinx.android.synthetic.main.episode_item.view.*
 
 class EpisodeListAdapter(private val interaction: Interaction? = null) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    private lateinit var binding : EpisodeItemBinding
 
     val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Episode>() {
 
@@ -34,13 +35,9 @@ class EpisodeListAdapter(private val interaction: Interaction? = null) :
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-
+        binding = EpisodeItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return EpisodeViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.episode_item,
-                parent,
-                false
-            ),
+            binding,
             interaction
         )
     }
@@ -63,23 +60,21 @@ class EpisodeListAdapter(private val interaction: Interaction? = null) :
 
     class EpisodeViewHolder
     constructor(
-        itemView: View,
+        private val binding: EpisodeItemBinding,
         private val interaction: Interaction?
-    ) : RecyclerView.ViewHolder(itemView) {
+    ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: Episode) = with(itemView) {
+        fun bind(item: Episode)  {
 
-            itemView.tv_title.text = item.name
-            itemView.tv_episode.text = item.episode
+            binding.tvTitle.text = item.name
+            binding.tvEpisode.text = item.episode
 
-            setOnClickListener{
-
+            binding.panel.setOnClickListener {
                 val bundle = Bundle()
                 bundle.putParcelable("episode", item)
-                findNavController().navigate(R.id.action_episodeListFragment_to_episodeDetailFragment, bundle)
-
-                //interaction?.onItemSelected(absoluteAdapterPosition, item)
+                it.findNavController().navigate(R.id.action_episodeListFragment_to_episodeDetailFragment, bundle)
             }
+
         }
     }
 

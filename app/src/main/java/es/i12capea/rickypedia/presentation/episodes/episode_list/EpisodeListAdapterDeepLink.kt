@@ -9,12 +9,14 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import es.i12capea.rickypedia.R
+import es.i12capea.rickypedia.databinding.EpisodeItemBinding
 import es.i12capea.rickypedia.presentation.common.navigateUriWithSlideInOptions
 import es.i12capea.rickypedia.presentation.entities.Episode
-import kotlinx.android.synthetic.main.episode_item.view.*
 
 class EpisodeListAdapterDeepLink() :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    private lateinit var binding: EpisodeItemBinding
 
     val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Episode>() {
 
@@ -35,14 +37,8 @@ class EpisodeListAdapterDeepLink() :
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-
-        return EpisodeViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.episode_item,
-                parent,
-                false
-            )
-        )
+        binding = EpisodeItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return EpisodeViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -63,16 +59,16 @@ class EpisodeListAdapterDeepLink() :
 
     class EpisodeViewHolder
     constructor(
-        itemView: View
-    ) : RecyclerView.ViewHolder(itemView) {
+        private val binding: EpisodeItemBinding
+    ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: Episode) = with(itemView) {
+        fun bind(item: Episode) {
 
-            itemView.tv_title.text = item.name
-            itemView.tv_episode.text = item.episode
+            binding.tvTitle.text = item.name
+            binding.tvEpisode.text = item.episode
 
-            setOnClickListener{
-                findNavController().navigateUriWithSlideInOptions(
+            binding.panel.setOnClickListener{
+                it.findNavController().navigateUriWithSlideInOptions(
                     Uri.parse("https://www.rickandmortyapiclient.com/episodeDetail/${item.id}")
                 )
             }

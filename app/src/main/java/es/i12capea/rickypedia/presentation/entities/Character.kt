@@ -1,7 +1,7 @@
 package es.i12capea.rickypedia.presentation.entities
 
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class Character(

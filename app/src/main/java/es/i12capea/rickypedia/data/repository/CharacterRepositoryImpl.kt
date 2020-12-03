@@ -63,7 +63,7 @@ class CharacterRepositoryImpl @Inject constructor(
     override suspend fun getCharacters(ids: List<Int>): Flow<List<CharacterEntity>> {
         return flow {
             if(ids.isEmpty()){
-                emit(emptyList())
+                emit(emptyList<CharacterEntity>())
             }else{
                 characterDao.searchCharactersByIds(ids)?.let {
                     emit(it.localCharactersToDomain())

@@ -1,30 +1,46 @@
 package es.i12capea.rickypedia.presentation.characters.character_list
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
-import es.i12capea.rickypedia.R
+import es.i12capea.rickypedia.databinding.FragmentCharacterListBinding
 import es.i12capea.rickypedia.presentation.characters.character_list.state.CharacterListStateEvent
 import es.i12capea.rickypedia.presentation.common.displayErrorDialog
-import kotlinx.android.synthetic.main.character_list_fragment.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @AndroidEntryPoint
 class CharacterListFragment constructor(
-) : Fragment(R.layout.character_list_fragment)
+) : Fragment()
 {
-    val TAG = "Pruebas"
+
+    private var _binding: FragmentCharacterListBinding? = null
+    private val binding get() = _binding!!
 
     private val viewModel : CharacterListViewModel by activityViewModels()
 
     lateinit var characterListAdapter : CharacterListAdapter
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        _binding = FragmentCharacterListBinding.inflate(inflater, container, false)
+        return binding.root    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewModel.setRecyclerState(binding.rvCharacters.layoutManager?.onSaveInstanceState())
+        _binding = null
+    }
 
     @ExperimentalCoroutinesApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -43,9 +59,9 @@ class CharacterListFragment constructor(
 
         viewModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading ->
             if(isLoading){
-                progress_bar.visibility = View.VISIBLE
+                binding.progressBar.visibility = View.VISIBLE
             }else{
-                progress_bar.visibility = View.INVISIBLE
+                binding.progressBar.visibility = View.INVISIBLE
             }
         })
 
@@ -63,7 +79,7 @@ class CharacterListFragment constructor(
     }
 
     private fun initRecyclerView(){
-        rv_characters.apply {
+        binding.rvCharacters.apply {
             layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
             characterListAdapter = CharacterListAdapter()
             characterListAdapter.setHasStableIds(true)
@@ -98,37 +114,13 @@ class CharacterListFragment constructor(
             viewModel.getActualPage()?.let { actualPage ->
                 viewModel.getRecyclerState()?.let { parcel ->
                     characterListAdapter.submitList(characters)
-                    rv_characters.layoutManager?.onRestoreInstanceState(parcel)
+                    binding.rvCharacters.layoutManager?.onRestoreInstanceState(parcel)
                     viewModel.setRecyclerState(null)
                 }
             }
 
         } ?: kotlin.run {
             viewModel.setStateEvent(CharacterListStateEvent.GetNextCharacterPage())
-            Log.d(TAG, "onViewCreated without characters")
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Log.d(TAG, "onResume")
-
-    }
-
-    override fun onStart() {
-        super.onStart()
-        Log.d(TAG, "onStart")
-    }
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        Log.d(TAG, "onAttach")
-
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        Log.d(TAG, "onDestroy")
-        viewModel.setRecyclerState(rv_characters.layoutManager?.onSaveInstanceState())
     }
 }

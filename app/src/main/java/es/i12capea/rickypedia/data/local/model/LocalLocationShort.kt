@@ -1,7 +1,7 @@
 package es.i12capea.rickypedia.data.local.model
 
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class LocalLocationShort(

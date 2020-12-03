@@ -42,7 +42,7 @@ class EpisodeRepositoryImpl @Inject constructor (
     override suspend fun getEpisodes(episodes: List<Int>): Flow<List<EpisodeEntity>> {
         return flow{
             if (episodes.isEmpty()){
-                emit(emptyList())
+                emit(emptyList<EpisodeEntity>())
             }else{
                 episodeDao.searchEpisodesByIds(episodes)?.let { localEpisodes ->
                     if (localEpisodes.size == episodes.size){

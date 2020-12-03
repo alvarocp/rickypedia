@@ -8,39 +8,44 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.setupWithNavController
 import dagger.hilt.android.AndroidEntryPoint
 import es.i12capea.rickypedia.R
-import kotlinx.android.synthetic.main.activity_main.*
+import es.i12capea.rickypedia.databinding.ActivityMainBinding
 
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
-    private val navController: NavController by lazy { findNavController(R.id.fragment_nav_host) }
+    private val navController: NavController by lazy { this.findNavController(R.id.fragment_nav_host) }
+
+    private lateinit var binding : ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
-        bottom_navigation.setupWithNavController(navController)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        val view = binding.root
+        setContentView(view)
 
-        bottom_navigation.setOnNavigationItemReselectedListener {
+        binding.bottomNavigation.setupWithNavController(this.navController)
+
+        binding.bottomNavigation.setOnNavigationItemReselectedListener {
 
         }
-        bottom_navigation.itemIconTintList = null;
+        binding.bottomNavigation.itemIconTintList = null;
 
-        navController.addOnDestinationChangedListener { _, destination, _ ->
+        this.navController.addOnDestinationChangedListener { _, destination, _ ->
             when (destination.id) {
                 R.id.characterListFragment -> {
-                    bottom_navigation.visibility = View.VISIBLE
+                    binding.bottomNavigation.visibility = View.VISIBLE
                 }
                 R.id.locationListFragment -> {
-                    bottom_navigation.visibility = View.VISIBLE
+                    binding.bottomNavigation.visibility = View.VISIBLE
 
                 }
                 R.id.episodeListFragment -> {
-                    bottom_navigation.visibility = View.VISIBLE
+                    binding.bottomNavigation.visibility = View.VISIBLE
                 }
 
-                else -> bottom_navigation.visibility = View.GONE
+                else -> binding.bottomNavigation.visibility = View.GONE
             }
         }
     }

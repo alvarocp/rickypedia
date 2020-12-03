@@ -1,7 +1,6 @@
 package es.i12capea.rickypedia.presentation.locations.location_list
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.navigation.findNavController
@@ -9,11 +8,13 @@ import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import es.i12capea.rickypedia.R
+import es.i12capea.rickypedia.databinding.LocationItemBinding
 import es.i12capea.rickypedia.presentation.entities.Location
-import kotlinx.android.synthetic.main.location_item.view.*
 
 class LocationListAdapter(private val interaction: Interaction? = null) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+
+    private lateinit var binding: LocationItemBinding
 
     val DIFF_CALLBACK = object : DiffUtil.ItemCallback<Location>() {
 
@@ -28,15 +29,10 @@ class LocationListAdapter(private val interaction: Interaction? = null) :
     }
     private val differ = AsyncListDiffer(this, DIFF_CALLBACK)
 
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-
+        binding = LocationItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return LocationViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.location_item,
-                parent,
-                false
-            ),
+            binding,
             interaction
         )
     }
@@ -59,23 +55,23 @@ class LocationListAdapter(private val interaction: Interaction? = null) :
 
     class LocationViewHolder
     constructor(
-        itemView: View,
+        private val binding: LocationItemBinding,
         private val interaction: Interaction?
-    ) : RecyclerView.ViewHolder(itemView) {
+    ) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: Location) = with(itemView) {
+        fun bind(item: Location) {
 
-            setOnClickListener{
-                val navController = findNavController()
+            binding.panel.setOnClickListener {
+                val navController = it.findNavController()
                 if (navController.currentDestination?.id == R.id.locationListFragment) {
                     //Este if arregla el bug del doble click antes de navegar.
                     navController.navigate(R.id.action_locationListFragment_to_locationDetailFragment, bundleOf(Pair("location", item)))
                 }
             }
 
-            tv_location_name.text = item.name
-            tv_location_dimension.text = item.dimension
-            tv_location_type.text = item.type
+            binding.tvLocationName.text = item.name
+            binding.tvLocationDimension.text = item.dimension
+            binding.tvLocationType.text = item.type
 
         }
     }
