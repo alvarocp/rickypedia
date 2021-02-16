@@ -2,6 +2,7 @@ package es.i12capea.rickypedia.presentation.characters.character_detail
 
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.Transition
@@ -22,9 +24,12 @@ import dagger.hilt.android.AndroidEntryPoint
 import es.i12capea.rickypedia.R
 import es.i12capea.rickypedia.databinding.FragmentCharacterDetailBinding
 import es.i12capea.rickypedia.presentation.characters.character_detail.state.CharacterDetailStateEvent
+import es.i12capea.rickypedia.presentation.common.displayErrorDialog
+import es.i12capea.rickypedia.presentation.common.visible
 import es.i12capea.rickypedia.presentation.entities.Character
 import es.i12capea.rickypedia.presentation.episodes.episode_list.EpisodeListAdapterDeepLink
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class CharacterDetailFragment
@@ -132,7 +137,7 @@ class CharacterDetailFragment
 
     @ExperimentalCoroutinesApi
     private fun subscribeObservers() {
-        viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
+        viewModel.dataState.observe(viewLifecycleOwner, { dataState ->
             dataState.getContentIfNotHandled()?.let { viewState ->
                 viewState.episodes?.let {
                     viewModel.setEpisodeList(it)
@@ -156,24 +161,24 @@ class CharacterDetailFragment
                 }
         })
 
-        viewModel.viewState.observe(viewLifecycleOwner, Observer {viewState ->
-            viewState.character?.let {
-                setCharacterView(it)
-            }
-            viewState.episodes?.let {
-                episodeListAdapter.submitList(it)
+        lifecycleScope.launchWhenStarted {
+            viewModel.isLoading.collect{
+                binding.scrollLayout.progressBar.visible = it
             }
 
-        })
-
-        viewModel.isLoading.observe(viewLifecycleOwner, Observer {
-            if(it){
-
-                binding.scrollLayout.progressBar.visibility = View.VISIBLE
-            }else{
-                binding.scrollLayout.progressBar.visibility = View.INVISIBLE
+            viewModel.viewState.collect {  viewState ->
+                viewState.character?.let {
+                    setCharacterView(it)
+                }
+                viewState.episodes?.let {
+                    episodeListAdapter.submitList(it)
+                }
             }
-        })
+
+            viewModel.error.collect {
+                displayErrorDialog(it.desc)
+            }
+        }
 
     }
 

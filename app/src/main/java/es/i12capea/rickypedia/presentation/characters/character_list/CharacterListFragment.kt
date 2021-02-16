@@ -8,13 +8,18 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
 import es.i12capea.rickypedia.databinding.FragmentCharacterListBinding
 import es.i12capea.rickypedia.presentation.characters.character_list.state.CharacterListStateEvent
 import es.i12capea.rickypedia.presentation.common.displayErrorDialog
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import es.i12capea.rickypedia.presentation.common.visible
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 
 @AndroidEntryPoint
 class CharacterListFragment constructor(
@@ -28,13 +33,15 @@ class CharacterListFragment constructor(
 
     lateinit var characterListAdapter : CharacterListAdapter
 
+    @FlowPreview
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentCharacterListBinding.inflate(inflater, container, false)
-        return binding.root    }
+        return binding.root
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -42,8 +49,9 @@ class CharacterListFragment constructor(
         _binding = null
     }
 
-    @ExperimentalCoroutinesApi
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         subscribeObservers()
 
@@ -51,31 +59,31 @@ class CharacterListFragment constructor(
 
         handleCharacters()
 
-        super.onViewCreated(view, savedInstanceState)
-
     }
 
-    fun subscribeObservers() {
+    private fun subscribeObservers() {
 
-        viewModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading ->
-            if(isLoading){
-                binding.progressBar.visibility = View.VISIBLE
-            }else{
-                binding.progressBar.visibility = View.INVISIBLE
+        lifecycleScope.launchWhenStarted {
+            viewModel.viewState.collect { viewState ->
+                viewState.characters?.let {
+                    characterListAdapter.submitList(it)
+                }
             }
-        })
+        }
 
-        viewModel.error.observe(viewLifecycleOwner, Observer { event ->
-            event.getContentIfNotHandled()?.let {
+        lifecycleScope.launchWhenStarted {
+            viewModel.isLoading.collect{
+                binding.progressBar.visible = it
+            }
+        }
+
+        lifecycleScope.launchWhenStarted {
+            viewModel.error.collect{
+                Log.d("stateerror", "recogido")
                 displayErrorDialog(it.desc)
             }
-        })
+        }
 
-        viewModel.viewState.observe(viewLifecycleOwner, Observer { viewState ->
-            viewState.characters?.let {
-                characterListAdapter.submitList(it)
-            }
-        })
     }
 
     private fun initRecyclerView(){

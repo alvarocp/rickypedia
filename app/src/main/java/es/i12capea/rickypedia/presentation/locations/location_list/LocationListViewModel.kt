@@ -9,31 +9,15 @@ import es.i12capea.rickypedia.presentation.entities.Page
 import es.i12capea.rickypedia.presentation.entities.mappers.locationPageEntityToPresentation
 import es.i12capea.rickypedia.presentation.locations.location_list.state.LocationListStateEvent
 import es.i12capea.rickypedia.presentation.locations.location_list.state.LocationListViewState
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.onCompletion
-import kotlinx.coroutines.launch
 
+@ExperimentalCoroutinesApi
 class LocationListViewModel @ViewModelInject constructor (
     private val getLocations: GetLocationsInPageUseCase,
-    private val dispatcher: CoroutineDispatcher
+    dispatcher: CoroutineDispatcher
 ) : BaseViewModel<LocationListStateEvent, LocationListViewState>(dispatcher) {
-
-    init {
-        val update = getCurrentViewStateOrNew()
-        update.lastPage = Page(
-            next = 1,
-            prev = null,
-            actual = 0,
-            list = emptyList(),
-            count = 0
-        )
-        update.locations = null
-        setViewState(update)
-    }
 
     override fun getJobNameForEvent(stateEvent: LocationListStateEvent): String? {
         return when(stateEvent){
@@ -70,7 +54,7 @@ class LocationListViewModel @ViewModelInject constructor (
         }
     }
 
-    private fun handleCollectLocations(currentLocations: List<Location>?, page: Page<Location>) {
+    private suspend fun handleCollectLocations(currentLocations: List<Location>?, page: Page<Location>) {
         setLastPage(page)
 
         val list = currentLocations?.toMutableList()
@@ -81,23 +65,32 @@ class LocationListViewModel @ViewModelInject constructor (
     }
 
     override fun initNewViewState(): LocationListViewState {
-        return LocationListViewState()
+        val viewState = LocationListViewState()
+        viewState.lastPage = Page(
+            next = 1,
+            prev = null,
+            actual = 0,
+            list = emptyList(),
+            count = 0
+        )
+        viewState.locations = null
+        return viewState
     }
 
     fun getLocations() : List<Location>?{
         return getCurrentViewStateOrNew().locations
     }
 
-    fun setLocationList(locations: List<Location>){
+    suspend fun setLocationList(locations: List<Location>){
         val update = getCurrentViewStateOrNew()
         update.locations = locations
-        postViewState(update)
+        setViewState(update)
     }
 
-    fun setLastPage(page: Page<Location>) {
+    suspend fun setLastPage(page: Page<Location>) {
         val update = getCurrentViewStateOrNew()
         update.lastPage = page
-        postViewState(update)
+        setViewState(update)
     }
 
     fun getLastPage() : Page<Location>? {
@@ -111,7 +104,9 @@ class LocationListViewModel @ViewModelInject constructor (
     fun setRecyclerState(state: Parcelable?){
         val update = getCurrentViewStateOrNew()
         update.layoutManagerState = state
-        postViewState(update)
+        launch {
+            setViewState(update)
+        }
     }
 
     fun getRecyclerState() : Parcelable? {

@@ -17,7 +17,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 
 class EpisodeDetailViewModel @ViewModelInject constructor(
@@ -92,7 +91,9 @@ class EpisodeDetailViewModel @ViewModelInject constructor(
     fun setCharacterList(cl: List<Character>){
         val update = getCurrentViewStateOrNew()
         update.characters = cl
-        postViewState(update)
+        launch {
+            setViewState(update)
+        }
     }
 
     fun getCharacterList() : List<Character>?{
@@ -106,7 +107,10 @@ class EpisodeDetailViewModel @ViewModelInject constructor(
     fun setCurrentEpisode(episode: Episode){
         val update = getCurrentViewStateOrNew()
         update.episode = episode
-        postViewState(update)
+        launch {
+            setViewState(update)
+        }
+
     }
 
     fun getCurrentEpisode() : Episode?{

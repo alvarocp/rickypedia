@@ -1,7 +1,6 @@
 package es.i12capea.rickypedia.presentation.locations.location_detail
 
 import androidx.hilt.lifecycle.ViewModelInject
-import es.i12capea.rickypedia.common.Event
 import es.i12capea.rickypedia.domain.usecases.GetCharactersInLocationUseCase
 import es.i12capea.rickypedia.presentation.common.BaseViewModel
 import es.i12capea.rickypedia.presentation.entities.Character
@@ -15,7 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 
 class LocationDetailViewModel @ViewModelInject constructor (
@@ -54,24 +52,26 @@ class LocationDetailViewModel @ViewModelInject constructor (
         return LocationDetailViewState()
     }
 
-    private fun handleCollectCharacters(characters: List<Character>) {
+    private suspend fun handleCollectCharacters(characters: List<Character>) {
         setCharactersInLocation(characters)
     }
 
     fun setLocation(location: Location){
         val update = getCurrentViewStateOrNew()
         update.location = location
-        postViewState(update)
+        launch {
+            setViewState(update)
+        }
     }
 
     fun getLocation() : Location?{
         return getCurrentViewStateOrNew().location
     }
 
-    fun setCharactersInLocation(characters: List<Character>){
+    suspend fun setCharactersInLocation(characters: List<Character>){
         val update = getCurrentViewStateOrNew()
         update.characters = characters
-        postViewState(update)
+        setViewState(update)
     }
 
     fun getCharactersInLocation() : List<Character>? {

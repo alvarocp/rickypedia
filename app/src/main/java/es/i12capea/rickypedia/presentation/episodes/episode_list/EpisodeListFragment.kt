@@ -8,13 +8,16 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import es.i12capea.rickypedia.databinding.FragmentEpisodeListBinding
 import es.i12capea.rickypedia.presentation.common.displayErrorDialog
+import es.i12capea.rickypedia.presentation.common.visible
 import es.i12capea.rickypedia.presentation.entities.Episode
 import es.i12capea.rickypedia.presentation.episodes.episode_list.state.EpisodeListStateEvent
+import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class EpisodeListFragment
@@ -56,25 +59,22 @@ class EpisodeListFragment
 
 
     fun subscribeObservers() {
-        viewModel.isLoading.observe(viewLifecycleOwner, Observer {
-            if(it){
-                binding.progressBar.visibility = View.VISIBLE
-            }else{
-                binding.progressBar.visibility = View.INVISIBLE
+        lifecycleScope.launchWhenStarted {
+            viewModel.isLoading.collect{
+                binding.progressBar.visible = it
             }
-        })
 
-        viewModel.error.observe(viewLifecycleOwner, Observer { event ->
-            event.getContentIfNotHandled()?.let {
-                this.displayErrorDialog(it.desc)
+            viewModel.viewState.collect{ viewState ->
+                viewState.episodes?.let {
+                    episodeListAdapter.submitList(it)
+                }
             }
-        })
 
-        viewModel.viewState.observe(viewLifecycleOwner, Observer { viewState ->
-            viewState.episodes?.let {
-                episodeListAdapter.submitList(it)
+            viewModel.error.collect {
+                displayErrorDialog(it.desc)
             }
-        })
+        }
+
     }
 
     private fun initRecyclerView(){

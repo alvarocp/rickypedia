@@ -8,6 +8,7 @@ import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
@@ -15,9 +16,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import es.i12capea.rickypedia.databinding.FragmentEpisodeDetailBinding
 import es.i12capea.rickypedia.presentation.characters.character_list.CharacterListAdapterDeepLink
 import es.i12capea.rickypedia.presentation.common.displayErrorDialog
+import es.i12capea.rickypedia.presentation.common.visible
 import es.i12capea.rickypedia.presentation.entities.Episode
 import es.i12capea.rickypedia.presentation.episodes.episode_detail.state.EpisodeDetailStateEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class EpisodeDetailFragment
@@ -94,28 +97,25 @@ class EpisodeDetailFragment
             }
         })
 
-        viewModel.error.observe(viewLifecycleOwner, Observer { event ->
-            event.getContentIfNotHandled()?.let {
-                displayErrorDialog(it.desc)
+        lifecycleScope.launchWhenStarted {
+            viewModel.isLoading.collect{
+                binding.progressBar.visible = it
             }
-        })
 
-        viewModel.isLoading.observe(viewLifecycleOwner, Observer {
-            if(it){
-                binding.progressBar.visibility = View.VISIBLE
-            }else{
-                binding.progressBar.visibility = View.INVISIBLE
-            }
-        })
-
-        viewModel.viewState.observe(viewLifecycleOwner, Observer { viewState ->
-            viewState.characters?.let {
-                characterListAdapterDeepLink.submitList(it)
-                (view?.parent as? ViewGroup)?.doOnPreDraw {
-                    startPostponedEnterTransition()
+            viewModel.viewState.collect { viewState ->
+                viewState.characters?.let {
+                    characterListAdapterDeepLink.submitList(it)
+                    (view?.parent as? ViewGroup)?.doOnPreDraw {
+                        startPostponedEnterTransition()
+                    }
                 }
             }
-        })
+
+            viewModel.error.collect {
+                displayErrorDialog(it.desc)
+            }
+        }
+
     }
 
     @ExperimentalCoroutinesApi

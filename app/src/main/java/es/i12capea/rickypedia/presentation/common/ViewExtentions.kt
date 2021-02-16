@@ -28,6 +28,12 @@ fun View.setMarginTop(marginTop: Int) {
     this.layoutParams = menuLayoutParams
 }
 
+var View.visible: Boolean
+    get() = visibility == View.VISIBLE
+    set(value) {
+        visibility = if (value) View.VISIBLE else View.GONE
+    }
+
 fun Activity.displayToast(@StringRes message:Int){
     Toast.makeText(this, message,Toast.LENGTH_SHORT).show()
 }

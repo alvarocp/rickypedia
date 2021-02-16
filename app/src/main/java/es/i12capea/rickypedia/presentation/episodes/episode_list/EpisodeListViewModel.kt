@@ -3,13 +3,10 @@ package es.i12capea.rickypedia.presentation.episodes.episode_list
 import android.os.Parcelable
 import androidx.hilt.lifecycle.ViewModelInject
 import es.i12capea.rickypedia.domain.usecases.GetEpisodesInPageUseCase
-import es.i12capea.rickypedia.domain.usecases.GetCharactersInEpisodeUseCase
-import es.i12capea.rickypedia.domain.usecases.GetEpisodeUseCase
 import es.i12capea.rickypedia.presentation.common.BaseViewModel
 import es.i12capea.rickypedia.presentation.entities.Episode
 import es.i12capea.rickypedia.presentation.entities.Page
 import es.i12capea.rickypedia.presentation.entities.mappers.episodePageToPresentation
-import es.i12capea.rickypedia.presentation.entities.mappers.locationPageEntityToPresentation
 import es.i12capea.rickypedia.presentation.episodes.episode_list.state.EpisodeListStateEvent
 import es.i12capea.rickypedia.presentation.episodes.episode_list.state.EpisodeListViewState
 import kotlinx.coroutines.CoroutineDispatcher
@@ -17,7 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 
 class EpisodeListViewModel @ViewModelInject constructor(
@@ -25,19 +21,6 @@ class EpisodeListViewModel @ViewModelInject constructor(
     private val dispatcher: CoroutineDispatcher
 ) : BaseViewModel<EpisodeListStateEvent, EpisodeListViewState>(dispatcher){
 
-
-    init {
-        val update = getCurrentViewStateOrNew()
-        update.lastPage = Page(
-            next = 1,
-            prev = null,
-            actual = 0,
-            list = emptyList(),
-            count = 0
-        )
-        update.episodes = null
-        setViewState(update)
-    }
 
     override fun getJobNameForEvent(stateEvent: EpisodeListStateEvent): String? {
         return when(stateEvent){
@@ -74,7 +57,7 @@ class EpisodeListViewModel @ViewModelInject constructor(
         }
     }
 
-    private fun handleCollectEpisodes(currentList: List<Episode>? , page: Page<Episode>) {
+    private suspend fun handleCollectEpisodes(currentList: List<Episode>? , page: Page<Episode>) {
 
         setActualEpisodePage(page)
 
@@ -85,25 +68,34 @@ class EpisodeListViewModel @ViewModelInject constructor(
         setEpisodeList(list)
     }
 
-    fun setActualEpisodePage(page: Page<Episode>){
+    suspend fun setActualEpisodePage(page: Page<Episode>){
         val update = getCurrentViewStateOrNew()
         update.lastPage = page
-        postViewState(update)
+        setViewState(update)
     }
 
 
     override fun initNewViewState(): EpisodeListViewState {
-        return EpisodeListViewState()
+        val viewState = EpisodeListViewState()
+        viewState.lastPage = Page(
+            next = 1,
+            prev = null,
+            actual = 0,
+            list = emptyList(),
+            count = 0
+        )
+        viewState.episodes = null
+        return viewState
     }
 
     fun getCurrentEpisodes() : List<Episode>?{
         return getCurrentViewStateOrNew().episodes
     }
 
-    fun setEpisodeList(episodes: List<Episode>){
+    suspend fun setEpisodeList(episodes: List<Episode>){
         val update = getCurrentViewStateOrNew()
         update.episodes = episodes
-        postViewState(update)
+        setViewState(update)
     }
 
     fun getNextPage() : Int? {
@@ -116,7 +108,10 @@ class EpisodeListViewModel @ViewModelInject constructor(
     fun setRecyclerState(state: Parcelable?){
         val update = getCurrentViewStateOrNew()
         update.layoutManagerState = state
-        postViewState(update)
+        launch {
+            setViewState(update)
+        }
+
     }
 
     fun getRecyclerState() : Parcelable? {
