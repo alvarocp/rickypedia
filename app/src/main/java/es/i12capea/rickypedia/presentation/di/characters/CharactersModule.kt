@@ -4,13 +4,13 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityRetainedComponent
-import es.i12capea.rickypedia.data.api.CharacterApi
-import es.i12capea.rickypedia.data.local.dao.LocalCharacterDao
-import es.i12capea.rickypedia.data.local.dao.LocalCharacterPageDao
-import es.i12capea.rickypedia.data.repository.CharacterRepositoryImpl
-import es.i12capea.rickypedia.domain.repositories.CharacterRepository
-import es.i12capea.rickypedia.domain.usecases.GetCharacterUseCase
-import es.i12capea.rickypedia.domain.usecases.GetCharactersInPageUseCase
+import es.i12capea.data.api.CharacterApi
+import es.i12capea.data.local.dao.LocalCharacterDao
+import es.i12capea.data.local.dao.LocalCharacterPageDao
+import es.i12capea.data.repository.CharacterRepositoryImpl
+import es.i12capea.domain.repositories.CharacterRepository
+import es.i12capea.domain.usecases.GetCharacterUseCase
+import es.i12capea.domain.usecases.GetCharactersInPageUseCase
 
 
 @Module
@@ -19,11 +19,11 @@ class CharactersModule {
 
     @Provides
     fun provideCharacterRepository(
-        characterApi: CharacterApi,
-        localCharacterPageDao: LocalCharacterPageDao,
-        localCharacterDao: LocalCharacterDao
+        characterApi: es.i12capea.data.api.CharacterApi,
+        localCharacterPageDao: es.i12capea.data.local.dao.LocalCharacterPageDao,
+        localCharacterDao: es.i12capea.data.local.dao.LocalCharacterDao
     ) : CharacterRepository{
-        return CharacterRepositoryImpl(
+        return es.i12capea.data.repository.CharacterRepositoryImpl(
             characterApi,
             localCharacterPageDao,
             localCharacterDao

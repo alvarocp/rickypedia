@@ -7,4 +7,6 @@ object Plugins {
     const val safeArgs = "androidx.navigation.safeargs.kotlin"
     const val kotlinParcelize = "kotlin-parcelize"
     const val googleServices = "com.google.gms.google-services"
+    const val javaLibrary = "java-library"
+    const val androidLibrary = "com.android.library"
 }

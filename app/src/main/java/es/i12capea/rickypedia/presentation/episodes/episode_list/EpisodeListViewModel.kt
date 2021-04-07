@@ -2,22 +2,15 @@ package es.i12capea.rickypedia.presentation.episodes.episode_list
 
 import android.os.Parcelable
 import androidx.hilt.lifecycle.ViewModelInject
-import es.i12capea.rickypedia.domain.usecases.GetEpisodesInPageUseCase
-import es.i12capea.rickypedia.domain.usecases.GetCharactersInEpisodeUseCase
-import es.i12capea.rickypedia.domain.usecases.GetEpisodeUseCase
+import es.i12capea.domain.usecases.GetEpisodesInPageUseCase
 import es.i12capea.rickypedia.presentation.common.BaseViewModel
 import es.i12capea.rickypedia.presentation.entities.Episode
 import es.i12capea.rickypedia.presentation.entities.Page
-import es.i12capea.rickypedia.presentation.entities.mappers.episodePageToPresentation
-import es.i12capea.rickypedia.presentation.entities.mappers.locationPageEntityToPresentation
 import es.i12capea.rickypedia.presentation.episodes.episode_list.state.EpisodeListStateEvent
 import es.i12capea.rickypedia.presentation.episodes.episode_list.state.EpisodeListViewState
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 
 class EpisodeListViewModel @ViewModelInject constructor(

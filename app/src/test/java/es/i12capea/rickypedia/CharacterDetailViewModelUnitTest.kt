@@ -1,9 +1,9 @@
 package es.i12capea.rickypedia
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import es.i12capea.rickypedia.domain.exceptions.ResponseException
-import es.i12capea.rickypedia.domain.usecases.GetCharacterUseCase
-import es.i12capea.rickypedia.domain.usecases.GetEpisodesUseCase
+import es.i12capea.domain.exceptions.ResponseException
+import es.i12capea.domain.usecases.GetCharacterUseCase
+import es.i12capea.domain.usecases.GetEpisodesUseCase
 import es.i12capea.rickypedia.presentation.characters.character_detail.CharacterDetailViewModel
 import es.i12capea.rickypedia.presentation.characters.character_detail.state.CharacterDetailStateEvent
 import io.mockk.*

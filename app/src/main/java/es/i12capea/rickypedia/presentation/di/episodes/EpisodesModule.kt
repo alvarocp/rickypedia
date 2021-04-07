@@ -4,24 +4,28 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityRetainedComponent
-import es.i12capea.rickypedia.data.api.EpisodesApi
-import es.i12capea.rickypedia.data.local.dao.LocalEpisodeDao
-import es.i12capea.rickypedia.data.local.dao.LocalEpisodePageDao
-import es.i12capea.rickypedia.data.repository.EpisodeRepositoryImpl
-import es.i12capea.rickypedia.domain.repositories.CharacterRepository
-import es.i12capea.rickypedia.domain.repositories.EpisodeRepository
-import es.i12capea.rickypedia.domain.usecases.GetEpisodesInPageUseCase
-import es.i12capea.rickypedia.domain.usecases.GetCharactersInEpisodeUseCase
-import es.i12capea.rickypedia.domain.usecases.GetEpisodeUseCase
-import es.i12capea.rickypedia.domain.usecases.GetEpisodesUseCase
+import es.i12capea.data.api.EpisodesApi
+import es.i12capea.data.local.dao.LocalEpisodeDao
+import es.i12capea.data.local.dao.LocalEpisodePageDao
+import es.i12capea.data.repository.EpisodeRepositoryImpl
+import es.i12capea.domain.repositories.CharacterRepository
+import es.i12capea.domain.repositories.EpisodeRepository
+import es.i12capea.domain.usecases.GetEpisodesInPageUseCase
+import es.i12capea.domain.usecases.GetCharactersInEpisodeUseCase
+import es.i12capea.domain.usecases.GetEpisodeUseCase
+import es.i12capea.domain.usecases.GetEpisodesUseCase
 
 @Module
 @InstallIn(ActivityRetainedComponent::class)
 class EpisodesModule {
 
     @Provides
-    fun provideEpisodeRepository(episodesApi: EpisodesApi, episodeDao: LocalEpisodeDao, episodesPageDao: LocalEpisodePageDao ) : EpisodeRepository{
-        return EpisodeRepositoryImpl(episodesApi, episodeDao, episodesPageDao)
+    fun provideEpisodeRepository(episodesApi: es.i12capea.data.api.EpisodesApi, episodeDao: es.i12capea.data.local.dao.LocalEpisodeDao, episodesPageDao: es.i12capea.data.local.dao.LocalEpisodePageDao) : EpisodeRepository{
+        return es.i12capea.data.repository.EpisodeRepositoryImpl(
+            episodesApi,
+            episodeDao,
+            episodesPageDao
+        )
     }
 
     @Provides

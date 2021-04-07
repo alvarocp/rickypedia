@@ -3,19 +3,15 @@ package es.i12capea.rickypedia.presentation.characters.character_list
 import android.os.Parcelable
 import androidx.hilt.lifecycle.ViewModelInject
 import es.i12capea.rickypedia.common.Event
-import es.i12capea.rickypedia.domain.usecases.GetCharactersInPageUseCase
+import es.i12capea.domain.usecases.GetCharactersInPageUseCase
 import es.i12capea.rickypedia.presentation.characters.character_list.state.CharacterListStateEvent
 import es.i12capea.rickypedia.presentation.characters.character_list.state.CharacterListViewState
 import es.i12capea.rickypedia.presentation.common.BaseViewModel
 import es.i12capea.rickypedia.presentation.entities.Character
 import es.i12capea.rickypedia.presentation.entities.Page
-import es.i12capea.rickypedia.presentation.entities.mappers.characterPageEntityToPresentation
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 
 class CharacterListViewModel @ViewModelInject constructor(

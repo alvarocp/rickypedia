@@ -1,10 +1,10 @@
 package es.i12capea.rickypedia
 
-import es.i12capea.rickypedia.domain.entities.CharacterEntity
-import es.i12capea.rickypedia.domain.entities.LocationShortEntity
-import es.i12capea.rickypedia.domain.exceptions.ResponseException
-import es.i12capea.rickypedia.domain.repositories.CharacterRepository
-import es.i12capea.rickypedia.domain.usecases.GetCharacterUseCase
+import es.i12capea.domain.entities.CharacterEntity
+import es.i12capea.domain.entities.LocationShortEntity
+import es.i12capea.domain.exceptions.ResponseException
+import es.i12capea.domain.repositories.CharacterRepository
+import es.i12capea.domain.usecases.GetCharacterUseCase
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.flow.flow

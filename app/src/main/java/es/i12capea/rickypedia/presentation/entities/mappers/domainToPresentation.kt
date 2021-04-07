@@ -1,9 +1,9 @@
 package es.i12capea.rickypedia.presentation.entities.mappers
 
-import es.i12capea.rickypedia.domain.entities.CharacterEntity
-import es.i12capea.rickypedia.domain.entities.EpisodeEntity
-import es.i12capea.rickypedia.domain.entities.LocationEntity
-import es.i12capea.rickypedia.domain.entities.PageEntity
+import es.i12capea.domain.entities.CharacterEntity
+import es.i12capea.domain.entities.EpisodeEntity
+import es.i12capea.domain.entities.LocationEntity
+import es.i12capea.domain.entities.PageEntity
 import es.i12capea.rickypedia.presentation.entities.*
 
 fun PageEntity<CharacterEntity>.characterPageEntityToPresentation() : Page<Character>{

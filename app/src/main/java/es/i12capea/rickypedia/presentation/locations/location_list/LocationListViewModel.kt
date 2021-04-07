@@ -2,19 +2,15 @@ package es.i12capea.rickypedia.presentation.locations.location_list
 
 import android.os.Parcelable
 import androidx.hilt.lifecycle.ViewModelInject
-import es.i12capea.rickypedia.domain.usecases.GetLocationsInPageUseCase
+import es.i12capea.domain.usecases.GetLocationsInPageUseCase
 import es.i12capea.rickypedia.presentation.common.BaseViewModel
 import es.i12capea.rickypedia.presentation.entities.Location
 import es.i12capea.rickypedia.presentation.entities.Page
-import es.i12capea.rickypedia.presentation.entities.mappers.locationPageEntityToPresentation
 import es.i12capea.rickypedia.presentation.locations.location_list.state.LocationListStateEvent
 import es.i12capea.rickypedia.presentation.locations.location_list.state.LocationListViewState
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 
 class LocationListViewModel @ViewModelInject constructor (

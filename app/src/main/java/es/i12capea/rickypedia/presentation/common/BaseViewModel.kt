@@ -7,11 +7,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import es.i12capea.rickypedia.common.ErrorRym
 import es.i12capea.rickypedia.common.Event
-import es.i12capea.rickypedia.domain.exceptions.PredicateNotSatisfiedException
-import es.i12capea.rickypedia.domain.exceptions.RequestException
-import es.i12capea.rickypedia.domain.exceptions.ResponseException
+import es.i12capea.domain.exceptions.PredicateNotSatisfiedException
+import es.i12capea.domain.exceptions.RequestException
+import es.i12capea.domain.exceptions.ResponseException
 import kotlinx.coroutines.*
-import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
 

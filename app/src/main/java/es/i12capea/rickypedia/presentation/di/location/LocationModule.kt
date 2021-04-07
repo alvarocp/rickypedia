@@ -4,14 +4,14 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityRetainedComponent
-import es.i12capea.rickypedia.data.api.LocationApi
-import es.i12capea.rickypedia.data.local.dao.LocalLocationDao
-import es.i12capea.rickypedia.data.local.dao.LocalLocationPageDao
-import es.i12capea.rickypedia.data.repository.LocationRepositoryImpl
-import es.i12capea.rickypedia.domain.repositories.CharacterRepository
-import es.i12capea.rickypedia.domain.repositories.LocationRepository
-import es.i12capea.rickypedia.domain.usecases.GetCharactersInLocationUseCase
-import es.i12capea.rickypedia.domain.usecases.GetLocationsInPageUseCase
+import es.i12capea.data.api.LocationApi
+import es.i12capea.data.local.dao.LocalLocationDao
+import es.i12capea.data.local.dao.LocalLocationPageDao
+import es.i12capea.data.repository.LocationRepositoryImpl
+import es.i12capea.domain.repositories.CharacterRepository
+import es.i12capea.domain.repositories.LocationRepository
+import es.i12capea.domain.usecases.GetCharactersInLocationUseCase
+import es.i12capea.domain.usecases.GetLocationsInPageUseCase
 
 @Module
 @InstallIn(ActivityRetainedComponent::class)
@@ -19,11 +19,11 @@ class LocationModule {
 
     @Provides
     fun provideLocationRepository(
-        locationApi: LocationApi,
-        localLocationDao: LocalLocationDao,
-        localLocationPageDao: LocalLocationPageDao
+        locationApi: es.i12capea.data.api.LocationApi,
+        localLocationDao: es.i12capea.data.local.dao.LocalLocationDao,
+        localLocationPageDao: es.i12capea.data.local.dao.LocalLocationPageDao
     ) : LocationRepository{
-        return LocationRepositoryImpl(
+        return es.i12capea.data.repository.LocationRepositoryImpl(
             locationApi,
             localLocationDao,
             localLocationPageDao

@@ -1,15 +1,11 @@
 package es.i12capea.rickypedia
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import es.i12capea.rickypedia.domain.exceptions.ResponseException
-import es.i12capea.rickypedia.domain.repositories.CharacterRepository
-import es.i12capea.rickypedia.domain.usecases.GetCharacterUseCase
-import es.i12capea.rickypedia.domain.usecases.GetEpisodesUseCase
+import es.i12capea.domain.exceptions.ResponseException
+import es.i12capea.domain.usecases.GetCharacterUseCase
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain

@@ -96,7 +96,6 @@ dependencies {
 
     // -- Coroutines
     implementation(Dependencies.Kotlin.coroutinesCore)
-    implementation(Dependencies.Kotlin.coroutinesAndroid)
     testImplementation(Dependencies.Test.coroutinesTest)
     androidTestImplementation(Dependencies.Test.coroutinesTest)
 

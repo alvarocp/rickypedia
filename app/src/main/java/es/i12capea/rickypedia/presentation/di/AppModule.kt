@@ -14,10 +14,10 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ApplicationComponent
 import es.i12capea.rickypedia.R
 import es.i12capea.rickypedia.common.Constants
-import es.i12capea.rickypedia.data.api.CharacterApi
-import es.i12capea.rickypedia.data.api.EpisodesApi
-import es.i12capea.rickypedia.data.api.LocationApi
-import es.i12capea.rickypedia.data.local.RymDatabase
+import es.i12capea.data.api.CharacterApi
+import es.i12capea.data.api.EpisodesApi
+import es.i12capea.data.api.LocationApi
+import es.i12capea.data.local.RymDatabase
 import es.i12capea.rickypedia.data.local.dao.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -97,23 +97,23 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideCharacterApi(retrofit: Retrofit.Builder) : CharacterApi{
+    fun provideCharacterApi(retrofit: Retrofit.Builder) : es.i12capea.data.api.CharacterApi {
         return retrofit.build()
-            .create(CharacterApi::class.java)
+            .create(es.i12capea.data.api.CharacterApi::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideLocationApi(retrofit: Retrofit.Builder) : LocationApi{
+    fun provideLocationApi(retrofit: Retrofit.Builder) : es.i12capea.data.api.LocationApi {
         return retrofit.build()
-            .create(LocationApi::class.java)
+            .create(es.i12capea.data.api.LocationApi::class.java)
     }
 
     @Singleton
     @Provides
-    fun provideEpisodeApi(retrofit: Retrofit.Builder) : EpisodesApi{
+    fun provideEpisodeApi(retrofit: Retrofit.Builder) : es.i12capea.data.api.EpisodesApi {
         return retrofit.build()
-            .create(EpisodesApi::class.java)
+            .create(es.i12capea.data.api.EpisodesApi::class.java)
     }
 
     @Singleton
@@ -133,46 +133,46 @@ class AppModule {
 
     @Singleton
     @Provides
-    fun provideAppDb(app: Application): RymDatabase {
+    fun provideAppDb(app: Application): es.i12capea.data.local.RymDatabase {
         return Room
-            .databaseBuilder(app, RymDatabase::class.java, Constants.DB_NAME)
+            .databaseBuilder(app, es.i12capea.data.local.RymDatabase::class.java, Constants.DB_NAME)
             .fallbackToDestructiveMigration() // get correct db version if schema changed
             .build()
     }
 
     @Singleton
     @Provides
-    fun provideLocalCharacterPageDao(db: RymDatabase): LocalCharacterPageDao {
+    fun provideLocalCharacterPageDao(db: es.i12capea.data.local.RymDatabase): es.i12capea.data.local.dao.LocalCharacterPageDao {
         return db.getLocalCharacterPageDao()
     }
 
     @Singleton
     @Provides
-    fun provideLocalCharacterDao(db: RymDatabase): LocalCharacterDao {
+    fun provideLocalCharacterDao(db: es.i12capea.data.local.RymDatabase): es.i12capea.data.local.dao.LocalCharacterDao {
         return db.getLocalCharacterDao()
     }
 
     @Singleton
     @Provides
-    fun provideLocalEpisodeDao(db: RymDatabase): LocalEpisodeDao {
+    fun provideLocalEpisodeDao(db: es.i12capea.data.local.RymDatabase): es.i12capea.data.local.dao.LocalEpisodeDao {
         return db.getLocalEpisodeDao()
     }
 
     @Singleton
     @Provides
-    fun provideLocalEpisodePageDao(db: RymDatabase): LocalEpisodePageDao {
+    fun provideLocalEpisodePageDao(db: es.i12capea.data.local.RymDatabase): es.i12capea.data.local.dao.LocalEpisodePageDao {
         return db.getLocalEpisodePageDao()
     }
 
     @Singleton
     @Provides
-    fun provideLocalLocationDao(db: RymDatabase): LocalLocationDao {
+    fun provideLocalLocationDao(db: es.i12capea.data.local.RymDatabase): es.i12capea.data.local.dao.LocalLocationDao {
         return db.getLocalLocationDao()
     }
 
     @Singleton
     @Provides
-    fun provideLocalLocationPageDao(db: RymDatabase): LocalLocationPageDao {
+    fun provideLocalLocationPageDao(db: es.i12capea.data.local.RymDatabase): es.i12capea.data.local.dao.LocalLocationPageDao {
         return db.getLocalLocationPageDao()
     }
 

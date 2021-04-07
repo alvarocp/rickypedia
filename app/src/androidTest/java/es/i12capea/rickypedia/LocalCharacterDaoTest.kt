@@ -5,15 +5,13 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import es.i12capea.rickypedia.data.local.RymDatabase
-import es.i12capea.rickypedia.data.local.dao.LocalCharacterDao
+import es.i12capea.data.local.RymDatabase
+import es.i12capea.data.local.dao.LocalCharacterDao
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.junit.*
 import org.junit.runner.RunWith
 import org.junit.runners.MethodSorters
-import java.util.concurrent.Executors
 
 @ExperimentalCoroutinesApi
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -26,15 +24,15 @@ class LocalCharacterDaoTest {
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    private lateinit var database: RymDatabase
-    private lateinit var dao: LocalCharacterDao
+    private lateinit var database: es.i12capea.data.local.RymDatabase
+    private lateinit var dao: es.i12capea.data.local.dao.LocalCharacterDao
 
     @Before
     fun setup(){
 
         database = Room.inMemoryDatabaseBuilder(
             ApplicationProvider.getApplicationContext(),
-            RymDatabase::class.java)
+            es.i12capea.data.local.RymDatabase::class.java)
             .allowMainThreadQueries()
             .build()
         dao = database.getLocalCharacterDao()

@@ -1,21 +1,16 @@
 package es.i12capea.rickypedia.presentation.locations.location_detail
 
 import androidx.hilt.lifecycle.ViewModelInject
-import es.i12capea.rickypedia.common.Event
-import es.i12capea.rickypedia.domain.usecases.GetCharactersInLocationUseCase
+import es.i12capea.domain.usecases.GetCharactersInLocationUseCase
 import es.i12capea.rickypedia.presentation.common.BaseViewModel
 import es.i12capea.rickypedia.presentation.entities.Character
 import es.i12capea.rickypedia.presentation.entities.Location
-import es.i12capea.rickypedia.presentation.entities.mappers.characterListToPresentation
 import es.i12capea.rickypedia.presentation.entities.mappers.toDomain
 import es.i12capea.rickypedia.presentation.locations.location_detail.state.LocationDetailStateEvent
 import es.i12capea.rickypedia.presentation.locations.location_detail.state.LocationDetailViewState
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.launch
 
 class LocationDetailViewModel @ViewModelInject constructor (

@@ -1,4 +1,3 @@
-
 object Classpaths {
     const val gradlePlugin = "com.android.tools.build:gradle:" + Versions.gradlePlugin
     const val kotlinGradlePlugin = "org.jetbrains.kotlin:kotlin-gradle-plugin:" + Versions.Kotlin.kotlin
