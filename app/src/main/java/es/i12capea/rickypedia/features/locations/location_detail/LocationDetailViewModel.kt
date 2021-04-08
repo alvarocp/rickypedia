@@ -53,24 +53,24 @@ class LocationDetailViewModel @ViewModelInject constructor (
         return LocationDetailViewState()
     }
 
-    private fun handleCollectCharacters(characters: List<Character>) {
+    private suspend fun handleCollectCharacters(characters: List<Character>) {
         setCharactersInLocation(characters)
     }
 
     fun setLocation(location: Location){
         val update = getCurrentViewStateOrNew()
         update.location = location
-        postViewState(update)
+        launch { setViewState(update) }
     }
 
     fun getLocation() : Location?{
         return getCurrentViewStateOrNew().location
     }
 
-    fun setCharactersInLocation(characters: List<Character>){
+    suspend fun setCharactersInLocation(characters: List<Character>){
         val update = getCurrentViewStateOrNew()
         update.characters = characters
-        postViewState(update)
+        setViewState(update)
     }
 
     fun getCharactersInLocation() : List<Character>? {

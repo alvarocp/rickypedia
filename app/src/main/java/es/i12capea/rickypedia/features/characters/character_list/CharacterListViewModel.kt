@@ -22,19 +22,6 @@ class CharacterListViewModel @ViewModelInject constructor(
     dispatcher: CoroutineDispatcher
 ) : BaseViewModel<CharacterListStateEvent, CharacterListViewState>(dispatcher){
 
-    init {
-        val update = getCurrentViewStateOrNew()
-        update.lastPage = Page(
-            next = 1,
-            prev = null,
-            actual = 0,
-            list = emptyList(),
-            count = 0
-        )
-        update.characters = null
-        setViewState(update)
-    }
-
     override fun getJobNameForEvent(stateEvent: CharacterListStateEvent) : String?{
         return when(stateEvent){
             is CharacterListStateEvent.GetNextCharacterPage -> {
@@ -54,10 +41,9 @@ class CharacterListViewModel @ViewModelInject constructor(
         } catch (t: Throwable){
             handleThrowable(t)
         }
-
     }
 
-    override fun getJobForEvent(stateEvent: CharacterListStateEvent): Job? {
+    override fun getJobForEvent(stateEvent: CharacterListStateEvent): Job {
         return launch {
             when (stateEvent) {
                 is CharacterListStateEvent.GetNextCharacterPage -> {
@@ -76,23 +62,23 @@ class CharacterListViewModel @ViewModelInject constructor(
         return getCurrentViewStateOrNew().lastPage
     }
 
-    fun setActualPage(page: Page<Character>){
+    private suspend fun setActualPage(page: Page<Character>){
         val update = getCurrentViewStateOrNew()
         update.lastPage = page
-        postViewState(update)
+        setViewState(update)
     }
 
     fun getCharacterList() : List<Character>?{
         return getCurrentViewStateOrNew().characters
     }
 
-    fun setCharacterList(list: List<Character>){
+    private suspend fun setCharacterList(list: List<Character>){
         val update = getCurrentViewStateOrNew()
         update.characters = list
-        postViewState(update)
+        setViewState(update)
     }
 
-    fun handleCollectCharacters(currentList: List<Character>?, page: Page<Character>){
+    private suspend fun handleCollectCharacters(currentList: List<Character>?, page: Page<Character>){
         setActualPage(page)
 
         val list = currentList?.toMutableList()
@@ -114,13 +100,22 @@ class CharacterListViewModel @ViewModelInject constructor(
 
 
     override fun initNewViewState(): CharacterListViewState {
-        return CharacterListViewState()
+        val characterListViewState = CharacterListViewState()
+        characterListViewState.lastPage = Page(
+                    next = 1,
+                    prev = null,
+                    actual = 0,
+                    list = emptyList(),
+                    count = 0
+                        )
+        characterListViewState.characters = null
+        return characterListViewState
     }
 
     fun setRecyclerState(state: Parcelable?){
         val update = getCurrentViewStateOrNew()
         update.layoutManagerState = state
-        postViewState(update)
+        launch { setViewState(update) }
     }
 
     fun getRecyclerState() : Parcelable? {

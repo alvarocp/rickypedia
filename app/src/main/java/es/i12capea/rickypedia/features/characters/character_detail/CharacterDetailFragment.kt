@@ -9,6 +9,7 @@ import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.Transition
@@ -25,6 +26,7 @@ import es.i12capea.rickypedia.features.characters.character_detail.state.Charact
 import es.i12capea.rickypedia.entities.Character
 import es.i12capea.rickypedia.features.episodes.episode_list.EpisodeListAdapterDeepLink
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class CharacterDetailFragment
@@ -132,6 +134,23 @@ class CharacterDetailFragment
 
     @ExperimentalCoroutinesApi
     private fun subscribeObservers() {
+        lifecycleScope.launchWhenStarted {
+            viewModel.isLoading.collect { isLoading ->
+                if(isLoading){
+                    binding.scrollLayout.progressBar.visibility = View.VISIBLE
+                }else{
+                    binding.scrollLayout.progressBar.visibility = View.INVISIBLE
+                }
+            }
+            viewModel.viewState.collect { viewState ->
+                viewState.character?.let {
+                    setCharacterView(it)
+                }
+                viewState.episodes?.let {
+                    episodeListAdapter.submitList(it)
+                }
+            }
+        }
         viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
             dataState.getContentIfNotHandled()?.let { viewState ->
                 viewState.episodes?.let {
@@ -154,25 +173,6 @@ class CharacterDetailFragment
                     }
                     }
                 }
-        })
-
-        viewModel.viewState.observe(viewLifecycleOwner, Observer {viewState ->
-            viewState.character?.let {
-                setCharacterView(it)
-            }
-            viewState.episodes?.let {
-                episodeListAdapter.submitList(it)
-            }
-
-        })
-
-        viewModel.isLoading.observe(viewLifecycleOwner, Observer {
-            if(it){
-
-                binding.scrollLayout.progressBar.visibility = View.VISIBLE
-            }else{
-                binding.scrollLayout.progressBar.visibility = View.INVISIBLE
-            }
         })
 
     }

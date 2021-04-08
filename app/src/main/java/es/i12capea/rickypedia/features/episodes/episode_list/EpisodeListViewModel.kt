@@ -21,20 +21,6 @@ class EpisodeListViewModel @ViewModelInject constructor(
     dispatcher: CoroutineDispatcher
 ) : BaseViewModel<EpisodeListStateEvent, EpisodeListViewState>(dispatcher){
 
-
-    init {
-        val update = getCurrentViewStateOrNew()
-        update.lastPage = Page(
-            next = 1,
-            prev = null,
-            actual = 0,
-            list = emptyList(),
-            count = 0
-        )
-        update.episodes = null
-        setViewState(update)
-    }
-
     override fun getJobNameForEvent(stateEvent: EpisodeListStateEvent): String? {
         return when(stateEvent){
             is EpisodeListStateEvent.GetNextPage -> {
@@ -70,7 +56,7 @@ class EpisodeListViewModel @ViewModelInject constructor(
         }
     }
 
-    private fun handleCollectEpisodes(currentList: List<Episode>?, page: Page<Episode>) {
+    private suspend fun handleCollectEpisodes(currentList: List<Episode>?, page: Page<Episode>) {
 
         setActualEpisodePage(page)
 
@@ -81,14 +67,23 @@ class EpisodeListViewModel @ViewModelInject constructor(
         setEpisodeList(list)
     }
 
-    fun setActualEpisodePage(page: Page<Episode>){
+    suspend fun setActualEpisodePage(page: Page<Episode>){
         val update = getCurrentViewStateOrNew()
         update.lastPage = page
-        postViewState(update)
+        setViewState(update)
     }
 
 
     override fun initNewViewState(): EpisodeListViewState {
+        val viewState = EpisodeListViewState()
+        viewState.lastPage = Page(
+                next = 1,
+                prev = null,
+                actual = 0,
+                list = emptyList(),
+                count = 0
+        )
+        viewState.episodes = null
         return EpisodeListViewState()
     }
 
@@ -96,10 +91,10 @@ class EpisodeListViewModel @ViewModelInject constructor(
         return getCurrentViewStateOrNew().episodes
     }
 
-    fun setEpisodeList(episodes: List<Episode>){
+    suspend fun setEpisodeList(episodes: List<Episode>){
         val update = getCurrentViewStateOrNew()
         update.episodes = episodes
-        postViewState(update)
+        setViewState(update)
     }
 
     fun getNextPage() : Int? {
@@ -112,7 +107,7 @@ class EpisodeListViewModel @ViewModelInject constructor(
     fun setRecyclerState(state: Parcelable?){
         val update = getCurrentViewStateOrNew()
         update.layoutManagerState = state
-        postViewState(update)
+        launch { setViewState(update) }
     }
 
     fun getRecyclerState() : Parcelable? {

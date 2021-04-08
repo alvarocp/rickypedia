@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
@@ -15,6 +16,7 @@ import es.i12capea.rickypedia.databinding.FragmentEpisodeListBinding
 import es.i12capea.rickypedia.common.displayErrorDialog
 import es.i12capea.rickypedia.entities.Episode
 import es.i12capea.rickypedia.features.episodes.episode_list.state.EpisodeListStateEvent
+import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class EpisodeListFragment
@@ -56,13 +58,6 @@ class EpisodeListFragment
 
 
     fun subscribeObservers() {
-        viewModel.isLoading.observe(viewLifecycleOwner, Observer {
-            if(it){
-                binding.progressBar.visibility = View.VISIBLE
-            }else{
-                binding.progressBar.visibility = View.INVISIBLE
-            }
-        })
 
         viewModel.error.observe(viewLifecycleOwner, Observer { event ->
             event.getContentIfNotHandled()?.let {
@@ -70,11 +65,21 @@ class EpisodeListFragment
             }
         })
 
-        viewModel.viewState.observe(viewLifecycleOwner, Observer { viewState ->
-            viewState.episodes?.let {
-                episodeListAdapter.submitList(it)
+        lifecycleScope.launchWhenStarted {
+            viewModel.isLoading.collect { isLoading ->
+                if(isLoading){
+                    binding.progressBar.visibility = View.VISIBLE
+                }else{
+                    binding.progressBar.visibility = View.INVISIBLE
+                }
             }
-        })
+            viewModel.viewState.collect { viewState ->
+                viewState.episodes?.let {
+                    episodeListAdapter.submitList(it)
+                }
+            }
+        }
+
     }
 
     private fun initRecyclerView(){

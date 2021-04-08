@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
@@ -15,6 +16,7 @@ import es.i12capea.rickypedia.databinding.FragmentLocationListBinding
 import es.i12capea.rickypedia.common.displayToast
 import es.i12capea.rickypedia.entities.Location
 import es.i12capea.rickypedia.features.locations.location_list.state.LocationListStateEvent
+import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class LocationListFragment
@@ -56,25 +58,26 @@ class LocationListFragment
     }
 
     private fun subscribeObservers() {
-        viewModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading ->
-            if (isLoading){
-                binding.progressBar.visibility = View.VISIBLE
-            }else{
-                binding.progressBar.visibility = View.INVISIBLE
-            }
-        })
-
         viewModel.error.observe(viewLifecycleOwner, Observer { event ->
             event.getContentIfNotHandled()?.let {
                 displayToast(it.desc)
             }
         })
 
-        viewModel.viewState.observe(viewLifecycleOwner, Observer { viewState ->
-            viewState.locations?.let {
-                locationListAdapter.submitList(it)
+        lifecycleScope.launchWhenStarted {
+            viewModel.isLoading.collect { isLoading ->
+                if (isLoading){
+                    binding.progressBar.visibility = View.VISIBLE
+                }else{
+                    binding.progressBar.visibility = View.INVISIBLE
+                }
             }
-        })
+            viewModel.viewState.collect { viewState ->
+                viewState.locations?.let {
+                    locationListAdapter.submitList(it)
+                }
+            }
+        }
     }
 
     private fun initRecyclerView(){

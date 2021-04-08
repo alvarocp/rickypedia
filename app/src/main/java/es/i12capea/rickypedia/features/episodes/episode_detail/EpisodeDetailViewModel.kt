@@ -91,7 +91,7 @@ class EpisodeDetailViewModel @ViewModelInject constructor(
     fun setCharacterList(cl: List<Character>){
         val update = getCurrentViewStateOrNew()
         update.characters = cl
-        postViewState(update)
+        launch { setViewState(update) }
     }
 
     fun getCharacterList() : List<Character>?{
@@ -105,7 +105,8 @@ class EpisodeDetailViewModel @ViewModelInject constructor(
     fun setCurrentEpisode(episode: Episode){
         val update = getCurrentViewStateOrNew()
         update.episode = episode
-        postViewState(update)
+        launch { setViewState(update) }
+
     }
 
     fun getCurrentEpisode() : Episode?{

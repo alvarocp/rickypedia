@@ -9,6 +9,8 @@ import es.i12capea.domain.exceptions.PredicateNotSatisfiedException
 import es.i12capea.domain.exceptions.RequestException
 import es.i12capea.domain.exceptions.ResponseException
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlin.coroutines.CoroutineContext
 
 
@@ -16,26 +18,24 @@ abstract class BaseViewModel<StateEvent, ViewState> (
     val dispatcher: CoroutineDispatcher
 ) : ViewModel(), CoroutineScope
 {
-
-    val TAG: String = "Pruebas"
-
-    private val _isLoading : MutableLiveData<Boolean> = MutableLiveData(false)
-    val isLoading: LiveData<Boolean> = _isLoading
-    fun setLoadingTrue() = _isLoading.postValue(true)
+    private val _isLoading : MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
 
     private val _error: MutableLiveData<Event<ErrorRym>> = MutableLiveData()
     val error : LiveData<Event<ErrorRym>> = _error
 
     private val successMessage: MutableLiveData<Event<String>> = MutableLiveData()
 
-    protected val _stateEvent: MutableLiveData<StateEvent> = MutableLiveData()
-    protected val _viewState: MutableLiveData<ViewState> = MutableLiveData()
+    private var _viewState: MutableStateFlow<ViewState>
+    val viewState: StateFlow<ViewState> get() = _viewState
+
+    init {
+        _viewState = MutableStateFlow(this.initNewViewState())
+    }
+
 
     private val _networkAvailable : MutableLiveData<Boolean> = MutableLiveData(false)
     val networkAvailable : LiveData<Boolean> = _networkAvailable
-
-    val viewState: LiveData<ViewState>
-        get() = _viewState
 
     val dataState: MutableLiveData<Event<ViewState>> = MutableLiveData()
 
@@ -43,12 +43,8 @@ abstract class BaseViewModel<StateEvent, ViewState> (
         return viewState.value ?: initNewViewState()
     }
 
-    fun postViewState(viewState: ViewState) {
-        _viewState.postValue(viewState)
-    }
-
-    fun setViewState(viewState: ViewState){
-        _viewState.value = viewState
+    suspend fun setViewState(viewState: ViewState) {
+        _viewState.emit(viewState)
     }
 
     fun setNetworkAvailable(available: Boolean){
@@ -62,7 +58,7 @@ abstract class BaseViewModel<StateEvent, ViewState> (
                 getJob(jobName)?.let {
                     Log.d("JOB", "Job $jobName already running")
                 } ?: kotlin.run {
-                    _isLoading.postValue(true)
+                    _isLoading.emit(true)
                     Log.d("JOB", "Job $jobName not running, lets start")
                     getJobForEvent(stateEvent)?.let { job ->
                         addJob(jobName, job)
@@ -102,7 +98,7 @@ abstract class BaseViewModel<StateEvent, ViewState> (
         if (jobs.isEmpty()){
             viewModelScope.launch {
                 delay(300)
-                _isLoading.postValue(false)
+                _isLoading.emit(false)
             }
         }
     }
@@ -135,7 +131,6 @@ abstract class BaseViewModel<StateEvent, ViewState> (
     fun cancelActiveJobs(){
         for((methodName, job) in jobs){
             if(job.isActive){
-                Log.e(TAG, "cancelling job in method: '$methodName'")
                 job.cancel()
             }
         }
@@ -143,7 +138,6 @@ abstract class BaseViewModel<StateEvent, ViewState> (
 
     override fun onCleared() {
         super.onCleared()
-        Log.d(TAG, "Se limpia base viewModel")
         cancelActiveJobs()
     }
 

@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -16,8 +17,7 @@ import es.i12capea.rickypedia.features.characters.character_list.state.Character
 import es.i12capea.rickypedia.common.displayErrorDialog
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import es.i12capea.rickypedia.entities.Character
-
-
+import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class CharacterListFragment constructor(
@@ -58,15 +58,22 @@ class CharacterListFragment constructor(
 
     }
 
-    fun subscribeObservers() {
-
-        viewModel.isLoading.observe(viewLifecycleOwner, Observer { isLoading ->
-            if(isLoading){
-                binding.progressBar.visibility = View.VISIBLE
-            }else{
-                binding.progressBar.visibility = View.INVISIBLE
+    private fun subscribeObservers() {
+        lifecycleScope.launchWhenStarted {
+            viewModel.isLoading.collect { isLoading ->
+                if(isLoading){
+                    binding.progressBar.visibility = View.VISIBLE
+                }else{
+                    binding.progressBar.visibility = View.INVISIBLE
+                }
             }
-        })
+            viewModel.viewState.collect { viewState ->
+                viewState.characters?.let {
+                    characterListAdapter.submitList(it)
+                }
+            }
+        }
+
 
         viewModel.error.observe(viewLifecycleOwner, Observer { event ->
             event.getContentIfNotHandled()?.let {
@@ -74,11 +81,7 @@ class CharacterListFragment constructor(
             }
         })
 
-        viewModel.viewState.observe(viewLifecycleOwner, Observer { viewState ->
-            viewState.characters?.let {
-                characterListAdapter.submitList(it)
-            }
-        })
+
     }
 
     private fun initRecyclerView(){

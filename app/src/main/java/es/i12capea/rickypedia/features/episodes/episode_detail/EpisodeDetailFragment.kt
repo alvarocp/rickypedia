@@ -8,6 +8,7 @@ import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
@@ -18,6 +19,7 @@ import es.i12capea.rickypedia.common.displayErrorDialog
 import es.i12capea.rickypedia.entities.Episode
 import es.i12capea.rickypedia.features.episodes.episode_detail.state.EpisodeDetailStateEvent
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
 class EpisodeDetailFragment
@@ -100,22 +102,24 @@ class EpisodeDetailFragment
             }
         })
 
-        viewModel.isLoading.observe(viewLifecycleOwner, Observer {
-            if(it){
-                binding.progressBar.visibility = View.VISIBLE
-            }else{
-                binding.progressBar.visibility = View.INVISIBLE
-            }
-        })
-
-        viewModel.viewState.observe(viewLifecycleOwner, Observer { viewState ->
-            viewState.characters?.let {
-                characterListAdapterDeepLink.submitList(it)
-                (view?.parent as? ViewGroup)?.doOnPreDraw {
-                    startPostponedEnterTransition()
+        lifecycleScope.launchWhenStarted {
+            viewModel.isLoading.collect { isLoading ->
+                if(isLoading){
+                    binding.progressBar.visibility = View.VISIBLE
+                }else{
+                    binding.progressBar.visibility = View.INVISIBLE
                 }
             }
-        })
+
+            viewModel.viewState.collect { viewState ->
+                viewState.characters?.let {
+                    characterListAdapterDeepLink.submitList(it)
+                    (view?.parent as? ViewGroup)?.doOnPreDraw {
+                        startPostponedEnterTransition()
+                    }
+                }
+            }
+        }
     }
 
     @ExperimentalCoroutinesApi
