@@ -2,10 +2,10 @@ package es.i12capea.data.repository
 
 import android.util.Log
 import es.i12capea.data.api.CharacterApi
+import es.i12capea.data.api.call
 import es.i12capea.data.local.dao.LocalCharacterDao
 import es.i12capea.data.local.dao.LocalCharacterPageDao
 import es.i12capea.data.mappers.*
-import es.i12capea.rickypedia.data.mappers.*
 import es.i12capea.domain.entities.CharacterEntity
 import es.i12capea.domain.entities.PageEntity
 import es.i12capea.domain.exceptions.RequestException

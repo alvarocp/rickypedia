@@ -1,15 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- CoordinatorLayout is used to create scrolling and "floating" effects within a layout -->
 <!-- This is typically the root layout which wraps the app bar and content -->
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    >
+    android:fitsSystemWindows="true">
 
 <!-- AppBarLayout is a wrapper for a Toolbar in order to apply scrolling effects. -->
 <!-- Note that AppBarLayout expects to be the first child nested within a CoordinatorLayout -->

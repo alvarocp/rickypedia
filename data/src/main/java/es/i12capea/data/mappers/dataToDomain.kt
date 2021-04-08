@@ -7,7 +7,6 @@ import es.i12capea.data.api.models.character.RemoteCharacter
 import es.i12capea.data.api.models.episode.RemoteEpisode
 import es.i12capea.data.api.models.location.RemoteLocation
 import es.i12capea.data.local.model.*
-import es.i12capea.rickypedia.data.local.model.*
 import es.i12capea.domain.entities.*
 
 

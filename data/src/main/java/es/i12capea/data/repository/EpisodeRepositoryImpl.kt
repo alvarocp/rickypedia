@@ -1,12 +1,12 @@
 package es.i12capea.data.repository
 
 import android.util.Log
-import es.i12capea.rickypedia.common.Constants
 import es.i12capea.data.api.EpisodesApi
-import es.i12capea.data.mappers.toDomain
+import es.i12capea.data.api.call
 import es.i12capea.data.local.dao.LocalEpisodeDao
 import es.i12capea.data.local.dao.LocalEpisodePageDao
-import es.i12capea.rickypedia.data.mappers.*
+import es.i12capea.data.mappers.*
+import es.i12capea.domain.common.Constants
 import es.i12capea.domain.entities.EpisodeEntity
 import es.i12capea.domain.entities.PageEntity
 import es.i12capea.domain.repositories.EpisodeRepository
@@ -110,7 +110,7 @@ class EpisodeRepositoryImpl @Inject constructor (
         val episodesEntities = result.episodesToDomain()
 
         try {
-            episodeDao.insertListEpisode(es.i12capea.data.mappers.toLocal(null))
+            episodeDao.insertListEpisode(episodesEntities.toLocal(null))
         }catch (e: Exception){
             Log.d("BD", "Cant Insert list")
         }

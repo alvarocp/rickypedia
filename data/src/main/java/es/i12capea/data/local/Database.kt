@@ -3,13 +3,10 @@ package es.i12capea.data.local
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import es.i12capea.rickypedia.common.Constants
 import es.i12capea.data.local.converters.Converters
 import es.i12capea.data.local.dao.*
 import es.i12capea.data.local.model.*
-import es.i12capea.rickypedia.data.local.dao.*
-import es.i12capea.rickypedia.data.local.model.*
-
+import es.i12capea.domain.common.Constants
 
 @Database(entities = [
     LocalCharacter::class,

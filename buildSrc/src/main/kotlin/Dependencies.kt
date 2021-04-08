@@ -41,8 +41,8 @@ object Dependencies {
 
     object Test {
         const val junit = "junit:junit:" + Versions.Test.junit
-        const val testExt = "androidx.test.ext:junit:"
-        const val espresso = "androidx.test.espresso:espresso-core:"
+        const val testExt = "androidx.test.ext:junit:" + Versions.Test.testExt
+        const val espresso = "androidx.test.espresso:espresso-core:" + Versions.Test.espresso
         const val mockk = "io.mockk:mockk:" + Versions.Test.mockk
         const val mockkAndroid = "io.mockk:mockk-android:" + Versions.Test.mockk
         const val mockkCommon = "io.mockk:mockk-common:" + Versions.Test.mockk

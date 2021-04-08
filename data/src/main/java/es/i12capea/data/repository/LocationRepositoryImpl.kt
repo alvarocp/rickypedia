@@ -1,11 +1,14 @@
 package es.i12capea.data.repository
 
 import android.util.Log
-import es.i12capea.data.mappers.toDomain
 import es.i12capea.data.api.LocationApi
+import es.i12capea.data.api.call
 import es.i12capea.data.local.dao.LocalLocationDao
 import es.i12capea.data.local.dao.LocalLocationPageDao
-import es.i12capea.rickypedia.data.mappers.*
+import es.i12capea.data.mappers.listLocationEntityToLocal
+import es.i12capea.data.mappers.locationPageToDomain
+import es.i12capea.data.mappers.toDomain
+import es.i12capea.data.mappers.toLocal
 import es.i12capea.domain.entities.LocationEntity
 import es.i12capea.domain.entities.PageEntity
 import es.i12capea.domain.repositories.LocationRepository

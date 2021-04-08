@@ -2,6 +2,7 @@ plugins {
     id(Plugins.androidLibrary)
     id(Plugins.kotlinAndroid)
     id(Plugins.kotlinApt)
+    id(Plugins.kotlinParcelize)
 
 }
 
@@ -11,7 +12,6 @@ android {
 
 
     defaultConfig {
-        applicationId = Config.applicationId
         minSdkVersion(Config.minSdk)
         targetSdkVersion(Config.targetSdk)
         versionCode = Config.versionCode
@@ -48,10 +48,23 @@ android {
 }
 
 dependencies {
+    implementation(project(":domain"))
 
     implementation(Dependencies.Kotlin.jdk)
     implementation(Dependencies.AndroidX.appCompat)
     implementation(Dependencies.AndroidX.core)
+
+    testImplementation(Dependencies.Test.mockk)
+    testImplementation(Dependencies.Test.mockkAndroid)
+    testImplementation(Dependencies.Test.mockkCommon)
+
+    androidTestImplementation(Dependencies.Test.mockk)
+    androidTestImplementation(Dependencies.Test.mockkAndroid)
+    androidTestImplementation(Dependencies.Test.mockkCommon)
+    //Instant task executor
+    testImplementation(Dependencies.Test.arch)
+    androidTestImplementation(Dependencies.Test.arch)
+
 
     implementation(Dependencies.AndroidX.material)
 
@@ -75,4 +88,9 @@ dependencies {
     implementation(Dependencies.Kotlin.coroutinesCore)
     testImplementation(Dependencies.Test.coroutinesTest)
     androidTestImplementation(Dependencies.Test.coroutinesTest)
+
+    //HILT
+    implementation(Dependencies.Libs.hilt)
+    kapt(Dependencies.Libs.hiltCompiler)
+
 }

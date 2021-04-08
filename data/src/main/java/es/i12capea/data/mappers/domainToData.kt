@@ -1,7 +1,6 @@
 package es.i12capea.data.mappers
 
 import es.i12capea.data.local.model.*
-import es.i12capea.rickypedia.data.local.model.*
 import es.i12capea.domain.entities.CharacterEntity
 import es.i12capea.domain.entities.EpisodeEntity
 import es.i12capea.domain.entities.LocationEntity

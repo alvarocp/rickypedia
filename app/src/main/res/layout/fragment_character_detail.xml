@@ -6,7 +6,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".presentation.characters.character_detail.CharacterDetailFragment"
+    tools:context=".features.characters.character_detail.CharacterDetailFragment"
     android:id="@+id/coordinator_character_detail"
     android:fitsSystemWindows="true">
 

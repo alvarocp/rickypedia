@@ -60,6 +60,9 @@ dependencies {
         fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar")))
     )
 
+    implementation(project(":domain"))
+    implementation(project(":data"))
+
     implementation(Dependencies.Kotlin.jdk)
     implementation(Dependencies.AndroidX.appCompat)
     implementation(Dependencies.AndroidX.core)
@@ -80,11 +83,9 @@ dependencies {
     androidTestImplementation(Dependencies.Test.mockkAndroid)
     androidTestImplementation(Dependencies.Test.mockkCommon)
 
-
     //Instant task executor
     testImplementation(Dependencies.Test.arch)
     androidTestImplementation(Dependencies.Test.arch)
-
 
     implementation(Dependencies.Libs.retrofit2)
     implementation(Dependencies.Libs.retrofitGson)
@@ -98,7 +99,6 @@ dependencies {
     implementation(Dependencies.Kotlin.coroutinesCore)
     testImplementation(Dependencies.Test.coroutinesTest)
     androidTestImplementation(Dependencies.Test.coroutinesTest)
-
 
     // LiveData Coroutines
     implementation(Dependencies.AndroidX.lifeCycleLiveData)
