@@ -22,7 +22,7 @@ class LocationListViewModel @ViewModelInject constructor (
     dispatcher: CoroutineDispatcher
 ) : BaseViewModel<LocationListStateEvent, LocationListViewState>(dispatcher) {
 
-    override fun getJobNameForEvent(stateEvent: LocationListStateEvent): String? {
+    override fun getJobNameForEvent(stateEvent: LocationListStateEvent): String {
         return when(stateEvent){
             is LocationListStateEvent.GetNextLocationPage -> {
                 LocationListStateEvent.GetNextLocationPage::class.java.name + getNextPage()
@@ -30,7 +30,7 @@ class LocationListViewModel @ViewModelInject constructor (
         }
     }
 
-    override fun getJobForEvent(stateEvent: LocationListStateEvent): Job? {
+    override fun getJobForEvent(stateEvent: LocationListStateEvent): Job {
         return launch {
             when(stateEvent){
                 is LocationListStateEvent.GetNextLocationPage -> {

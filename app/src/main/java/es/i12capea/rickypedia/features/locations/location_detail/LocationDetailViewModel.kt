@@ -23,7 +23,7 @@ class LocationDetailViewModel @ViewModelInject constructor (
 ) : BaseViewModel<LocationDetailStateEvent, LocationDetailViewState>(dispatcher) {
 
 
-    override fun getJobNameForEvent(stateEvent: LocationDetailStateEvent): String? {
+    override fun getJobNameForEvent(stateEvent: LocationDetailStateEvent): String {
         return when(stateEvent){
             is LocationDetailStateEvent.GetCharactersInLocation -> {
                 LocationDetailStateEvent.GetCharactersInLocation::class.java.name + stateEvent.location.id
@@ -31,7 +31,7 @@ class LocationDetailViewModel @ViewModelInject constructor (
         }
     }
 
-    override fun getJobForEvent(stateEvent: LocationDetailStateEvent): Job? {
+    override fun getJobForEvent(stateEvent: LocationDetailStateEvent): Job {
         return launch {
             when(stateEvent){
                 is LocationDetailStateEvent.GetCharactersInLocation -> {
@@ -42,7 +42,7 @@ class LocationDetailViewModel @ViewModelInject constructor (
                                 handleCollectCharacters(it.characterListToPresentation())
                             }
                     } catch (t: Throwable){
-                        handleError(t)
+                        handleThrowable(t)
                     }
                 }
             }

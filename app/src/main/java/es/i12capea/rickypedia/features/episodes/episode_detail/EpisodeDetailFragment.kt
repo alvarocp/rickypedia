@@ -7,18 +7,17 @@ import android.view.ViewGroup
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
-import es.i12capea.rickypedia.databinding.FragmentEpisodeDetailBinding
-import es.i12capea.rickypedia.features.characters.character_list.CharacterListAdapterDeepLink
+import es.i12capea.domain.common.Constants
 import es.i12capea.rickypedia.common.displayErrorDialog
+import es.i12capea.rickypedia.databinding.FragmentEpisodeDetailBinding
 import es.i12capea.rickypedia.entities.Episode
+import es.i12capea.rickypedia.features.characters.character_list.CharacterListAdapterDeepLink
 import es.i12capea.rickypedia.features.episodes.episode_detail.state.EpisodeDetailStateEvent
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
@@ -26,8 +25,6 @@ class EpisodeDetailFragment
     : Fragment()
 {
     private var _binding: FragmentEpisodeDetailBinding? = null
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
 
     private val viewModel : EpisodeDetailViewModel by viewModels()
@@ -50,7 +47,6 @@ class EpisodeDetailFragment
         _binding = null
     }
 
-    @ExperimentalCoroutinesApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -68,7 +64,7 @@ class EpisodeDetailFragment
                 onEpisodeChange(it)
             } ?: kotlin.run {
                 if(args.episodeId > 0){
-                    viewModel.setStateEvent(EpisodeDetailStateEvent.GetEpisode(args.episodeId))
+                    viewModel.setStateEvent(EpisodeDetailStateEvent.GetEpisodeAndCharactersInEpisode(args.episodeId))
                 }
             }
         }
@@ -82,26 +78,7 @@ class EpisodeDetailFragment
         }
     }
 
-    @ExperimentalCoroutinesApi
     private fun subscribeObservers() {
-        viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
-            dataState.getContentIfNotHandled()?.let {viewState ->
-                viewState.characters?.let {
-                    binding.rvCharactersEpisode.visibility = View.VISIBLE
-                    viewModel.setCharacterList(it)
-                }
-                viewState.episode?.let {
-                    onEpisodeChange(it)
-                }
-            }
-        })
-
-        viewModel.error.observe(viewLifecycleOwner, Observer { event ->
-            event.getContentIfNotHandled()?.let {
-                displayErrorDialog(it.desc)
-            }
-        })
-
         lifecycleScope.launchWhenStarted {
             viewModel.isLoading.collect { isLoading ->
                 if(isLoading){
@@ -113,23 +90,34 @@ class EpisodeDetailFragment
 
             viewModel.viewState.collect { viewState ->
                 viewState.characters?.let {
+                    binding.rvCharactersEpisode.visibility = View.VISIBLE
                     characterListAdapterDeepLink.submitList(it)
                     (view?.parent as? ViewGroup)?.doOnPreDraw {
                         startPostponedEnterTransition()
                     }
+                } ?: kotlin.run {
+                    binding.rvCharactersEpisode.visibility = View.GONE
+                }
+
+                viewState.episode?.let {
+                    setEpisodeView(it)
+                }
+            }
+
+            viewModel.error.collect { error ->
+                if(error.code != Constants.NO_ERROR){
+                    displayErrorDialog(error.desc)
                 }
             }
         }
     }
 
-    @ExperimentalCoroutinesApi
     fun onEpisodeChange(it: Episode){
-        setEpisodeView(it)
         viewModel.setCurrentEpisode(it)
         viewModel.setStateEvent(EpisodeDetailStateEvent.GetCharactersInEpisode(it))
     }
 
-    fun setEpisodeView(it: Episode){
+    private fun setEpisodeView(it: Episode){
         binding.tvTitle.text = it.name
         binding.tvEpisode.text = it.episode
         binding.tvAirDate.text = it.air_date

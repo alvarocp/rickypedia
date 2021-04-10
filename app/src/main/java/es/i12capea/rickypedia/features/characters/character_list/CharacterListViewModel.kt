@@ -2,14 +2,14 @@ package es.i12capea.rickypedia.features.characters.character_list
 
 import android.os.Parcelable
 import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.viewModelScope
 import es.i12capea.domain.usecases.GetCharactersInPageUseCase
-import es.i12capea.rickypedia.common.Event
-import es.i12capea.rickypedia.features.characters.character_list.state.CharacterListStateEvent
-import es.i12capea.rickypedia.features.characters.character_list.state.CharacterListViewState
 import es.i12capea.rickypedia.common.BaseViewModel
 import es.i12capea.rickypedia.entities.Character
 import es.i12capea.rickypedia.entities.Page
 import es.i12capea.rickypedia.entities.mappers.characterPageEntityToPresentation
+import es.i12capea.rickypedia.features.characters.character_list.state.CharacterListStateEvent
+import es.i12capea.rickypedia.features.characters.character_list.state.CharacterListViewState
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -22,10 +22,24 @@ class CharacterListViewModel @ViewModelInject constructor(
     dispatcher: CoroutineDispatcher
 ) : BaseViewModel<CharacterListStateEvent, CharacterListViewState>(dispatcher){
 
-    override fun getJobNameForEvent(stateEvent: CharacterListStateEvent) : String?{
+    override fun getJobNameForEvent(stateEvent: CharacterListStateEvent) : String {
         return when(stateEvent){
             is CharacterListStateEvent.GetNextCharacterPage -> {
                 CharacterListStateEvent.GetNextCharacterPage::class.java.name + getNextPage()
+            }
+        }
+    }
+
+    override fun getJobForEvent(stateEvent: CharacterListStateEvent): Job {
+        return viewModelScope.launch {
+            when (stateEvent) {
+                is CharacterListStateEvent.GetNextCharacterPage -> {
+                    getLastPage()?.let { currentPage ->
+                        currentPage.next?.let { nextPage ->
+                            getNextCharacterPageFlow(nextPage)
+                        }
+                    }
+                }
             }
         }
     }
@@ -42,21 +56,6 @@ class CharacterListViewModel @ViewModelInject constructor(
             handleThrowable(t)
         }
     }
-
-    override fun getJobForEvent(stateEvent: CharacterListStateEvent): Job {
-        return launch {
-            when (stateEvent) {
-                is CharacterListStateEvent.GetNextCharacterPage -> {
-                    getLastPage()?.let { currentPage ->
-                        currentPage.next?.let { nextPage ->
-                            getNextCharacterPageFlow(nextPage)
-                        }
-                    }
-                }
-            }
-        }
-    }
-
 
     fun getActualPage() : Page<Character>?{
         return getCurrentViewStateOrNew().lastPage
@@ -85,19 +84,8 @@ class CharacterListViewModel @ViewModelInject constructor(
             ?: arrayListOf()
         list.addAll(page.list)
 
-        setCharacterList(list)
+       setCharacterList(list)
     }
-
-    private fun postLastPage(lastPage: Page<Character>) {
-        dataState.postValue(
-            Event(
-            CharacterListViewState(
-                lastPage = lastPage
-            )
-        )
-        )
-    }
-
 
     override fun initNewViewState(): CharacterListViewState {
         val characterListViewState = CharacterListViewState()
@@ -107,7 +95,7 @@ class CharacterListViewModel @ViewModelInject constructor(
                     actual = 0,
                     list = emptyList(),
                     count = 0
-                        )
+        )
         characterListViewState.characters = null
         return characterListViewState
     }
@@ -122,15 +110,11 @@ class CharacterListViewModel @ViewModelInject constructor(
         return getCurrentViewStateOrNew().layoutManagerState
     }
 
-    fun getLastPage() : Page<Character>?{
+    private fun getLastPage() : Page<Character>?{
         return getCurrentViewStateOrNew().lastPage
     }
 
-    fun getNextPage() : Int? {
+    private fun getNextPage() : Int? {
         return getCurrentViewStateOrNew().lastPage?.next
-    }
-
-    fun getPrevPage() : Int? {
-        return getCurrentViewStateOrNew().lastPage?.prev
     }
 }

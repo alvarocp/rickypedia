@@ -1,24 +1,24 @@
 package es.i12capea.rickypedia.features.locations.location_detail
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
+import es.i12capea.domain.common.Constants
+import es.i12capea.rickypedia.common.displayErrorDialog
 import es.i12capea.rickypedia.databinding.FragmentLocationDetailBinding
-import es.i12capea.rickypedia.features.characters.character_list.CharacterListAdapterDeepLink
-import es.i12capea.rickypedia.common.displayToast
 import es.i12capea.rickypedia.entities.Location
+import es.i12capea.rickypedia.features.characters.character_list.CharacterListAdapterDeepLink
 import es.i12capea.rickypedia.features.locations.location_detail.state.LocationDetailStateEvent.GetCharactersInLocation
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
@@ -49,7 +49,6 @@ class LocationDetailFragment
         _binding = null
     }
 
-    @ExperimentalCoroutinesApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -78,12 +77,6 @@ class LocationDetailFragment
     }
 
     private fun subscribeObservers() {
-        viewModel.error.observe(viewLifecycleOwner, Observer { event ->
-            event.getContentIfNotHandled()?.let {
-                displayToast(it.desc)
-            }
-        })
-
         lifecycleScope.launchWhenStarted {
             viewModel.isLoading.collect { isLoading ->
                 if (isLoading){
@@ -104,6 +97,13 @@ class LocationDetailFragment
                     }else{
                         binding.clEmptyLocation.visibility = View.INVISIBLE
                     }
+                }
+            }
+
+            viewModel.error.collect { error ->
+                Log.d("COLLECT", "viewModel.error.collect")
+                if(error.code != Constants.NO_ERROR){
+                    displayErrorDialog(error.desc)
                 }
             }
         }

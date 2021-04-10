@@ -21,7 +21,7 @@ class EpisodeListViewModel @ViewModelInject constructor(
     dispatcher: CoroutineDispatcher
 ) : BaseViewModel<EpisodeListStateEvent, EpisodeListViewState>(dispatcher){
 
-    override fun getJobNameForEvent(stateEvent: EpisodeListStateEvent): String? {
+    override fun getJobNameForEvent(stateEvent: EpisodeListStateEvent): String {
         return when(stateEvent){
             is EpisodeListStateEvent.GetNextPage -> {
                 EpisodeListStateEvent.GetNextPage::class.java.name + getNextPage()
@@ -29,7 +29,7 @@ class EpisodeListViewModel @ViewModelInject constructor(
         }
     }
 
-    override fun getJobForEvent(stateEvent: EpisodeListStateEvent): Job? {
+    override fun getJobForEvent(stateEvent: EpisodeListStateEvent): Job {
         return launch {
             when(stateEvent){
                 is EpisodeListStateEvent.GetNextPage -> {
@@ -57,7 +57,6 @@ class EpisodeListViewModel @ViewModelInject constructor(
     }
 
     private suspend fun handleCollectEpisodes(currentList: List<Episode>?, page: Page<Episode>) {
-
         setActualEpisodePage(page)
 
         val list = currentList?.toMutableList()
@@ -91,13 +90,13 @@ class EpisodeListViewModel @ViewModelInject constructor(
         return getCurrentViewStateOrNew().episodes
     }
 
-    suspend fun setEpisodeList(episodes: List<Episode>){
+    private suspend fun setEpisodeList(episodes: List<Episode>){
         val update = getCurrentViewStateOrNew()
         update.episodes = episodes
         setViewState(update)
     }
 
-    fun getNextPage() : Int? {
+    private fun getNextPage() : Int? {
         return getCurrentViewStateOrNew().lastPage?.next
     }
     fun getLastPage() : Page<Episode>?{

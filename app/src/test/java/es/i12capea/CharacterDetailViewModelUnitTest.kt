@@ -23,7 +23,6 @@ class CharacterDetailViewModelUnitTest {
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
 
-    @ExperimentalCoroutinesApi
     @Before
     fun setup(){
         Dispatchers.setMain(Dispatchers.Unconfined)

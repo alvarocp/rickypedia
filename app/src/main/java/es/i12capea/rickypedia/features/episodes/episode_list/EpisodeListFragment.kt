@@ -7,13 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import dagger.hilt.android.AndroidEntryPoint
-import es.i12capea.rickypedia.databinding.FragmentEpisodeListBinding
+import es.i12capea.domain.common.Constants
 import es.i12capea.rickypedia.common.displayErrorDialog
+import es.i12capea.rickypedia.databinding.FragmentEpisodeListBinding
 import es.i12capea.rickypedia.entities.Episode
 import es.i12capea.rickypedia.features.episodes.episode_list.state.EpisodeListStateEvent
 import kotlinx.coroutines.flow.collect
@@ -52,19 +52,12 @@ class EpisodeListFragment
 
         viewModel.getCurrentEpisodes()?.let {
             handleEpisodes(it)
-        } ?: viewModel.setStateEvent(EpisodeListStateEvent.GetNextPage())
+        } ?: viewModel.setStateEvent(EpisodeListStateEvent.GetNextPage)
 
     }
 
 
     fun subscribeObservers() {
-
-        viewModel.error.observe(viewLifecycleOwner, Observer { event ->
-            event.getContentIfNotHandled()?.let {
-                this.displayErrorDialog(it.desc)
-            }
-        })
-
         lifecycleScope.launchWhenStarted {
             viewModel.isLoading.collect { isLoading ->
                 if(isLoading){
@@ -76,6 +69,11 @@ class EpisodeListFragment
             viewModel.viewState.collect { viewState ->
                 viewState.episodes?.let {
                     episodeListAdapter.submitList(it)
+                }
+            }
+            viewModel.error.collect { error ->
+                if(error.code != Constants.NO_ERROR){
+                    displayErrorDialog(error.desc)
                 }
             }
         }
@@ -96,7 +94,7 @@ class EpisodeListFragment
                     val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                     val lastPosition = layoutManager.findLastVisibleItemPosition()
                     if (lastPosition == episodeListAdapter.itemCount.minus(1)) {
-                        viewModel.setStateEvent(EpisodeListStateEvent.GetNextPage())
+                        viewModel.setStateEvent(EpisodeListStateEvent.GetNextPage)
                         Log.d("A", "LastPositionReached")
                     }
                 }

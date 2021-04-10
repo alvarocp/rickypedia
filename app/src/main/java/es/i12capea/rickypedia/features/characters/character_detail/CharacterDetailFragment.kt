@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,10 +21,9 @@ import com.bumptech.glide.request.target.Target
 import dagger.hilt.android.AndroidEntryPoint
 import es.i12capea.rickypedia.R
 import es.i12capea.rickypedia.databinding.FragmentCharacterDetailBinding
-import es.i12capea.rickypedia.features.characters.character_detail.state.CharacterDetailStateEvent
 import es.i12capea.rickypedia.entities.Character
+import es.i12capea.rickypedia.features.characters.character_detail.state.CharacterDetailStateEvent
 import es.i12capea.rickypedia.features.episodes.episode_list.EpisodeListAdapterDeepLink
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
@@ -44,7 +42,6 @@ class CharacterDetailFragment
     lateinit var episodeListAdapter: EpisodeListAdapterDeepLink
 
 
-    @ExperimentalCoroutinesApi
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -54,7 +51,7 @@ class CharacterDetailFragment
             .inflateTransition(android.R.transition.move)
             .addListener(object : Transition.TransitionListener{
                 override fun onTransitionEnd(transition: Transition) {
-                    viewModel.setImageLoad(true)
+                    viewModel.setStateEvent(CharacterDetailStateEvent.GetCharacterAndEpisodes(args.characterId))
                 }
                 override fun onTransitionResume(transition: Transition) {}
                 override fun onTransitionPause(transition: Transition) {}
@@ -72,7 +69,6 @@ class CharacterDetailFragment
         _binding = null
     }
 
-    @ExperimentalCoroutinesApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -132,7 +128,6 @@ class CharacterDetailFragment
         }
     }
 
-    @ExperimentalCoroutinesApi
     private fun subscribeObservers() {
         lifecycleScope.launchWhenStarted {
             viewModel.isLoading.collect { isLoading ->
@@ -151,30 +146,6 @@ class CharacterDetailFragment
                 }
             }
         }
-        viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
-            dataState.getContentIfNotHandled()?.let { viewState ->
-                viewState.episodes?.let {
-                    viewModel.setEpisodeList(it)
-                }
-                viewState.character?.let {
-                    viewModel.setCharacterDetails(it)
-                    viewModel.setStateEvent(CharacterDetailStateEvent.GetEpisodesFromCharacter(it))
-                }
-                viewState.isImageLoaded?.let { isImageLoaded ->
-                    isImageLoaded.let {bool ->
-                        if(bool){
-                            args.character?.let {
-                                viewModel.setCharacterDetails(it)
-                                viewModel.setStateEvent(CharacterDetailStateEvent.GetEpisodesFromCharacter(it))
-                            } ?: kotlin.run {
-                                viewModel.setStateEvent(CharacterDetailStateEvent.GetCharacter(args.characterId))
-                            }
-                        }
-                    }
-                    }
-                }
-        })
-
     }
 
     private fun setCharacterView(character: Character) {

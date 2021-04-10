@@ -26,8 +26,8 @@ object Versions {
     }
 
     object Kotlin{
-        const val kotlin = "1.4.21"
-        const val coroutines = "1.4.1"
+        const val kotlin = "1.4.32"
+        const val coroutines = "1.4.3"
     }
 
     object Test{

@@ -97,6 +97,7 @@ dependencies {
 
     // -- Coroutines
     implementation(Dependencies.Kotlin.coroutinesCore)
+    implementation(Dependencies.Kotlin.coroutinesAndroid)
     testImplementation(Dependencies.Test.coroutinesTest)
     androidTestImplementation(Dependencies.Test.coroutinesTest)
 
@@ -142,7 +143,7 @@ dependencies {
     androidTestImplementation(Dependencies.AndroidX.roomTesting)
 
 
-    implementation("com.google.firebase:firebase-analytics:18.0.0")
+    implementation("com.google.firebase:firebase-analytics:18.0.2")
 
-    implementation("com.google.firebase:firebase-auth:20.0.1")
+    implementation("com.google.firebase:firebase-auth:20.0.3")
 }

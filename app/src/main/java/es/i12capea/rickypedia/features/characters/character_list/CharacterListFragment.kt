@@ -7,16 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
+import es.i12capea.domain.common.Constants
+import es.i12capea.rickypedia.common.displayErrorDialog
 import es.i12capea.rickypedia.databinding.FragmentCharacterListBinding
 import es.i12capea.rickypedia.features.characters.character_list.state.CharacterListStateEvent
-import es.i12capea.rickypedia.common.displayErrorDialog
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import es.i12capea.rickypedia.entities.Character
 import kotlinx.coroutines.flow.collect
 
 @AndroidEntryPoint
@@ -45,7 +43,6 @@ class CharacterListFragment constructor(
         _binding = null
     }
 
-    @ExperimentalCoroutinesApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
         subscribeObservers()
@@ -67,21 +64,19 @@ class CharacterListFragment constructor(
                     binding.progressBar.visibility = View.INVISIBLE
                 }
             }
+
             viewModel.viewState.collect { viewState ->
                 viewState.characters?.let {
                     characterListAdapter.submitList(it)
                 }
             }
-        }
 
-
-        viewModel.error.observe(viewLifecycleOwner, Observer { event ->
-            event.getContentIfNotHandled()?.let {
-                displayErrorDialog(it.desc)
+            viewModel.error.collect { error ->
+                if(error.code != Constants.NO_ERROR){
+                    displayErrorDialog(error.desc)
+                }
             }
-        })
-
-
+        }
     }
 
     private fun initRecyclerView(){
@@ -100,7 +95,7 @@ class CharacterListFragment constructor(
                     val lastPosition = IntArray(layoutManager.spanCount)
                     layoutManager.findLastVisibleItemPositions(lastPosition)
                     if (lastPosition[0] >= characterListAdapter.itemCount.minus(4)) {
-                        viewModel.setStateEvent(CharacterListStateEvent.GetNextCharacterPage())
+                        viewModel.setStateEvent(CharacterListStateEvent.GetNextCharacterPage)
                         Log.d("A", "LastPositionReached")
                     }
                 }
@@ -114,19 +109,17 @@ class CharacterListFragment constructor(
         }
     }
 
-    @ExperimentalCoroutinesApi
-    fun handleCharacters(){
+    private fun handleCharacters(){
         viewModel.getCharacterList()?.let { characters ->
-            viewModel.getActualPage()?.let { actualPage ->
+            viewModel.getActualPage()?.let {
                 viewModel.getRecyclerState()?.let { parcel ->
                     characterListAdapter.submitList(characters)
                     binding.rvCharacters.layoutManager?.onRestoreInstanceState(parcel)
                     viewModel.setRecyclerState(null)
                 }
             }
-
         } ?: kotlin.run {
-            viewModel.setStateEvent(CharacterListStateEvent.GetNextCharacterPage())
+            viewModel.setStateEvent(CharacterListStateEvent.GetNextCharacterPage)
         }
     }
 }

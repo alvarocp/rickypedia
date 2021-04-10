@@ -3,7 +3,6 @@ package es.i12capea.rickypedia.features.episodes.episode_detail
 import androidx.hilt.lifecycle.ViewModelInject
 import es.i12capea.domain.usecases.GetCharactersInEpisodeUseCase
 import es.i12capea.domain.usecases.GetEpisodeUseCase
-import es.i12capea.rickypedia.common.Event
 import es.i12capea.rickypedia.common.BaseViewModel
 import es.i12capea.rickypedia.entities.Character
 import es.i12capea.rickypedia.entities.Episode
@@ -26,32 +25,24 @@ class EpisodeDetailViewModel @ViewModelInject constructor(
 ) : BaseViewModel<EpisodeDetailStateEvent, EpisodeDetailViewState>(dispatcher){
 
 
-    override fun getJobNameForEvent(stateEvent: EpisodeDetailStateEvent): String? {
+    override fun getJobNameForEvent(stateEvent: EpisodeDetailStateEvent): String {
         return when(stateEvent){
             is EpisodeDetailStateEvent.GetCharactersInEpisode -> {
                 EpisodeDetailStateEvent.GetCharactersInEpisode::class.java.name + stateEvent.episode.id
             }
-            is EpisodeDetailStateEvent.GetEpisode -> {
-                EpisodeDetailStateEvent.GetEpisode::class.java.name + stateEvent.episodeId
+            is EpisodeDetailStateEvent.GetEpisodeAndCharactersInEpisode -> {
+                EpisodeDetailStateEvent.GetEpisodeAndCharactersInEpisode::class.java.name + stateEvent.episodeId
             }
         }
     }
 
-    override fun getJobForEvent(stateEvent: EpisodeDetailStateEvent): Job? {
+    override fun getJobForEvent(stateEvent: EpisodeDetailStateEvent): Job {
         return launch {
             when(stateEvent){
                 is EpisodeDetailStateEvent.GetCharactersInEpisode -> {
-                    try {
-                        getCharactersInEpisodeUseCase.invoke(stateEvent.episode.toDomain())
-                            .flowOn(Dispatchers.IO)
-                            .collect {
-                                handleCollectCharacters(it.characterListToPresentation())
-                            }
-                    }catch (t: Throwable){
-                        handleThrowable(t)
-                    }
+                    invokeGetCharactersInEpisodeUseCase(stateEvent.episode)
                 }
-                is EpisodeDetailStateEvent.GetEpisode -> {
+                is EpisodeDetailStateEvent.GetEpisodeAndCharactersInEpisode -> {
                     try {
                         getEpisodeUseCase.invoke(stateEvent.episodeId)
                             .flowOn(Dispatchers.IO)
@@ -66,26 +57,29 @@ class EpisodeDetailViewModel @ViewModelInject constructor(
         }
     }
 
-
-
-    private fun handleCollectEpisode(episode: Episode) {
-        dataState.postValue(
-            Event(
-                EpisodeDetailViewState(
-                    episode = episode
-                )
-            )
-        )
+    private suspend fun invokeGetCharactersInEpisodeUseCase(episode: Episode){
+        try {
+            getCharactersInEpisodeUseCase.invoke(episode.toDomain())
+                    .flowOn(Dispatchers.IO)
+                    .collect {
+                        handleCollectCharacters(it.characterListToPresentation())
+                    }
+        }catch (t: Throwable){
+            handleThrowable(t)
+        }
     }
 
-    private fun handleCollectCharacters(characters: List<Character>) {
-        dataState.postValue(
-            Event(
-                EpisodeDetailViewState(
-                    characters = characters
-                )
-            )
-        )
+    private suspend fun handleCollectEpisode(episode: Episode) {
+        val update = getCurrentViewStateOrNew()
+        update.episode = episode
+        setViewState(update)
+        invokeGetCharactersInEpisodeUseCase(episode)
+    }
+
+    private suspend fun handleCollectCharacters(characters: List<Character>) {
+        val update = getCurrentViewStateOrNew()
+        update.characters = characters
+        setViewState(update)
     }
 
     fun setCharacterList(cl: List<Character>){
@@ -106,7 +100,6 @@ class EpisodeDetailViewModel @ViewModelInject constructor(
         val update = getCurrentViewStateOrNew()
         update.episode = episode
         launch { setViewState(update) }
-
     }
 
     fun getCurrentEpisode() : Episode?{

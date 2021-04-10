@@ -5,6 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import es.i12capea.domain.common.Constants
 import es.i12capea.domain.exceptions.PredicateNotSatisfiedException
 import es.i12capea.domain.exceptions.RequestException
 import es.i12capea.domain.exceptions.ResponseException
@@ -21,10 +22,8 @@ abstract class BaseViewModel<StateEvent, ViewState> (
     private val _isLoading : MutableStateFlow<Boolean> = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
-    private val _error: MutableLiveData<Event<ErrorRym>> = MutableLiveData()
-    val error : LiveData<Event<ErrorRym>> = _error
-
-    private val successMessage: MutableLiveData<Event<String>> = MutableLiveData()
+    private val _error: MutableStateFlow<ErrorRym> = MutableStateFlow(ErrorRym(Constants.NO_ERROR, ""))
+    val error : StateFlow<ErrorRym> = _error
 
     private var _viewState: MutableStateFlow<ViewState>
     val viewState: StateFlow<ViewState> get() = _viewState
@@ -33,11 +32,8 @@ abstract class BaseViewModel<StateEvent, ViewState> (
         _viewState = MutableStateFlow(this.initNewViewState())
     }
 
-
     private val _networkAvailable : MutableLiveData<Boolean> = MutableLiveData(false)
     val networkAvailable : LiveData<Boolean> = _networkAvailable
-
-    val dataState: MutableLiveData<Event<ViewState>> = MutableLiveData()
 
     fun getCurrentViewStateOrNew(): ViewState{
         return viewState.value ?: initNewViewState()
@@ -52,15 +48,15 @@ abstract class BaseViewModel<StateEvent, ViewState> (
     }
 
     open fun setStateEvent(stateEvent: StateEvent){
-        launch {
-            getJobNameForEvent(stateEvent)?.let { jobName ->
+        viewModelScope.launch {
+            getJobNameForEvent(stateEvent).let { jobName ->
                 Log.d("JOB", "Jobname -> $jobName")
                 getJob(jobName)?.let {
                     Log.d("JOB", "Job $jobName already running")
                 } ?: kotlin.run {
                     _isLoading.emit(true)
                     Log.d("JOB", "Job $jobName not running, lets start")
-                    getJobForEvent(stateEvent)?.let { job ->
+                    getJobForEvent(stateEvent).let { job ->
                         addJob(jobName, job)
                         job.invokeOnCompletion {
                             removeJobFromList(jobName)
@@ -71,8 +67,8 @@ abstract class BaseViewModel<StateEvent, ViewState> (
         }
     }
 
-    abstract fun getJobNameForEvent(stateEvent: StateEvent) : String?
-    abstract fun getJobForEvent(stateEvent: StateEvent) : Job?
+    abstract fun getJobNameForEvent(stateEvent: StateEvent) : String
+    abstract fun getJobForEvent(stateEvent: StateEvent) : Job
 
     abstract fun initNewViewState(): ViewState
 
@@ -87,7 +83,7 @@ abstract class BaseViewModel<StateEvent, ViewState> (
     }
 
     private fun logJobsName(){
-        for((methodName, job) in jobs) {
+        for((methodName, _) in jobs) {
             Log.d("JOB", "Job: $methodName")
         }
     }
@@ -128,8 +124,8 @@ abstract class BaseViewModel<StateEvent, ViewState> (
         return null
     }
 
-    fun cancelActiveJobs(){
-        for((methodName, job) in jobs){
+    private fun cancelActiveJobs(){
+        for((_, job) in jobs){
             if(job.isActive){
                 job.cancel()
             }
@@ -141,24 +137,24 @@ abstract class BaseViewModel<StateEvent, ViewState> (
         cancelActiveJobs()
     }
 
-    fun handleError(cause: Throwable){
+    private suspend fun handleError(cause: Throwable){
         when(cause){
             is RequestException -> {
-                _error.postValue(Event(ErrorRym(1, "No se ha podido realizar la conexión.")))
+                _error.emit(ErrorRym(Constants.NO_NETWORK, "No se ha podido realizar la conexión."))
             }
             is ResponseException -> {
-                _error.postValue(Event(ErrorRym(2, "Error en la respuesta de servidor.")))
+                _error.emit(ErrorRym(Constants.BAD_NETWORK_RESPONSE, "Error en la respuesta de servidor."))
             }
             is PredicateNotSatisfiedException -> {
-                _error.postValue(Event(ErrorRym(3, "No se ha cumplido los predicados.")))
+                _error.emit(ErrorRym(Constants.PREDICATE_NOT_SATISFIED, "No se ha cumplido los predicados."))
             }
             else -> {
-                _error.postValue(Event(ErrorRym(9999, "Error desconocido")))
+                _error.emit(ErrorRym(Constants.UNKNOWN_ERROR, "Error desconocido"))
             }
         }
     }
 
-    fun handleThrowable(cause: Throwable?){
+    suspend fun handleThrowable(cause: Throwable?){
         cause?.let {
             handleError(it)
         }
