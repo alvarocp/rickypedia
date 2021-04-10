@@ -35,7 +35,9 @@ class CharacterListFragment constructor(
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentCharacterListBinding.inflate(inflater, container, false)
-        return binding.root    }
+        subscribeObservers()
+        return binding.root
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -44,9 +46,6 @@ class CharacterListFragment constructor(
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
-        subscribeObservers()
-
         initRecyclerView()
 
         handleCharacters()
@@ -57,23 +56,21 @@ class CharacterListFragment constructor(
 
     private fun subscribeObservers() {
         lifecycleScope.launchWhenStarted {
-            viewModel.isLoading.collect { isLoading ->
-                if(isLoading){
-                    binding.progressBar.visibility = View.VISIBLE
-                }else{
-                    binding.progressBar.visibility = View.INVISIBLE
-                }
-            }
-
             viewModel.viewState.collect { viewState ->
                 viewState.characters?.let {
                     characterListAdapter.submitList(it)
                 }
-            }
-
-            viewModel.error.collect { error ->
-                if(error.code != Constants.NO_ERROR){
-                    displayErrorDialog(error.desc)
+                viewState.errorRym.getContentIfNotHandled()?.let { error ->
+                    if(error.code != Constants.NO_ERROR){
+                        displayErrorDialog(error.desc)
+                    }
+                }
+                viewState.isLoading.let { isLoading ->
+                    if(isLoading){
+                        binding.progressBar.visibility = View.VISIBLE
+                    }else{
+                        binding.progressBar.visibility = View.INVISIBLE
+                    }
                 }
             }
         }

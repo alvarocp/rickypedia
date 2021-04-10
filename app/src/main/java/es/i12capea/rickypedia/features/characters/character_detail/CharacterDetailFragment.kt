@@ -19,7 +19,9 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import dagger.hilt.android.AndroidEntryPoint
+import es.i12capea.domain.common.Constants
 import es.i12capea.rickypedia.R
+import es.i12capea.rickypedia.common.displayErrorDialog
 import es.i12capea.rickypedia.databinding.FragmentCharacterDetailBinding
 import es.i12capea.rickypedia.entities.Character
 import es.i12capea.rickypedia.features.characters.character_detail.state.CharacterDetailStateEvent
@@ -130,19 +132,24 @@ class CharacterDetailFragment
 
     private fun subscribeObservers() {
         lifecycleScope.launchWhenStarted {
-            viewModel.isLoading.collect { isLoading ->
-                if(isLoading){
-                    binding.scrollLayout.progressBar.visibility = View.VISIBLE
-                }else{
-                    binding.scrollLayout.progressBar.visibility = View.INVISIBLE
-                }
-            }
             viewModel.viewState.collect { viewState ->
                 viewState.character?.let {
                     setCharacterView(it)
                 }
                 viewState.episodes?.let {
                     episodeListAdapter.submitList(it)
+                }
+                viewState.errorRym.getContentIfNotHandled()?.let { error ->
+                    if(error.code != Constants.NO_ERROR){
+                        displayErrorDialog(error.desc)
+                    }
+                }
+                viewState.isLoading.let { isLoading ->
+                    if(isLoading){
+                        binding.scrollLayout.progressBar.visibility = View.VISIBLE
+                    }else{
+                        binding.scrollLayout.progressBar.visibility = View.INVISIBLE
+                    }
                 }
             }
         }

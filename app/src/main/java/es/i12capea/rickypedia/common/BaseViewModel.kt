@@ -15,21 +15,16 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlin.coroutines.CoroutineContext
 
 
-abstract class BaseViewModel<StateEvent, ViewState> (
+abstract class BaseViewModel<StateEvent, ViewState : BaseViewState> (
     val dispatcher: CoroutineDispatcher
 ) : ViewModel(), CoroutineScope
 {
-    private val _isLoading : MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading
-
-    private val _error: MutableStateFlow<ErrorRym> = MutableStateFlow(ErrorRym(Constants.NO_ERROR, ""))
-    val error : StateFlow<ErrorRym> = _error
-
     private var _viewState: MutableStateFlow<ViewState>
-    val viewState: StateFlow<ViewState> get() = _viewState
+    val viewState: StateFlow<ViewState>
 
     init {
         _viewState = MutableStateFlow(this.initNewViewState())
+        viewState = _viewState
     }
 
     private val _networkAvailable : MutableLiveData<Boolean> = MutableLiveData(false)
@@ -39,12 +34,18 @@ abstract class BaseViewModel<StateEvent, ViewState> (
         return viewState.value ?: initNewViewState()
     }
 
-    suspend fun setViewState(viewState: ViewState) {
-        _viewState.emit(viewState)
+    fun setViewState(viewState: ViewState) {
+        _viewState.value = viewState
     }
 
     fun setNetworkAvailable(available: Boolean){
         _networkAvailable.postValue(available)
+    }
+
+    fun setLoading(isLoading: Boolean){
+        val update = getCurrentViewStateOrNew()
+        update.isLoading = isLoading
+        setViewState(update)
     }
 
     open fun setStateEvent(stateEvent: StateEvent){
@@ -54,7 +55,7 @@ abstract class BaseViewModel<StateEvent, ViewState> (
                 getJob(jobName)?.let {
                     Log.d("JOB", "Job $jobName already running")
                 } ?: kotlin.run {
-                    _isLoading.emit(true)
+                    setLoading(true)
                     Log.d("JOB", "Job $jobName not running, lets start")
                     getJobForEvent(stateEvent).let { job ->
                         addJob(jobName, job)
@@ -92,10 +93,7 @@ abstract class BaseViewModel<StateEvent, ViewState> (
         Log.d("JOB", "Remove from list")
         jobs.remove(methodName)
         if (jobs.isEmpty()){
-            viewModelScope.launch {
-                delay(300)
-                _isLoading.emit(false)
-            }
+            setLoading(false)
         }
     }
 
@@ -138,20 +136,22 @@ abstract class BaseViewModel<StateEvent, ViewState> (
     }
 
     private suspend fun handleError(cause: Throwable){
+        val update = getCurrentViewStateOrNew()
         when(cause){
             is RequestException -> {
-                _error.emit(ErrorRym(Constants.NO_NETWORK, "No se ha podido realizar la conexión."))
+                update.errorRym = Event(ErrorRym(Constants.NO_NETWORK, "No se ha podido realizar la conexión."))
             }
             is ResponseException -> {
-                _error.emit(ErrorRym(Constants.BAD_NETWORK_RESPONSE, "Error en la respuesta de servidor."))
+                update.errorRym = Event(ErrorRym(Constants.BAD_NETWORK_RESPONSE, "Error en la respuesta de servidor."))
             }
             is PredicateNotSatisfiedException -> {
-                _error.emit(ErrorRym(Constants.PREDICATE_NOT_SATISFIED, "No se ha cumplido los predicados."))
+                update.errorRym = Event(ErrorRym(Constants.PREDICATE_NOT_SATISFIED, "No se ha cumplido los predicados."))
             }
             else -> {
-                _error.emit(ErrorRym(Constants.UNKNOWN_ERROR, "Error desconocido"))
+                update.errorRym = Event(ErrorRym(Constants.UNKNOWN_ERROR, "Error desconocido"))
             }
         }
+        setViewState(update)
     }
 
     suspend fun handleThrowable(cause: Throwable?){

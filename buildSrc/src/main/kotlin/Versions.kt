@@ -19,7 +19,7 @@ object Versions {
         const val legacySupport = "1.0.0"
         const val room = "2.2.5"
         const val navigation = "2.3.2"
-        const val lifecycle = "2.2.0"
+        const val lifecycle = "2.3.1"
         const val material = "1.3.0-alpha04"
         const val cardview = "1.0.0"
         const val recyclerview = "1.2.0-beta01"

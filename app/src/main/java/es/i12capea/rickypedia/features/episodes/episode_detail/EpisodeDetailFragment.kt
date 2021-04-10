@@ -80,14 +80,6 @@ class EpisodeDetailFragment
 
     private fun subscribeObservers() {
         lifecycleScope.launchWhenStarted {
-            viewModel.isLoading.collect { isLoading ->
-                if(isLoading){
-                    binding.progressBar.visibility = View.VISIBLE
-                }else{
-                    binding.progressBar.visibility = View.INVISIBLE
-                }
-            }
-
             viewModel.viewState.collect { viewState ->
                 viewState.characters?.let {
                     binding.rvCharactersEpisode.visibility = View.VISIBLE
@@ -99,14 +91,22 @@ class EpisodeDetailFragment
                     binding.rvCharactersEpisode.visibility = View.GONE
                 }
 
+                viewState.isLoading.let { isLoading ->
+                    if(isLoading){
+                        binding.progressBar.visibility = View.VISIBLE
+                    }else{
+                        binding.progressBar.visibility = View.INVISIBLE
+                    }
+                }
+
+                viewState.errorRym.getContentIfNotHandled()?.let { error ->
+                    if(error.code != Constants.NO_ERROR){
+                        displayErrorDialog(error.desc)
+                    }
+                }
+
                 viewState.episode?.let {
                     setEpisodeView(it)
-                }
-            }
-
-            viewModel.error.collect { error ->
-                if(error.code != Constants.NO_ERROR){
-                    displayErrorDialog(error.desc)
                 }
             }
         }

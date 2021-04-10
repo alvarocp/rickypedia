@@ -78,14 +78,6 @@ class LocationDetailFragment
 
     private fun subscribeObservers() {
         lifecycleScope.launchWhenStarted {
-            viewModel.isLoading.collect { isLoading ->
-                if (isLoading){
-                    binding.progressBar.visibility = View.VISIBLE
-                }else{
-                    binding.progressBar.visibility = View.INVISIBLE
-                }
-            }
-
             viewModel.viewState.collect { viewState ->
                 viewState.characters?.let {
                     characterListAdapterDeepLink.submitList(it)
@@ -98,12 +90,17 @@ class LocationDetailFragment
                         binding.clEmptyLocation.visibility = View.INVISIBLE
                     }
                 }
-            }
-
-            viewModel.error.collect { error ->
-                Log.d("COLLECT", "viewModel.error.collect")
-                if(error.code != Constants.NO_ERROR){
-                    displayErrorDialog(error.desc)
+                viewState.errorRym.getContentIfNotHandled()?.let { error ->
+                    if(error.code != Constants.NO_ERROR){
+                        displayErrorDialog(error.desc)
+                    }
+                }
+                viewState.isLoading.let { isLoading ->
+                    if(isLoading){
+                        binding.progressBar.visibility = View.VISIBLE
+                    }else{
+                        binding.progressBar.visibility = View.INVISIBLE
+                    }
                 }
             }
         }

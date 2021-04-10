@@ -59,23 +59,21 @@ class LocationListFragment
 
     private fun subscribeObservers() {
         lifecycleScope.launchWhenStarted {
-            viewModel.isLoading.collect { isLoading ->
-                if (isLoading){
-                    binding.progressBar.visibility = View.VISIBLE
-                }else{
-                    binding.progressBar.visibility = View.INVISIBLE
-                }
-            }
-
             viewModel.viewState.collect { viewState ->
                 viewState.locations?.let {
                     locationListAdapter.submitList(it)
                 }
-            }
-
-            viewModel.error.collect { error ->
-                if(error.code != Constants.NO_ERROR){
-                    displayErrorDialog(error.desc)
+                viewState.errorRym.getContentIfNotHandled()?.let { error ->
+                    if(error.code != Constants.NO_ERROR){
+                        displayErrorDialog(error.desc)
+                    }
+                }
+                viewState.isLoading.let { isLoading ->
+                    if(isLoading){
+                        binding.progressBar.visibility = View.VISIBLE
+                    }else{
+                        binding.progressBar.visibility = View.INVISIBLE
+                    }
                 }
             }
         }
