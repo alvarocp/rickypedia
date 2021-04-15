@@ -48,7 +48,7 @@ abstract class BaseViewModel<StateEvent, ViewState> (
     }
 
     open fun setStateEvent(stateEvent: StateEvent){
-        viewModelScope.launch {
+        launch {
             getJobNameForEvent(stateEvent).let { jobName ->
                 Log.d("JOB", "Jobname -> $jobName")
                 getJob(jobName)?.let {
