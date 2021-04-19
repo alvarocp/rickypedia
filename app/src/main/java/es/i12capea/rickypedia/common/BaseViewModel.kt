@@ -34,15 +34,15 @@ abstract class BaseViewModel<StateEvent, ViewState : BaseViewState> (
         return viewState.value ?: initNewViewState()
     }
 
-    fun setViewState(viewState: ViewState) {
-        _viewState.value = viewState
+    suspend fun setViewState(viewState: ViewState) {
+        _viewState.emit(viewState)
     }
 
     fun setNetworkAvailable(available: Boolean){
         _networkAvailable.postValue(available)
     }
 
-    fun setLoading(isLoading: Boolean){
+    suspend fun setLoading(isLoading: Boolean){
         val update = getCurrentViewStateOrNew()
         update.isLoading = isLoading
         setViewState(update)
@@ -93,7 +93,9 @@ abstract class BaseViewModel<StateEvent, ViewState : BaseViewState> (
         Log.d("JOB", "Remove from list")
         jobs.remove(methodName)
         if (jobs.isEmpty()){
-            setLoading(false)
+            launch {
+                setLoading(false)
+            }
         }
     }
 

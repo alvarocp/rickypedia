@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.addRepeatingJob
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -35,7 +37,6 @@ class CharacterListFragment constructor(
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentCharacterListBinding.inflate(inflater, container, false)
-        subscribeObservers()
         return binding.root
     }
 
@@ -46,16 +47,18 @@ class CharacterListFragment constructor(
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
         initRecyclerView()
 
         handleCharacters()
 
-        super.onViewCreated(view, savedInstanceState)
+        subscribeObservers()
 
     }
 
     private fun subscribeObservers() {
-        lifecycleScope.launchWhenStarted {
+        addRepeatingJob(Lifecycle.State.STARTED) {
             viewModel.viewState.collect { viewState ->
                 viewState.characters?.let {
                     characterListAdapter.submitList(it)
