@@ -54,12 +54,14 @@ abstract class BaseViewModel<StateEvent, ViewState> (
                 getJob(jobName)?.let {
                     Log.d("JOB", "Job $jobName already running")
                 } ?: kotlin.run {
-                    _isLoading.emit(true)
+                    launch { _isLoading.emit(true) }
                     Log.d("JOB", "Job $jobName not running, lets start")
-                    getJobForEvent(stateEvent).let { job ->
-                        addJob(jobName, job)
-                        job.invokeOnCompletion {
-                            removeJobFromList(jobName)
+                    launch {
+                        getJobForEvent(stateEvent).let { job ->
+                            addJob(jobName, job)
+                            job.invokeOnCompletion {
+                                launch { removeJobFromList(jobName) }
+                            }
                         }
                     }
                 }
@@ -77,7 +79,7 @@ abstract class BaseViewModel<StateEvent, ViewState> (
 
     private val jobs: HashMap<String, Job> = HashMap()
 
-    private fun addJob(methodName: String, job: Job){
+    private suspend fun addJob(methodName: String, job: Job){
         cancelJob(methodName)
         jobs[methodName] = job
     }
@@ -88,18 +90,16 @@ abstract class BaseViewModel<StateEvent, ViewState> (
         }
     }
 
-    private fun removeJobFromList(methodName: String){
+    private suspend fun removeJobFromList(methodName: String){
         Log.d("JOB", "Remove from list")
         jobs.remove(methodName)
         if (jobs.isEmpty()){
-            viewModelScope.launch {
-                delay(300)
-                _isLoading.emit(false)
-            }
+            delay(300)
+            _isLoading.emit(false)
         }
     }
 
-    private fun cancelJob(methodName: String){
+    private suspend fun cancelJob(methodName: String){
         getJob(methodName)?.let {
             removeJobFromList(methodName)
             it.cancel()

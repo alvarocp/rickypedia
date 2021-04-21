@@ -3,6 +3,7 @@ package es.i12capea.rickypedia.features.characters.character_list
 import android.os.Parcelable
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.viewModelScope
+import es.i12capea.domain.exceptions.RequestException
 import es.i12capea.domain.usecases.GetCharactersInPageUseCase
 import es.i12capea.rickypedia.common.BaseViewModel
 import es.i12capea.rickypedia.entities.Character
@@ -31,7 +32,7 @@ class CharacterListViewModel @ViewModelInject constructor(
     }
 
     override fun getJobForEvent(stateEvent: CharacterListStateEvent): Job {
-        return viewModelScope.launch {
+        return launch {
             when (stateEvent) {
                 is CharacterListStateEvent.GetNextCharacterPage -> {
                     getLastPage()?.let { currentPage ->
@@ -90,11 +91,11 @@ class CharacterListViewModel @ViewModelInject constructor(
     override fun initNewViewState(): CharacterListViewState {
         val characterListViewState = CharacterListViewState()
         characterListViewState.lastPage = Page(
-                    next = 1,
-                    prev = null,
-                    actual = 0,
-                    list = emptyList(),
-                    count = 0
+            next = 1,
+            prev = null,
+            actual = 0,
+            list = emptyList(),
+            count = 0
         )
         characterListViewState.characters = null
         return characterListViewState

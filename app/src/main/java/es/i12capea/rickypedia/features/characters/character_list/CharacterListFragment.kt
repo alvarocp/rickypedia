@@ -46,15 +46,13 @@ class CharacterListFragment constructor(
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         subscribeObservers()
 
         initRecyclerView()
 
         handleCharacters()
-
-        super.onViewCreated(view, savedInstanceState)
-
     }
 
     private fun subscribeObservers() {
@@ -66,13 +64,17 @@ class CharacterListFragment constructor(
                     binding.progressBar.visibility = View.INVISIBLE
                 }
             }
+        }
 
+        addRepeatingJob(Lifecycle.State.STARTED){
             viewModel.viewState.collect { viewState ->
                 viewState.characters?.let {
                     characterListAdapter.submitList(it)
                 }
             }
+        }
 
+        addRepeatingJob(Lifecycle.State.STARTED){
             viewModel.error.collect { error ->
                 if(error.code != Constants.NO_ERROR){
                     displayErrorDialog(error.desc)
