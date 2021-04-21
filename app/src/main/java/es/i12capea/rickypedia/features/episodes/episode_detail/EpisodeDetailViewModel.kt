@@ -4,6 +4,8 @@ import androidx.hilt.lifecycle.ViewModelInject
 import es.i12capea.domain.usecases.GetCharactersInEpisodeUseCase
 import es.i12capea.domain.usecases.GetEpisodeUseCase
 import es.i12capea.rickypedia.common.BaseViewModel
+import es.i12capea.rickypedia.common.ErrorRym
+import es.i12capea.rickypedia.common.Event
 import es.i12capea.rickypedia.entities.Character
 import es.i12capea.rickypedia.entities.Episode
 import es.i12capea.rickypedia.entities.mappers.characterListToPresentation
@@ -11,6 +13,7 @@ import es.i12capea.rickypedia.entities.mappers.toDomain
 import es.i12capea.rickypedia.entities.mappers.toPresentation
 import es.i12capea.rickypedia.features.episodes.episode_detail.state.EpisodeDetailStateEvent
 import es.i12capea.rickypedia.features.episodes.episode_detail.state.EpisodeDetailViewState
+import es.i12capea.rickypedia.features.locations.location_list.state.LocationListViewState
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -70,26 +73,22 @@ class EpisodeDetailViewModel @ViewModelInject constructor(
     }
 
     private suspend fun handleCollectEpisode(episode: Episode) {
-        val update = getCurrentViewStateOrNew()
-        update.episode = episode
-        setViewState(update)
+        val update = getCurrentViewState()
+        setViewState(update.copy(episode = episode))
         invokeGetCharactersInEpisodeUseCase(episode)
     }
 
     private suspend fun handleCollectCharacters(characters: List<Character>) {
-        val update = getCurrentViewStateOrNew()
-        update.characters = characters
-        setViewState(update)
+        setCharacterList(characters)
     }
 
-    fun setCharacterList(cl: List<Character>){
-        val update = getCurrentViewStateOrNew()
-        update.characters = cl
-        launch { setViewState(update) }
+    private suspend fun setCharacterList(cl: List<Character>){
+        val update = getCurrentViewState()
+        launch { setViewState(update.copy(characters = cl)) }
     }
 
     fun getCharacterList() : List<Character>?{
-        return getCurrentViewStateOrNew().characters
+        return getCurrentViewState().characters
     }
 
     override fun initNewViewState(): EpisodeDetailViewState {
@@ -97,15 +96,22 @@ class EpisodeDetailViewModel @ViewModelInject constructor(
     }
 
     fun setCurrentEpisode(episode: Episode){
-        val update = getCurrentViewStateOrNew()
-        update.episode = episode
-        launch { setViewState(update) }
+        val update = getCurrentViewState()
+        launch { setViewState(update.copy(episode = episode)) }
     }
 
     fun getCurrentEpisode() : Episode?{
-        return getCurrentViewStateOrNew().episode
+        return getCurrentViewState().episode
     }
 
+    override fun setLoading(isLoading: Boolean): EpisodeDetailViewState {
+        val update = getCurrentViewState()
+        return update.copy(isLoading = isLoading)
+    }
 
+    override fun setError(error: Event<ErrorRym>): EpisodeDetailViewState {
+        val update = getCurrentViewState()
+        return update.copy(errorRym = error)
+    }
 
 }

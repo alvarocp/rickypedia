@@ -3,12 +3,15 @@ package es.i12capea.rickypedia.features.locations.location_detail
 import androidx.hilt.lifecycle.ViewModelInject
 import es.i12capea.domain.usecases.GetCharactersInLocationUseCase
 import es.i12capea.rickypedia.common.BaseViewModel
+import es.i12capea.rickypedia.common.ErrorRym
+import es.i12capea.rickypedia.common.Event
 import es.i12capea.rickypedia.entities.Character
 import es.i12capea.rickypedia.entities.Location
 import es.i12capea.rickypedia.entities.mappers.characterListToPresentation
 import es.i12capea.rickypedia.entities.mappers.toDomain
 import es.i12capea.rickypedia.features.locations.location_detail.state.LocationDetailStateEvent
 import es.i12capea.rickypedia.features.locations.location_detail.state.LocationDetailViewState
+import es.i12capea.rickypedia.features.locations.location_list.state.LocationListViewState
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -58,24 +61,32 @@ class LocationDetailViewModel @ViewModelInject constructor (
     }
 
     fun setLocation(location: Location){
-        val update = getCurrentViewStateOrNew()
+        val update = getCurrentViewState()
         update.location = location
         launch { setViewState(update) }
     }
 
     fun getLocation() : Location?{
-        return getCurrentViewStateOrNew().location
+        return getCurrentViewState().location
     }
 
     suspend fun setCharactersInLocation(characters: List<Character>){
-        val update = getCurrentViewStateOrNew()
+        val update = getCurrentViewState()
         update.characters = characters
         setViewState(update)
     }
 
     fun getCharactersInLocation() : List<Character>? {
-        return getCurrentViewStateOrNew().characters
+        return getCurrentViewState().characters
     }
 
+    override fun setLoading(isLoading: Boolean): LocationDetailViewState {
+        val update = getCurrentViewState()
+        return update.copy(isLoading = isLoading)
+    }
 
+    override fun setError(error: Event<ErrorRym>): LocationDetailViewState {
+        val update = getCurrentViewState()
+        return update.copy(errorRym = error)
+    }
 }

@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.addRepeatingJob
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -79,7 +81,7 @@ class EpisodeDetailFragment
     }
 
     private fun subscribeObservers() {
-        lifecycleScope.launchWhenStarted {
+        addRepeatingJob(Lifecycle.State.STARTED) {
             viewModel.viewState.collect { viewState ->
                 viewState.characters?.let {
                     binding.rvCharactersEpisode.visibility = View.VISIBLE

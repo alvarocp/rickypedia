@@ -5,6 +5,8 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.viewModelScope
 import es.i12capea.domain.usecases.GetCharactersInPageUseCase
 import es.i12capea.rickypedia.common.BaseViewModel
+import es.i12capea.rickypedia.common.ErrorRym
+import es.i12capea.rickypedia.common.Event
 import es.i12capea.rickypedia.entities.Character
 import es.i12capea.rickypedia.entities.Page
 import es.i12capea.rickypedia.entities.mappers.characterPageEntityToPresentation
@@ -58,23 +60,21 @@ class CharacterListViewModel @ViewModelInject constructor(
     }
 
     fun getActualPage() : Page<Character>?{
-        return getCurrentViewStateOrNew().lastPage
+        return getCurrentViewState().lastPage
     }
 
     private suspend fun setActualPage(page: Page<Character>){
-        val update = getCurrentViewStateOrNew()
-        update.lastPage = page
-        setViewState(update)
+        val update = getCurrentViewState()
+        setViewState(update.copy(lastPage = page))
     }
 
     fun getCharacterList() : List<Character>?{
-        return getCurrentViewStateOrNew().characters
+        return getCurrentViewState().characters
     }
 
     private suspend fun setCharacterList(list: List<Character>){
-        val update = getCurrentViewStateOrNew()
-        update.characters = list
-        setViewState(update)
+        val update = getCurrentViewState()
+        setViewState(update.copy(characters = list))
     }
 
     private suspend fun handleCollectCharacters(currentList: List<Character>?, page: Page<Character>){
@@ -88,33 +88,42 @@ class CharacterListViewModel @ViewModelInject constructor(
     }
 
     override fun initNewViewState(): CharacterListViewState {
-        val characterListViewState = CharacterListViewState()
-        characterListViewState.lastPage = Page(
-                    next = 1,
-                    prev = null,
-                    actual = 0,
-                    list = emptyList(),
-                    count = 0
+        return CharacterListViewState(
+            lastPage = Page(
+                next = 1,
+                prev = null,
+                actual = 0,
+                list = emptyList(),
+                count = 0
+            ),
+            characters = null
         )
-        characterListViewState.characters = null
-        return characterListViewState
     }
 
     fun setRecyclerState(state: Parcelable?){
-        val update = getCurrentViewStateOrNew()
-        update.layoutManagerState = state
-        launch { setViewState(update) }
+        val update = getCurrentViewState()
+        launch { setViewState(update.copy(layoutManagerState = state)) }
     }
 
     fun getRecyclerState() : Parcelable? {
-        return getCurrentViewStateOrNew().layoutManagerState
+        return getCurrentViewState().layoutManagerState
     }
 
     private fun getLastPage() : Page<Character>?{
-        return getCurrentViewStateOrNew().lastPage
+        return getCurrentViewState().lastPage
     }
 
     private fun getNextPage() : Int? {
-        return getCurrentViewStateOrNew().lastPage?.next
+        return getCurrentViewState().lastPage?.next
+    }
+
+    override fun setLoading(isLoading: Boolean): CharacterListViewState {
+        val update = getCurrentViewState()
+        return update.copy(isLoading = isLoading)
+    }
+
+    override fun setError(error: Event<ErrorRym>): CharacterListViewState {
+        val update = getCurrentViewState()
+        return update.copy(errorRym = error)
     }
 }

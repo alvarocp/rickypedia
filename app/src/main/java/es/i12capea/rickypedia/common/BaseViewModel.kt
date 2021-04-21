@@ -15,11 +15,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlin.coroutines.CoroutineContext
 
 
-abstract class BaseViewModel<StateEvent, ViewState : BaseViewState> (
+abstract class BaseViewModel<StateEvent, ViewState> (
     val dispatcher: CoroutineDispatcher
 ) : ViewModel(), CoroutineScope
 {
-    private var _viewState: MutableStateFlow<ViewState>
+    private val _viewState: MutableStateFlow<ViewState>
     val viewState: StateFlow<ViewState>
 
     init {
@@ -30,8 +30,8 @@ abstract class BaseViewModel<StateEvent, ViewState : BaseViewState> (
     private val _networkAvailable : MutableLiveData<Boolean> = MutableLiveData(false)
     val networkAvailable : LiveData<Boolean> = _networkAvailable
 
-    fun getCurrentViewStateOrNew(): ViewState{
-        return viewState.value ?: initNewViewState()
+    fun getCurrentViewState(): ViewState{
+        return viewState.value
     }
 
     suspend fun setViewState(viewState: ViewState) {
@@ -42,12 +42,6 @@ abstract class BaseViewModel<StateEvent, ViewState : BaseViewState> (
         _networkAvailable.postValue(available)
     }
 
-    suspend fun setLoading(isLoading: Boolean){
-        val update = getCurrentViewStateOrNew()
-        update.isLoading = isLoading
-        setViewState(update)
-    }
-
     open fun setStateEvent(stateEvent: StateEvent){
         viewModelScope.launch {
             getJobNameForEvent(stateEvent).let { jobName ->
@@ -55,7 +49,7 @@ abstract class BaseViewModel<StateEvent, ViewState : BaseViewState> (
                 getJob(jobName)?.let {
                     Log.d("JOB", "Job $jobName already running")
                 } ?: kotlin.run {
-                    setLoading(true)
+                    _viewState.emit(setLoading(true))
                     Log.d("JOB", "Job $jobName not running, lets start")
                     getJobForEvent(stateEvent).let { job ->
                         addJob(jobName, job)
@@ -70,6 +64,8 @@ abstract class BaseViewModel<StateEvent, ViewState : BaseViewState> (
 
     abstract fun getJobNameForEvent(stateEvent: StateEvent) : String
     abstract fun getJobForEvent(stateEvent: StateEvent) : Job
+    abstract fun setLoading(isLoading: Boolean) : ViewState
+    abstract fun setError(error: Event<ErrorRym>) : ViewState
 
     abstract fun initNewViewState(): ViewState
 
@@ -94,7 +90,7 @@ abstract class BaseViewModel<StateEvent, ViewState : BaseViewState> (
         jobs.remove(methodName)
         if (jobs.isEmpty()){
             launch {
-                setLoading(false)
+                _viewState.emit(setLoading(false))
             }
         }
     }
@@ -138,22 +134,20 @@ abstract class BaseViewModel<StateEvent, ViewState : BaseViewState> (
     }
 
     private suspend fun handleError(cause: Throwable){
-        val update = getCurrentViewStateOrNew()
         when(cause){
             is RequestException -> {
-                update.errorRym = Event(ErrorRym(Constants.NO_NETWORK, "No se ha podido realizar la conexión."))
+                _viewState.emit(setError(Event(ErrorRym(Constants.NO_NETWORK, "No se ha podido realizar la conexión."))))
             }
             is ResponseException -> {
-                update.errorRym = Event(ErrorRym(Constants.BAD_NETWORK_RESPONSE, "Error en la respuesta de servidor."))
+                _viewState.emit(setError(Event(ErrorRym(Constants.BAD_NETWORK_RESPONSE, "Error en la respuesta de servidor."))))
             }
             is PredicateNotSatisfiedException -> {
-                update.errorRym = Event(ErrorRym(Constants.PREDICATE_NOT_SATISFIED, "No se ha cumplido los predicados."))
+                _viewState.emit(setError(Event(ErrorRym(Constants.PREDICATE_NOT_SATISFIED, "No se ha cumplido los predicados."))))
             }
             else -> {
-                update.errorRym = Event(ErrorRym(Constants.UNKNOWN_ERROR, "Error desconocido"))
+                _viewState.emit(setError(Event(ErrorRym(Constants.UNKNOWN_ERROR, "Error desconocido"))))
             }
         }
-        setViewState(update)
     }
 
     suspend fun handleThrowable(cause: Throwable?){

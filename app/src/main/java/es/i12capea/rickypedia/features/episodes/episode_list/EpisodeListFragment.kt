@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.addRepeatingJob
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -57,8 +59,8 @@ class EpisodeListFragment
     }
 
 
-    fun subscribeObservers() {
-        lifecycleScope.launchWhenStarted {
+    private fun subscribeObservers() {
+        addRepeatingJob(Lifecycle.State.STARTED) {
             viewModel.viewState.collect { viewState ->
                 viewState.episodes?.let {
                     episodeListAdapter.submitList(it)

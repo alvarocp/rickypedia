@@ -4,6 +4,8 @@ import android.os.Parcelable
 import androidx.hilt.lifecycle.ViewModelInject
 import es.i12capea.domain.usecases.GetLocationsInPageUseCase
 import es.i12capea.rickypedia.common.BaseViewModel
+import es.i12capea.rickypedia.common.ErrorRym
+import es.i12capea.rickypedia.common.Event
 import es.i12capea.rickypedia.entities.Location
 import es.i12capea.rickypedia.entities.Page
 import es.i12capea.rickypedia.entities.mappers.locationPageEntityToPresentation
@@ -81,36 +83,46 @@ class LocationListViewModel @ViewModelInject constructor (
     }
 
     fun getLocations() : List<Location>?{
-        return getCurrentViewStateOrNew().locations
+        return getCurrentViewState().locations
     }
 
-    suspend fun setLocationList(locations: List<Location>){
-        val update = getCurrentViewStateOrNew()
+    private suspend fun setLocationList(locations: List<Location>){
+        val update = getCurrentViewState()
         update.locations = locations
         setViewState(update)
     }
 
-    suspend fun setLastPage(page: Page<Location>) {
-        val update = getCurrentViewStateOrNew()
+    private suspend fun setLastPage(page: Page<Location>) {
+        val update = getCurrentViewState()
         update.lastPage = page
         setViewState(update)
     }
 
     fun getLastPage() : Page<Location>? {
-        return getCurrentViewStateOrNew().lastPage
+        return getCurrentViewState().lastPage
     }
 
-    fun getNextPage() : Int?{
-        return getCurrentViewStateOrNew().lastPage?.next
+    private fun getNextPage() : Int?{
+        return getCurrentViewState().lastPage?.next
     }
 
     fun setRecyclerState(state: Parcelable?){
-        val update = getCurrentViewStateOrNew()
+        val update = getCurrentViewState()
         update.layoutManagerState = state
         launch { setViewState(update) }
     }
 
     fun getRecyclerState() : Parcelable? {
-        return getCurrentViewStateOrNew().layoutManagerState
+        return getCurrentViewState().layoutManagerState
+    }
+
+    override fun setLoading(isLoading: Boolean): LocationListViewState {
+        val update = getCurrentViewState()
+        return update.copy(isLoading = isLoading)
+    }
+
+    override fun setError(error: Event<ErrorRym>): LocationListViewState {
+        val update = getCurrentViewState()
+        return update.copy(errorRym = error)
     }
 }

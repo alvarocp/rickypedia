@@ -4,12 +4,15 @@ import androidx.hilt.lifecycle.ViewModelInject
 import es.i12capea.domain.usecases.GetCharacterUseCase
 import es.i12capea.domain.usecases.GetEpisodesUseCase
 import es.i12capea.rickypedia.common.BaseViewModel
+import es.i12capea.rickypedia.common.ErrorRym
+import es.i12capea.rickypedia.common.Event
 import es.i12capea.rickypedia.entities.Character
 import es.i12capea.rickypedia.entities.Episode
 import es.i12capea.rickypedia.entities.mappers.episodeListToPresentation
 import es.i12capea.rickypedia.entities.mappers.toPresentation
 import es.i12capea.rickypedia.features.characters.character_detail.state.CharacterDetailStateEvent
 import es.i12capea.rickypedia.features.characters.character_detail.state.CharacterDetailViewState
+import es.i12capea.rickypedia.features.locations.location_list.state.LocationListViewState
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -90,41 +93,42 @@ class CharacterDetailViewModel @ViewModelInject constructor(
     }
 
     private suspend fun handleCollectCharacter(character: Character) {
-        val update = getCurrentViewStateOrNew()
-        update.character = character
-        setViewState(update)
+        setCharacterDetails(character)
     }
 
     fun setImageLoad(isLoad: Boolean){
-        val update = getCurrentViewStateOrNew()
-        update.isImageLoaded = isLoad
-        launch { setViewState(update) }
+        val update = getCurrentViewState()
+        launch { setViewState(update.copy(isImageLoaded = isLoad)) }
     }
 
     private suspend fun handleCollectEpisodes(episodes: List<Episode>) {
-        val update = getCurrentViewStateOrNew()
-        update.episodes = episodes
-        setViewState(update)
+        setEpisodeList(episodes)
     }
 
     fun getEpisodeList() : List<Episode>?{
-        return getCurrentViewStateOrNew().episodes
+        return getCurrentViewState().episodes
     }
 
-    fun setEpisodeList(episodes: List<Episode>){
-        val update = getCurrentViewStateOrNew()
-        update.episodes = episodes
-        launch { setViewState(update) }
-
+    private suspend fun setEpisodeList(episodes: List<Episode>){
+        val update = getCurrentViewState()
+        setViewState(update.copy(episodes = episodes))
     }
 
-    fun setCharacterDetails(character: Character){
-        val update = getCurrentViewStateOrNew()
-        update.character = character
-        launch { setViewState(update) }
+    private suspend fun setCharacterDetails(character: Character){
+        val update = getCurrentViewState()
+        setViewState(update.copy(character = character))
     }
 
     fun getCharacterDetails() : Character?{
-        return getCurrentViewStateOrNew().character
+        return getCurrentViewState().character
+    }
+    override fun setLoading(isLoading: Boolean): CharacterDetailViewState {
+        val update = getCurrentViewState()
+        return update.copy(isLoading = isLoading)
+    }
+
+    override fun setError(error: Event<ErrorRym>): CharacterDetailViewState {
+        val update = getCurrentViewState()
+        return update.copy(errorRym = error)
     }
 }

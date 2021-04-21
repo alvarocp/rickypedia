@@ -4,11 +4,14 @@ import android.os.Parcelable
 import androidx.hilt.lifecycle.ViewModelInject
 import es.i12capea.domain.usecases.GetEpisodesInPageUseCase
 import es.i12capea.rickypedia.common.BaseViewModel
+import es.i12capea.rickypedia.common.ErrorRym
+import es.i12capea.rickypedia.common.Event
 import es.i12capea.rickypedia.entities.Episode
 import es.i12capea.rickypedia.entities.Page
 import es.i12capea.rickypedia.entities.mappers.episodePageToPresentation
 import es.i12capea.rickypedia.features.episodes.episode_list.state.EpisodeListStateEvent
 import es.i12capea.rickypedia.features.episodes.episode_list.state.EpisodeListViewState
+import es.i12capea.rickypedia.features.locations.location_list.state.LocationListViewState
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -66,50 +69,56 @@ class EpisodeListViewModel @ViewModelInject constructor(
         setEpisodeList(list)
     }
 
-    suspend fun setActualEpisodePage(page: Page<Episode>){
-        val update = getCurrentViewStateOrNew()
-        update.lastPage = page
-        setViewState(update)
+    private suspend fun setActualEpisodePage(page: Page<Episode>){
+        val update = getCurrentViewState()
+        setViewState(update.copy(lastPage = page))
     }
 
 
     override fun initNewViewState(): EpisodeListViewState {
-        val viewState = EpisodeListViewState()
-        viewState.lastPage = Page(
+        return EpisodeListViewState(
+            lastPage = Page(
                 next = 1,
                 prev = null,
                 actual = 0,
                 list = emptyList(),
                 count = 0
+            )
         )
-        viewState.episodes = null
-        return EpisodeListViewState()
     }
 
     fun getCurrentEpisodes() : List<Episode>?{
-        return getCurrentViewStateOrNew().episodes
+        return getCurrentViewState().episodes
     }
 
     private suspend fun setEpisodeList(episodes: List<Episode>){
-        val update = getCurrentViewStateOrNew()
-        update.episodes = episodes
-        setViewState(update)
+        val update = getCurrentViewState()
+        setViewState(update.copy(episodes = episodes))
     }
 
     private fun getNextPage() : Int? {
-        return getCurrentViewStateOrNew().lastPage?.next
+        return getCurrentViewState().lastPage?.next
     }
     fun getLastPage() : Page<Episode>?{
-        return getCurrentViewStateOrNew().lastPage
+        return getCurrentViewState().lastPage
     }
 
     fun setRecyclerState(state: Parcelable?){
-        val update = getCurrentViewStateOrNew()
-        update.layoutManagerState = state
-        launch { setViewState(update) }
+        val update = getCurrentViewState()
+        launch { setViewState(update.copy(layoutManagerState = state)) }
     }
 
     fun getRecyclerState() : Parcelable? {
-        return getCurrentViewStateOrNew().layoutManagerState
+        return getCurrentViewState().layoutManagerState
+    }
+
+    override fun setLoading(isLoading: Boolean): EpisodeListViewState {
+        val update = getCurrentViewState()
+        return update.copy(isLoading = isLoading)
+    }
+
+    override fun setError(error: Event<ErrorRym>): EpisodeListViewState {
+        val update = getCurrentViewState()
+        return update.copy(errorRym = error)
     }
 }

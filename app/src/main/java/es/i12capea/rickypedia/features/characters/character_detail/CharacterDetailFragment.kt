@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.addRepeatingJob
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -131,7 +133,7 @@ class CharacterDetailFragment
     }
 
     private fun subscribeObservers() {
-        lifecycleScope.launchWhenStarted {
+        addRepeatingJob(Lifecycle.State.STARTED) {
             viewModel.viewState.collect { viewState ->
                 viewState.character?.let {
                     setCharacterView(it)

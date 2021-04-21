@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.addRepeatingJob
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -58,7 +60,7 @@ class LocationListFragment
     }
 
     private fun subscribeObservers() {
-        lifecycleScope.launchWhenStarted {
+        addRepeatingJob(Lifecycle.State.STARTED) {
             viewModel.viewState.collect { viewState ->
                 viewState.locations?.let {
                     locationListAdapter.submitList(it)
