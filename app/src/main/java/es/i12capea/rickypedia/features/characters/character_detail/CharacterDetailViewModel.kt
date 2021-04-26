@@ -1,6 +1,6 @@
 package es.i12capea.rickypedia.features.characters.character_detail
 
-import androidx.hilt.lifecycle.ViewModelInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import es.i12capea.domain.usecases.GetCharacterUseCase
 import es.i12capea.domain.usecases.GetEpisodesUseCase
 import es.i12capea.rickypedia.common.BaseViewModel
@@ -12,16 +12,16 @@ import es.i12capea.rickypedia.entities.mappers.episodeListToPresentation
 import es.i12capea.rickypedia.entities.mappers.toPresentation
 import es.i12capea.rickypedia.features.characters.character_detail.state.CharacterDetailStateEvent
 import es.i12capea.rickypedia.features.characters.character_detail.state.CharacterDetailViewState
-import es.i12capea.rickypedia.features.locations.location_list.state.LocationListViewState
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-
-class CharacterDetailViewModel @ViewModelInject constructor(
+@HiltViewModel
+class CharacterDetailViewModel @Inject constructor(
     private val getCharacter: GetCharacterUseCase,
     private val getEpisodes: GetEpisodesUseCase,
     dispatcher: CoroutineDispatcher

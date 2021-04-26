@@ -3,7 +3,9 @@ package es.i12capea.data
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import es.i12capea.domain.exceptions.ResponseException
 import es.i12capea.domain.usecases.GetCharacterUseCase
-import io.mockk.*
+import io.mockk.MockKAnnotations
+import io.mockk.coVerify
+import io.mockk.unmockkAll
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect

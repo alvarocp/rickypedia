@@ -1,7 +1,7 @@
 package es.i12capea.rickypedia.features.episodes.episode_list
 
 import android.os.Parcelable
-import androidx.hilt.lifecycle.ViewModelInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import es.i12capea.domain.usecases.GetEpisodesInPageUseCase
 import es.i12capea.rickypedia.common.BaseViewModel
 import es.i12capea.rickypedia.common.ErrorRym
@@ -11,15 +11,16 @@ import es.i12capea.rickypedia.entities.Page
 import es.i12capea.rickypedia.entities.mappers.episodePageToPresentation
 import es.i12capea.rickypedia.features.episodes.episode_list.state.EpisodeListStateEvent
 import es.i12capea.rickypedia.features.episodes.episode_list.state.EpisodeListViewState
-import es.i12capea.rickypedia.features.locations.location_list.state.LocationListViewState
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class EpisodeListViewModel @ViewModelInject constructor(
+@HiltViewModel
+class EpisodeListViewModel @Inject constructor(
     private val getEpisodesInPageUseCase: GetEpisodesInPageUseCase,
     dispatcher: CoroutineDispatcher
 ) : BaseViewModel<EpisodeListStateEvent, EpisodeListViewState>(dispatcher){

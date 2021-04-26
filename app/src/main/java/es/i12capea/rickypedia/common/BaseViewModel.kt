@@ -9,9 +9,12 @@ import es.i12capea.domain.common.Constants
 import es.i12capea.domain.exceptions.PredicateNotSatisfiedException
 import es.i12capea.domain.exceptions.RequestException
 import es.i12capea.domain.exceptions.ResponseException
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
 
@@ -27,19 +30,12 @@ abstract class BaseViewModel<StateEvent, ViewState> (
         viewState = _viewState
     }
 
-    private val _networkAvailable : MutableLiveData<Boolean> = MutableLiveData(false)
-    val networkAvailable : LiveData<Boolean> = _networkAvailable
-
     fun getCurrentViewState(): ViewState{
         return viewState.value
     }
 
     suspend fun setViewState(viewState: ViewState) {
         _viewState.emit(viewState)
-    }
-
-    fun setNetworkAvailable(available: Boolean){
-        _networkAvailable.postValue(available)
     }
 
     open fun setStateEvent(stateEvent: StateEvent){

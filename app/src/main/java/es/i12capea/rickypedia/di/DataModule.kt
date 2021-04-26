@@ -8,7 +8,7 @@ import com.google.gson.GsonBuilder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.components.SingletonComponent
 import es.i12capea.data.api.LocationApi
 import es.i12capea.data.local.RymDatabase
 import es.i12capea.data.local.dao.*
@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
-@InstallIn(ApplicationComponent::class)
+@InstallIn(SingletonComponent::class)
 class DataModule {
     @Provides
     @Singleton

@@ -6,8 +6,7 @@ object Versions {
     object Libs {
         const val retrofit2 = "2.9.0"
         const val glide = "4.11.0"
-        const val hilt = "2.28.3-alpha"
-        const val hiltViewModel = "1.0.0-alpha02"
+        const val hilt = "2.35"
         const val material_dialogs = "3.3.0"
     }
 

@@ -1,6 +1,6 @@
 package es.i12capea.rickypedia.features.episodes.episode_detail
 
-import androidx.hilt.lifecycle.ViewModelInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import es.i12capea.domain.usecases.GetCharactersInEpisodeUseCase
 import es.i12capea.domain.usecases.GetEpisodeUseCase
 import es.i12capea.rickypedia.common.BaseViewModel
@@ -13,15 +13,16 @@ import es.i12capea.rickypedia.entities.mappers.toDomain
 import es.i12capea.rickypedia.entities.mappers.toPresentation
 import es.i12capea.rickypedia.features.episodes.episode_detail.state.EpisodeDetailStateEvent
 import es.i12capea.rickypedia.features.episodes.episode_detail.state.EpisodeDetailViewState
-import es.i12capea.rickypedia.features.locations.location_list.state.LocationListViewState
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class EpisodeDetailViewModel @ViewModelInject constructor(
+@HiltViewModel
+class EpisodeDetailViewModel @Inject constructor(
     private val getCharactersInEpisodeUseCase: GetCharactersInEpisodeUseCase,
     private val getEpisodeUseCase: GetEpisodeUseCase,
     dispatcher: CoroutineDispatcher

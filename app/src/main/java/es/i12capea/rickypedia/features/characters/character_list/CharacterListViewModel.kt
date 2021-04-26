@@ -1,8 +1,8 @@
 package es.i12capea.rickypedia.features.characters.character_list
 
 import android.os.Parcelable
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
 import es.i12capea.domain.usecases.GetCharactersInPageUseCase
 import es.i12capea.rickypedia.common.BaseViewModel
 import es.i12capea.rickypedia.common.ErrorRym
@@ -18,8 +18,10 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class CharacterListViewModel @ViewModelInject constructor(
+@HiltViewModel
+class CharacterListViewModel @Inject constructor(
     private val getCharacters: GetCharactersInPageUseCase,
     dispatcher: CoroutineDispatcher
 ) : BaseViewModel<CharacterListStateEvent, CharacterListViewState>(dispatcher){

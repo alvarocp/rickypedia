@@ -108,9 +108,6 @@ dependencies {
     implementation(Dependencies.Libs.hilt)
     kapt(Dependencies.Libs.hiltCompiler)
 
-    implementation(Dependencies.Libs.hiltViewModel)
-    kapt(Dependencies.Libs.hiltViewModelCompiler)
-
     // jetpack navigation components
     implementation(Dependencies.AndroidX.navigationFragment)
     implementation(Dependencies.AndroidX.navigationUi)

@@ -1,7 +1,7 @@
 package es.i12capea.rickypedia.features.locations.location_list
 
 import android.os.Parcelable
-import androidx.hilt.lifecycle.ViewModelInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import es.i12capea.domain.usecases.GetLocationsInPageUseCase
 import es.i12capea.rickypedia.common.BaseViewModel
 import es.i12capea.rickypedia.common.ErrorRym
@@ -17,9 +17,10 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-
-class LocationListViewModel @ViewModelInject constructor (
+@HiltViewModel
+class LocationListViewModel @Inject constructor (
     private val getLocations: GetLocationsInPageUseCase,
     dispatcher: CoroutineDispatcher
 ) : BaseViewModel<LocationListStateEvent, LocationListViewState>(dispatcher) {

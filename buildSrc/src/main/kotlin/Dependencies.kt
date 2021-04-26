@@ -5,8 +5,6 @@ object Dependencies {
         const val retrofitGson = "com.squareup.retrofit2:converter-gson:${Versions.Libs.retrofit2}"
         const val hilt = "com.google.dagger:hilt-android:${Versions.Libs.hilt}"
         const val hiltCompiler = "com.google.dagger:hilt-android-compiler:${Versions.Libs.hilt}"
-        const val hiltViewModel = "androidx.hilt:hilt-lifecycle-viewmodel:${Versions.Libs.hiltViewModel}"
-        const val hiltViewModelCompiler = "androidx.hilt:hilt-compiler:${Versions.Libs.hiltViewModel}"
         const val glide = "com.github.bumptech.glide:glide:${Versions.Libs.glide}"
         const val glideCompiler = "com.github.bumptech.glide:compiler:${Versions.Libs.glide}"
         const val materialDialogs = "com.afollestad.material-dialogs:core:${Versions.Libs.material_dialogs}"
