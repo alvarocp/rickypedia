@@ -64,6 +64,7 @@ abstract class BaseViewModel<StateEvent, ViewState> (
 
     abstract fun getJobNameForEvent(stateEvent: StateEvent) : String
     abstract fun getJobForEvent(stateEvent: StateEvent) : Job
+
     abstract fun setLoading(isLoading: Boolean) : ViewState
     abstract fun setError(error: Event<ErrorRym>) : ViewState
 

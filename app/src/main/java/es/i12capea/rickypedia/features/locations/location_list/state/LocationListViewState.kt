@@ -8,9 +8,9 @@ import es.i12capea.rickypedia.entities.Location
 import es.i12capea.rickypedia.entities.Page
 
 data class LocationListViewState(
-    var locations: List<Location>? = null,
-    var lastPage: Page<Location>? = null,
-    var layoutManagerState: Parcelable? = null,
+    val locations: List<Location>? = null,
+    val lastPage: Page<Location>? = null,
+    val layoutManagerState: Parcelable? = null,
     val isLoading: Boolean = false,
     val errorRym: Event<ErrorRym> = Event(ErrorRym(Constants.NO_ERROR, ""))
 )

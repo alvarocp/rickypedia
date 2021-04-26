@@ -122,6 +122,7 @@ class CharacterDetailViewModel @ViewModelInject constructor(
     fun getCharacterDetails() : Character?{
         return getCurrentViewState().character
     }
+
     override fun setLoading(isLoading: Boolean): CharacterDetailViewState {
         val update = getCurrentViewState()
         return update.copy(isLoading = isLoading)

@@ -62,8 +62,7 @@ class LocationDetailViewModel @ViewModelInject constructor (
 
     fun setLocation(location: Location){
         val update = getCurrentViewState()
-        update.location = location
-        launch { setViewState(update) }
+        launch { setViewState(update.copy(location = location)) }
     }
 
     fun getLocation() : Location?{
@@ -72,8 +71,7 @@ class LocationDetailViewModel @ViewModelInject constructor (
 
     suspend fun setCharactersInLocation(characters: List<Character>){
         val update = getCurrentViewState()
-        update.characters = characters
-        setViewState(update)
+        setViewState(update.copy(characters = characters))
     }
 
     fun getCharactersInLocation() : List<Character>? {

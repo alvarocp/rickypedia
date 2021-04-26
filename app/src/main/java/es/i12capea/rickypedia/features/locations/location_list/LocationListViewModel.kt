@@ -70,16 +70,15 @@ class LocationListViewModel @ViewModelInject constructor (
     }
 
     override fun initNewViewState(): LocationListViewState {
-        val viewState = LocationListViewState()
-        viewState.lastPage = Page(
-                next = 1,
-                prev = null,
-                actual = 0,
-                list = emptyList(),
-                count = 0
+        return LocationListViewState(
+                lastPage = Page(
+                        next = 1,
+                        prev = null,
+                        actual = 0,
+                        list = emptyList(),
+                        count = 0
+                )
         )
-        viewState.locations = null
-        return viewState
     }
 
     fun getLocations() : List<Location>?{
@@ -88,14 +87,12 @@ class LocationListViewModel @ViewModelInject constructor (
 
     private suspend fun setLocationList(locations: List<Location>){
         val update = getCurrentViewState()
-        update.locations = locations
-        setViewState(update)
+        setViewState(update.copy(locations = locations))
     }
 
     private suspend fun setLastPage(page: Page<Location>) {
         val update = getCurrentViewState()
-        update.lastPage = page
-        setViewState(update)
+        setViewState(update.copy(lastPage = page))
     }
 
     fun getLastPage() : Page<Location>? {
@@ -108,8 +105,7 @@ class LocationListViewModel @ViewModelInject constructor (
 
     fun setRecyclerState(state: Parcelable?){
         val update = getCurrentViewState()
-        update.layoutManagerState = state
-        launch { setViewState(update) }
+        launch { setViewState(update.copy(layoutManagerState = state)) }
     }
 
     fun getRecyclerState() : Parcelable? {
