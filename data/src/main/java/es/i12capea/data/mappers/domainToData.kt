@@ -1,10 +1,10 @@
 package es.i12capea.data.mappers
 
 import es.i12capea.data.local.model.*
-import es.i12capea.domain.entities.CharacterEntity
-import es.i12capea.domain.entities.EpisodeEntity
-import es.i12capea.domain.entities.LocationEntity
-import es.i12capea.domain.entities.PageEntity
+import es.i12capea.rickypedia.shared.domain.entities.CharacterEntity
+import es.i12capea.rickypedia.shared.domain.entities.EpisodeEntity
+import es.i12capea.rickypedia.shared.domain.entities.LocationEntity
+import es.i12capea.rickypedia.shared.domain.entities.PageEntity
 
 
 fun LocationEntity.toLocal(pageId: Int?) : LocalLocation {

@@ -20,7 +20,7 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import dagger.hilt.android.AndroidEntryPoint
-import es.i12capea.domain.common.Constants
+import es.i12capea.rickypedia.shared.domain.common.Constants
 import es.i12capea.rickypedia.R
 import es.i12capea.rickypedia.common.displayErrorDialog
 import es.i12capea.rickypedia.databinding.FragmentCharacterDetailBinding

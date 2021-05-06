@@ -3,7 +3,7 @@ package es.i12capea.rickypedia.features.characters.character_list
 import android.os.Parcelable
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import es.i12capea.domain.usecases.GetCharactersInPageUseCase
+import es.i12capea.rickypedia.shared.domain.usecases.GetCharactersInPageUseCase
 import es.i12capea.rickypedia.common.BaseViewModel
 import es.i12capea.rickypedia.common.ErrorRym
 import es.i12capea.rickypedia.common.Event

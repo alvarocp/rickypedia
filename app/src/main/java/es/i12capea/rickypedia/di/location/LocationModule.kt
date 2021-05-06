@@ -4,10 +4,10 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityRetainedComponent
-import es.i12capea.domain.repositories.CharacterRepository
-import es.i12capea.domain.repositories.LocationRepository
-import es.i12capea.domain.usecases.GetCharactersInLocationUseCase
-import es.i12capea.domain.usecases.GetLocationsInPageUseCase
+import es.i12capea.rickypedia.shared.domain.repositories.CharacterRepository
+import es.i12capea.rickypedia.shared.domain.repositories.LocationRepository
+import es.i12capea.rickypedia.shared.domain.usecases.GetCharactersInLocationUseCase
+import es.i12capea.rickypedia.shared.domain.usecases.GetLocationsInPageUseCase
 
 @Module
 @InstallIn(ActivityRetainedComponent::class)

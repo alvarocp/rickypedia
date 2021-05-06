@@ -5,10 +5,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import es.i12capea.domain.common.Constants
-import es.i12capea.domain.exceptions.PredicateNotSatisfiedException
-import es.i12capea.domain.exceptions.RequestException
-import es.i12capea.domain.exceptions.ResponseException
+import es.i12capea.rickypedia.shared.domain.common.Constants
+import es.i12capea.rickypedia.shared.domain.exceptions.PredicateNotSatisfiedException
+import es.i12capea.rickypedia.shared.domain.exceptions.RequestException
+import es.i12capea.rickypedia.shared.domain.exceptions.ResponseException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job

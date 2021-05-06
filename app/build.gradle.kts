@@ -60,8 +60,8 @@ dependencies {
         fileTree(mapOf("dir" to "libs", "include" to listOf("*.jar")))
     )
 
-    implementation(project(":domain"))
     implementation(project(":data"))
+    implementation(project(":shared"))
 
     implementation(Dependencies.Kotlin.jdk)
     implementation(Dependencies.AndroidX.appCompat)

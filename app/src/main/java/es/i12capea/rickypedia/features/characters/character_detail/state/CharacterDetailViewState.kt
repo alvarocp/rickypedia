@@ -1,6 +1,6 @@
 package es.i12capea.rickypedia.features.characters.character_detail.state
 
-import es.i12capea.domain.common.Constants
+import es.i12capea.rickypedia.shared.domain.common.Constants
 import es.i12capea.rickypedia.common.ErrorRym
 import es.i12capea.rickypedia.common.Event
 import es.i12capea.rickypedia.entities.Character

@@ -6,10 +6,6 @@ import es.i12capea.data.api.call
 import es.i12capea.data.local.dao.LocalEpisodeDao
 import es.i12capea.data.local.dao.LocalEpisodePageDao
 import es.i12capea.data.mappers.*
-import es.i12capea.domain.common.Constants
-import es.i12capea.domain.entities.EpisodeEntity
-import es.i12capea.domain.entities.PageEntity
-import es.i12capea.domain.repositories.EpisodeRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -24,12 +20,12 @@ class EpisodeRepositoryImpl @Inject constructor (
     private val episodesApi: EpisodesApi,
     private val episodeDao: LocalEpisodeDao,
     private val episodePageDao: LocalEpisodePageDao
-): EpisodeRepository{
-    override suspend fun getEpisodesAtPage(page: Int): Flow<PageEntity<EpisodeEntity>> {
+): es.i12capea.rickypedia.shared.domain.repositories.EpisodeRepository {
+    override suspend fun getEpisodesAtPage(page: Int): Flow<es.i12capea.rickypedia.shared.domain.entities.PageEntity<es.i12capea.rickypedia.shared.domain.entities.EpisodeEntity>> {
         return flow{
             episodePageDao.searchPageById(page)?.let {
                 emit(it.toDomain())
-                if (it.page.count != Constants.MAX_ITEM_PER_PAGE){
+                if (it.page.count != es.i12capea.rickypedia.shared.domain.common.Constants.MAX_ITEM_PER_PAGE){
                     emit(retrieveAndSaveEpisodePage(page))
                 }
             } ?: kotlin.run {
@@ -39,10 +35,10 @@ class EpisodeRepositoryImpl @Inject constructor (
         }
     }
 
-    override suspend fun getEpisodes(episodes: List<Int>): Flow<List<EpisodeEntity>> {
+    override suspend fun getEpisodes(episodes: List<Int>): Flow<List<es.i12capea.rickypedia.shared.domain.entities.EpisodeEntity>> {
         return flow{
             if (episodes.isEmpty()){
-                emit(emptyList<EpisodeEntity>())
+                emit(emptyList<es.i12capea.rickypedia.shared.domain.entities.EpisodeEntity>())
             }else{
                 episodeDao.searchEpisodesByIds(episodes)?.let { localEpisodes ->
                     if (localEpisodes.size == episodes.size){
@@ -65,7 +61,7 @@ class EpisodeRepositoryImpl @Inject constructor (
         }
     }
 
-    override suspend fun getEpisode(id: Int): Flow<EpisodeEntity> {
+    override suspend fun getEpisode(id: Int): Flow<es.i12capea.rickypedia.shared.domain.entities.EpisodeEntity> {
         return flow {
             episodeDao.searchEpisodeById(id)?.let {
                 emit(it.toDomain())
@@ -80,7 +76,7 @@ class EpisodeRepositoryImpl @Inject constructor (
         }
     }
 
-    suspend fun retrieveAndSaveEpisodePage(page: Int) : PageEntity<EpisodeEntity>{
+    suspend fun retrieveAndSaveEpisodePage(page: Int) : es.i12capea.rickypedia.shared.domain.entities.PageEntity<es.i12capea.rickypedia.shared.domain.entities.EpisodeEntity> {
         try{
             val result = episodesApi.getAllEpisodes(page)
                 .call()
@@ -103,7 +99,7 @@ class EpisodeRepositoryImpl @Inject constructor (
         }
     }
 
-    suspend fun retrieveAndSaveEpisodes(episodes: List<Int>) : List<EpisodeEntity>{
+    suspend fun retrieveAndSaveEpisodes(episodes: List<Int>) : List<es.i12capea.rickypedia.shared.domain.entities.EpisodeEntity>{
         val result = episodesApi.getEpisodes(episodes)
             .call()
 

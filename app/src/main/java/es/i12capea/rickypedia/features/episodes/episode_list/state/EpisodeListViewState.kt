@@ -1,7 +1,7 @@
 package es.i12capea.rickypedia.features.episodes.episode_list.state
 
 import android.os.Parcelable
-import es.i12capea.domain.common.Constants
+import es.i12capea.rickypedia.shared.domain.common.Constants
 import es.i12capea.rickypedia.common.ErrorRym
 import es.i12capea.rickypedia.common.Event
 import es.i12capea.rickypedia.entities.Episode

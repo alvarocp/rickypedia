@@ -1,23 +1,26 @@
 package es.i12capea.data
 
-import es.i12capea.domain.entities.CharacterEntity
-import es.i12capea.domain.entities.LocationShortEntity
-import es.i12capea.domain.exceptions.ResponseException
-import es.i12capea.domain.repositories.CharacterRepository
+import es.i12capea.rickypedia.shared.domain.entities.CharacterEntity
+import es.i12capea.rickypedia.shared.domain.entities.LocationShortEntity
+import es.i12capea.rickypedia.shared.domain.exceptions.ResponseException
+import es.i12capea.rickypedia.shared.domain.repositories.CharacterRepository
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.flow.flow
 
-fun getCharacterRepositoryResponseException() : CharacterRepository {
-    val mockCharacterRepository = mockk<CharacterRepository>()
+fun getCharacterRepositoryResponseException() : es.i12capea.rickypedia.shared.domain.repositories.CharacterRepository {
+    val mockCharacterRepository = mockk<es.i12capea.rickypedia.shared.domain.repositories.CharacterRepository>()
 
-    coEvery { mockCharacterRepository.getCharacter(any()) } throws ResponseException(1, "")
+    coEvery { mockCharacterRepository.getCharacter(any()) } throws es.i12capea.rickypedia.shared.domain.exceptions.ResponseException(
+        1,
+        ""
+    )
 
     return mockCharacterRepository
 }
 
-fun getCharacterRepository() : CharacterRepository{
-    val mockCharacterRepository = mockk<CharacterRepository>()
+fun getCharacterRepository() : es.i12capea.rickypedia.shared.domain.repositories.CharacterRepository {
+    val mockCharacterRepository = mockk<es.i12capea.rickypedia.shared.domain.repositories.CharacterRepository>()
 
     coEvery { mockCharacterRepository.getCharacter(1) } returns flow {
         emit(getCharacterEntitySampleId1())
@@ -28,17 +31,20 @@ fun getCharacterRepository() : CharacterRepository{
     return mockCharacterRepository
 }
 
-fun getCharacterEntitySampleId1() : CharacterEntity{
-    return CharacterEntity(
+fun getCharacterEntitySampleId1() : es.i12capea.rickypedia.shared.domain.entities.CharacterEntity {
+    return es.i12capea.rickypedia.shared.domain.entities.CharacterEntity(
         1,
         "Rick Sanchez",
         "Alive",
         "Human",
         "",
         "Male",
-        LocationShortEntity(1,"Earth (C-137)"),
-        LocationShortEntity(20, "Earth (Replacement Dimension)"),
+        es.i12capea.rickypedia.shared.domain.entities.LocationShortEntity(1, "Earth (C-137)"),
+        es.i12capea.rickypedia.shared.domain.entities.LocationShortEntity(
+            20,
+            "Earth (Replacement Dimension)"
+        ),
         "https://rickandmortyapi.com/api/character/avatar/1.jpeg",
-        listOf(1,2,3,4,5,6,7,8)
+        listOf(1, 2, 3, 4, 5, 6, 7, 8)
     )
 }

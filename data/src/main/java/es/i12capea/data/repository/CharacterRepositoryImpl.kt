@@ -6,10 +6,7 @@ import es.i12capea.data.api.call
 import es.i12capea.data.local.dao.LocalCharacterDao
 import es.i12capea.data.local.dao.LocalCharacterPageDao
 import es.i12capea.data.mappers.*
-import es.i12capea.domain.entities.CharacterEntity
-import es.i12capea.domain.entities.PageEntity
-import es.i12capea.domain.exceptions.RequestException
-import es.i12capea.domain.repositories.CharacterRepository
+import es.i12capea.rickypedia.shared.domain.repositories.CharacterRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -23,9 +20,9 @@ class CharacterRepositoryImpl @Inject constructor(
     private val characterApi: CharacterApi,
     private val characterPageDao: LocalCharacterPageDao,
     private val characterDao : LocalCharacterDao
-) : CharacterRepository{
+) : CharacterRepository {
 
-    override suspend fun getCharactersAtPage(page: Int): Flow<PageEntity<CharacterEntity>> {
+    override suspend fun getCharactersAtPage(page: Int): Flow<es.i12capea.rickypedia.shared.domain.entities.PageEntity<es.i12capea.rickypedia.shared.domain.entities.CharacterEntity>> {
         return flow{
             characterPageDao.searchPageById(page)?.let {
                 if (it.page.count == it.characters.size){
@@ -53,17 +50,17 @@ class CharacterRepositoryImpl @Inject constructor(
                     }
                 }.start()
             }catch (t: Throwable){
-                if (t !is RequestException){
+                if (t !is es.i12capea.rickypedia.shared.domain.exceptions.RequestException){
                     throw t
                 }
             }
         }
     }
 
-    override suspend fun getCharacters(ids: List<Int>): Flow<List<CharacterEntity>> {
+    override suspend fun getCharacters(ids: List<Int>): Flow<List<es.i12capea.rickypedia.shared.domain.entities.CharacterEntity>> {
         return flow {
             if(ids.isEmpty()){
-                emit(emptyList<CharacterEntity>())
+                emit(emptyList<es.i12capea.rickypedia.shared.domain.entities.CharacterEntity>())
             }else{
                 characterDao.searchCharactersByIds(ids)?.let {
                     emit(it.localCharactersToDomain())
@@ -86,7 +83,7 @@ class CharacterRepositoryImpl @Inject constructor(
                         }
                     }.start()
                 }catch (t: Throwable){
-                    if (t !is RequestException){
+                    if (t !is es.i12capea.rickypedia.shared.domain.exceptions.RequestException){
                         throw t
                     }
                 }
@@ -94,7 +91,7 @@ class CharacterRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend  fun getCharacter(id: Int): Flow<CharacterEntity> {
+    override suspend  fun getCharacter(id: Int): Flow<es.i12capea.rickypedia.shared.domain.entities.CharacterEntity> {
         return flow {
             characterDao.searchCharacterById(id)?.let {
                 emit(it.toDomain())
@@ -106,7 +103,7 @@ class CharacterRepositoryImpl @Inject constructor(
 
                 emit(result.toDomain())
             }catch (t: Throwable){
-                if (t !is RequestException){
+                if (t !is es.i12capea.rickypedia.shared.domain.exceptions.RequestException){
                     throw t
                 }
             }

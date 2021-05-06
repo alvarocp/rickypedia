@@ -9,9 +9,9 @@ import es.i12capea.data.mappers.listLocationEntityToLocal
 import es.i12capea.data.mappers.locationPageToDomain
 import es.i12capea.data.mappers.toDomain
 import es.i12capea.data.mappers.toLocal
-import es.i12capea.domain.entities.LocationEntity
-import es.i12capea.domain.entities.PageEntity
-import es.i12capea.domain.repositories.LocationRepository
+import es.i12capea.rickypedia.shared.domain.entities.LocationEntity
+import es.i12capea.rickypedia.shared.domain.entities.PageEntity
+import es.i12capea.rickypedia.shared.domain.repositories.LocationRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -25,9 +25,9 @@ class LocationRepositoryImpl @Inject constructor(
     private val api : LocationApi,
     private val locationDao: LocalLocationDao,
     private val locationPageDao: LocalLocationPageDao
-) : LocationRepository {
+) : es.i12capea.rickypedia.shared.domain.repositories.LocationRepository {
 
-    override suspend  fun getLocationsInPage(page: Int): Flow<PageEntity<LocationEntity>> {
+    override suspend  fun getLocationsInPage(page: Int): Flow<es.i12capea.rickypedia.shared.domain.entities.PageEntity<es.i12capea.rickypedia.shared.domain.entities.LocationEntity>> {
         return flow{
             locationPageDao.searchPageById(page)?.let{
                 emit(it.toDomain())
@@ -57,7 +57,7 @@ class LocationRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend  fun getLocation(id: Int): Flow<LocationEntity> {
+    override suspend  fun getLocation(id: Int): Flow<es.i12capea.rickypedia.shared.domain.entities.LocationEntity> {
         return flow{
 
             val result = api.getLocation(id)

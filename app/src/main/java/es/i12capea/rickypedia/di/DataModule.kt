@@ -9,10 +9,12 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import es.i12capea.data.api.CharacterApi
+import es.i12capea.data.api.EpisodesApi
 import es.i12capea.data.api.LocationApi
 import es.i12capea.data.local.RymDatabase
 import es.i12capea.data.local.dao.*
-import es.i12capea.domain.common.Constants
+import es.i12capea.rickypedia.shared.domain.common.Constants
 import es.i12capea.rickypedia.R
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -74,9 +76,9 @@ class DataModule {
 
     @Provides
     @Singleton
-    fun provideCharacterApi(retrofit: Retrofit.Builder) : es.i12capea.data.api.CharacterApi {
+    fun provideCharacterApi(retrofit: Retrofit.Builder) : CharacterApi {
         return retrofit.build()
-            .create(es.i12capea.data.api.CharacterApi::class.java)
+            .create(CharacterApi::class.java)
     }
 
     @Provides
@@ -88,9 +90,9 @@ class DataModule {
 
     @Singleton
     @Provides
-    fun provideEpisodeApi(retrofit: Retrofit.Builder) : es.i12capea.data.api.EpisodesApi {
+    fun provideEpisodeApi(retrofit: Retrofit.Builder) : EpisodesApi {
         return retrofit.build()
-            .create(es.i12capea.data.api.EpisodesApi::class.java)
+            .create(EpisodesApi::class.java)
     }
 
     @Singleton

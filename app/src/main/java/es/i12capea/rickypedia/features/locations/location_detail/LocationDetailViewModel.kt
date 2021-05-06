@@ -1,7 +1,7 @@
 package es.i12capea.rickypedia.features.locations.location_detail
 
 import dagger.hilt.android.lifecycle.HiltViewModel
-import es.i12capea.domain.usecases.GetCharactersInLocationUseCase
+import es.i12capea.rickypedia.shared.domain.usecases.GetCharactersInLocationUseCase
 import es.i12capea.rickypedia.common.BaseViewModel
 import es.i12capea.rickypedia.common.ErrorRym
 import es.i12capea.rickypedia.common.Event

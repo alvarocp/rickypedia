@@ -2,8 +2,8 @@ package es.i12capea.data.api
 
 
 import android.util.Log
-import es.i12capea.domain.exceptions.RequestException
-import es.i12capea.domain.exceptions.ResponseException
+import es.i12capea.rickypedia.shared.domain.exceptions.RequestException
+import es.i12capea.rickypedia.shared.domain.exceptions.ResponseException
 import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -27,7 +27,7 @@ fun <T> Call<T>.call(): T {
 
     this.enqueue(object : Callback<T> {
         override fun onFailure(call: Call<T>, t: Throwable) {
-            throwable = RequestException()
+            throwable = es.i12capea.rickypedia.shared.domain.exceptions.RequestException()
             latch.countDown()
         }
 
@@ -42,7 +42,10 @@ fun <T> Call<T>.call(): T {
                     latch.countDown()
                 }
                 false -> {
-                    throwable = ResponseException(response.code(), response.message())
+                    throwable = es.i12capea.rickypedia.shared.domain.exceptions.ResponseException(
+                        response.code(),
+                        response.message()
+                    )
                     latch.countDown()
                 }
             }

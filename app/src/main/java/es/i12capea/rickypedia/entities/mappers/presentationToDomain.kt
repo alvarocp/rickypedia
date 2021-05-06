@@ -1,9 +1,9 @@
 package es.i12capea.rickypedia.entities.mappers
 
-import es.i12capea.domain.entities.CharacterEntity
-import es.i12capea.domain.entities.EpisodeEntity
-import es.i12capea.domain.entities.LocationEntity
-import es.i12capea.domain.entities.LocationShortEntity
+import es.i12capea.rickypedia.shared.domain.entities.CharacterEntity
+import es.i12capea.rickypedia.shared.domain.entities.EpisodeEntity
+import es.i12capea.rickypedia.shared.domain.entities.LocationEntity
+import es.i12capea.rickypedia.shared.domain.entities.LocationShortEntity
 import es.i12capea.rickypedia.entities.Character
 import es.i12capea.rickypedia.entities.Episode
 import es.i12capea.rickypedia.entities.Location

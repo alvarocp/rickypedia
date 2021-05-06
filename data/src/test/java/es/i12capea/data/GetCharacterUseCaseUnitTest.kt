@@ -1,8 +1,8 @@
 package es.i12capea.data
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import es.i12capea.domain.exceptions.ResponseException
-import es.i12capea.domain.usecases.GetCharacterUseCase
+import es.i12capea.rickypedia.shared.domain.exceptions.ResponseException
+import es.i12capea.rickypedia.shared.domain.usecases.GetCharacterUseCase
 import io.mockk.MockKAnnotations
 import io.mockk.coVerify
 import io.mockk.unmockkAll
@@ -43,7 +43,8 @@ class GetCharacterUseCaseUnitTest {
     @Test
     fun `01 success test`() = runBlocking{
         val characterRepository = getCharacterRepository()
-        val getCharacterUseCase = GetCharacterUseCase(characterRepository)
+        val getCharacterUseCase =
+            es.i12capea.rickypedia.shared.domain.usecases.GetCharacterUseCase(characterRepository)
         var characterCollected = 0
 
         getCharacterUseCase(1)
@@ -57,10 +58,11 @@ class GetCharacterUseCaseUnitTest {
         coVerify { characterRepository.getCharacter(any()) }
     }
 
-    @Test(expected = ResponseException::class)
+    @Test(expected = es.i12capea.rickypedia.shared.domain.exceptions.ResponseException::class)
     fun `02 repository throw response exception`() = runBlocking{
         val characterRepository = getCharacterRepositoryResponseException()
-        val getCharacterUseCase = GetCharacterUseCase(characterRepository)
+        val getCharacterUseCase =
+            es.i12capea.rickypedia.shared.domain.usecases.GetCharacterUseCase(characterRepository)
 
         getCharacterUseCase(1)
             .collect { //Empty collect need because cold stream are not sent if no one is listening.

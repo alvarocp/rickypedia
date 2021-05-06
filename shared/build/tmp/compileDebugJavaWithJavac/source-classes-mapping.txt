@@ -1,0 +1,2 @@
+es/i12capea/rickypedia/shared/BuildConfig.java
+ es.i12capea.rickypedia.shared.BuildConfig

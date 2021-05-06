@@ -2,7 +2,7 @@ package es.i12capea.rickypedia.features.locations.location_list
 
 import android.os.Parcelable
 import dagger.hilt.android.lifecycle.HiltViewModel
-import es.i12capea.domain.usecases.GetLocationsInPageUseCase
+import es.i12capea.rickypedia.shared.domain.usecases.GetLocationsInPageUseCase
 import es.i12capea.rickypedia.common.BaseViewModel
 import es.i12capea.rickypedia.common.ErrorRym
 import es.i12capea.rickypedia.common.Event

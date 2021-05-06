@@ -8,9 +8,9 @@ import es.i12capea.data.api.CharacterApi
 import es.i12capea.data.local.dao.LocalCharacterDao
 import es.i12capea.data.local.dao.LocalCharacterPageDao
 import es.i12capea.data.repository.CharacterRepositoryImpl
-import es.i12capea.domain.repositories.CharacterRepository
-import es.i12capea.domain.usecases.GetCharacterUseCase
-import es.i12capea.domain.usecases.GetCharactersInPageUseCase
+import es.i12capea.rickypedia.shared.domain.repositories.CharacterRepository
+import es.i12capea.rickypedia.shared.domain.usecases.GetCharacterUseCase
+import es.i12capea.rickypedia.shared.domain.usecases.GetCharactersInPageUseCase
 
 
 @Module

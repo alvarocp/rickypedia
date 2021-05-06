@@ -48,7 +48,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":domain"))
+    implementation(project(":shared"))
 
     implementation(Dependencies.Kotlin.jdk)
     implementation(Dependencies.AndroidX.appCompat)

@@ -1,8 +1,8 @@
 package es.i12capea.rickypedia.features.characters.character_detail
 
 import dagger.hilt.android.lifecycle.HiltViewModel
-import es.i12capea.domain.usecases.GetCharacterUseCase
-import es.i12capea.domain.usecases.GetEpisodesUseCase
+import es.i12capea.rickypedia.shared.domain.usecases.GetCharacterUseCase
+import es.i12capea.rickypedia.shared.domain.usecases.GetEpisodesUseCase
 import es.i12capea.rickypedia.common.BaseViewModel
 import es.i12capea.rickypedia.common.ErrorRym
 import es.i12capea.rickypedia.common.Event

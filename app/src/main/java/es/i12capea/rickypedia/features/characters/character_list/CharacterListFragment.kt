@@ -12,7 +12,7 @@ import androidx.lifecycle.addRepeatingJob
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
-import es.i12capea.domain.common.Constants
+import es.i12capea.rickypedia.shared.domain.common.Constants
 import es.i12capea.rickypedia.common.displayErrorDialog
 import es.i12capea.rickypedia.databinding.FragmentCharacterListBinding
 import es.i12capea.rickypedia.features.characters.character_list.state.CharacterListStateEvent

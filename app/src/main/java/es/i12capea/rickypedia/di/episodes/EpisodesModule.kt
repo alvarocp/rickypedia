@@ -4,12 +4,12 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityRetainedComponent
-import es.i12capea.domain.repositories.CharacterRepository
-import es.i12capea.domain.repositories.EpisodeRepository
-import es.i12capea.domain.usecases.GetCharactersInEpisodeUseCase
-import es.i12capea.domain.usecases.GetEpisodeUseCase
-import es.i12capea.domain.usecases.GetEpisodesInPageUseCase
-import es.i12capea.domain.usecases.GetEpisodesUseCase
+import es.i12capea.rickypedia.shared.domain.repositories.CharacterRepository
+import es.i12capea.rickypedia.shared.domain.repositories.EpisodeRepository
+import es.i12capea.rickypedia.shared.domain.usecases.GetCharactersInEpisodeUseCase
+import es.i12capea.rickypedia.shared.domain.usecases.GetEpisodeUseCase
+import es.i12capea.rickypedia.shared.domain.usecases.GetEpisodesInPageUseCase
+import es.i12capea.rickypedia.shared.domain.usecases.GetEpisodesUseCase
 
 @Module
 @InstallIn(ActivityRetainedComponent::class)

@@ -7,12 +7,12 @@ import es.i12capea.data.api.models.character.RemoteCharacter
 import es.i12capea.data.api.models.episode.RemoteEpisode
 import es.i12capea.data.api.models.location.RemoteLocation
 import es.i12capea.data.local.model.*
-import es.i12capea.domain.entities.*
+import es.i12capea.rickypedia.shared.domain.entities.*
 
 
-fun PageAndLocations.toDomain() : PageEntity<LocationEntity>{
+fun PageAndLocations.toDomain() : PageEntity<LocationEntity> {
     return PageEntity(
-        nextPage =  this.page.nextPage,
+        nextPage = this.page.nextPage,
         prevPage = this.page.prevPage,
         actualPage = this.page.actualPage,
         count = this.page.count,
@@ -28,19 +28,19 @@ fun List<LocalLocation>.localLocationsToDomain() : List<LocationEntity>{
     return list
 }
 
-fun LocalLocation.toDomain() : LocationEntity{
+fun LocalLocation.toDomain() : LocationEntity {
     return LocationEntity(
         id = id,
-        name= name,
-        type= type,
-        dimension= dimension,
-        residents= residents
+        name = name,
+        type = type,
+        dimension = dimension,
+        residents = residents
     )
 }
 
-fun PageAndEpisodes.toDomain() : PageEntity<EpisodeEntity>{
+fun PageAndEpisodes.toDomain() : PageEntity<EpisodeEntity> {
     return PageEntity(
-        nextPage =  this.page.nextPage,
+        nextPage = this.page.nextPage,
         prevPage = this.page.prevPage,
         actualPage = this.page.actualPage,
         count = this.page.count,
@@ -56,19 +56,19 @@ fun List<LocalEpisode>.toDomain() : List<EpisodeEntity>{
     return list
 }
 
-fun LocalEpisode.toDomain() : EpisodeEntity{
+fun LocalEpisode.toDomain() : EpisodeEntity {
     return EpisodeEntity(
-         id = id,
-         name = name,
-         air_date = air_date,
-         episode = episode,
-         characters = characters
+        id = id,
+        name = name,
+        air_date = air_date,
+        episode = episode,
+        characters = characters
     )
 }
 
-fun PageAndCharacters.toDomain() : PageEntity<CharacterEntity>{
+fun PageAndCharacters.toDomain() : PageEntity<CharacterEntity> {
     return PageEntity(
-        nextPage =  this.page.nextPage,
+        nextPage = this.page.nextPage,
         prevPage = this.page.prevPage,
         actualPage = this.page.actualPage,
         count = this.page.count,
@@ -76,7 +76,7 @@ fun PageAndCharacters.toDomain() : PageEntity<CharacterEntity>{
     )
 }
 
-fun LocalCharacter.toDomain() : CharacterEntity{
+fun LocalCharacter.toDomain() : CharacterEntity {
 
     return CharacterEntity(
         id = id,
@@ -85,8 +85,14 @@ fun LocalCharacter.toDomain() : CharacterEntity{
         species = species,
         type = type,
         gender = gender,
-        origin = LocationShortEntity(origin.locationId ,origin.name),
-        location = LocationShortEntity(location.locationId, location.name),
+        origin = LocationShortEntity(
+            origin.locationId,
+            origin.name
+        ),
+        location = LocationShortEntity(
+            location.locationId,
+            location.name
+        ),
         image = image,
         episodes = this.episodes
     )
@@ -116,24 +122,24 @@ fun Info.getActualPage() : Int{
     return actual
 }
 
-fun PageableResponse<RemoteCharacter>.characterPageToDomain() : PageEntity<CharacterEntity>{
+fun PageableResponse<RemoteCharacter>.characterPageToDomain() : PageEntity<CharacterEntity> {
     return PageEntity(
-        nextPage =  getIdFromPage(this.info.next),
+        nextPage = getIdFromPage(this.info.next),
         prevPage = getIdFromPage(this.info.prev),
-        actualPage =  info.getActualPage(),
+        actualPage = info.getActualPage(),
         count = this.results.size,
-        list =  this.results.charactersToDomain()
+        list = this.results.charactersToDomain()
     )
 }
 
 
 fun PageableResponse<RemoteLocation>.locationPageToDomain() : PageEntity<LocationEntity> {
     return PageEntity(
-        nextPage =  getIdFromPage(this.info.next),
+        nextPage = getIdFromPage(this.info.next),
         prevPage = getIdFromPage(this.info.prev),
-        actualPage =  info.getActualPage(),
+        actualPage = info.getActualPage(),
         count = this.results.size,
-        list =  this.results.locationsToDomain()
+        list = this.results.locationsToDomain()
     )
 }
 
@@ -156,13 +162,13 @@ fun getIdFromUrl(url: String?) : Int?{
     }
 }
 
-fun PageableResponse<RemoteEpisode>.episodePageToDomain() : PageEntity<EpisodeEntity>{
+fun PageableResponse<RemoteEpisode>.episodePageToDomain() : PageEntity<EpisodeEntity> {
     return PageEntity(
-        nextPage =  getIdFromPage(this.info.next),
+        nextPage = getIdFromPage(this.info.next),
         prevPage = getIdFromPage(this.info.prev),
-        actualPage =  info.getActualPage(),
+        actualPage = info.getActualPage(),
         count = this.results.size,
-        list =  this.results.episodesToDomain()
+        list = this.results.episodesToDomain()
     )
 }
 
@@ -241,8 +247,16 @@ fun RemoteCharacter.toDomain() : CharacterEntity {
         species = species,
         type = type,
         gender = gender,
-        origin = LocationShortEntity(getIdFromUrl(origin.url),origin.name),
-        location = LocationShortEntity(getIdFromUrl(location.url), location.name),
+        origin = LocationShortEntity(
+            getIdFromUrl(
+                origin.url
+            ), origin.name
+        ),
+        location = LocationShortEntity(
+            getIdFromUrl(
+                location.url
+            ), location.name
+        ),
         image = image,
         episodes = episodes
     )

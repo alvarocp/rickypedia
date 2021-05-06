@@ -1,8 +1,8 @@
 package es.i12capea
 
-import es.i12capea.domain.entities.CharacterEntity
-import es.i12capea.domain.entities.LocationShortEntity
-import es.i12capea.domain.usecases.GetCharacterUseCase
+import es.i12capea.rickypedia.shared.domain.entities.CharacterEntity
+import es.i12capea.rickypedia.shared.domain.entities.LocationShortEntity
+import es.i12capea.rickypedia.shared.domain.usecases.GetCharacterUseCase
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.flow.flow
