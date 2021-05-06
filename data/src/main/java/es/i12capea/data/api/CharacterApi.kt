@@ -1,6 +1,6 @@
 package es.i12capea.data.api
-import es.i12capea.data.api.models.PageableResponse
-import es.i12capea.data.api.models.character.RemoteCharacter
+import es.i12capea.rickypedia.shared.data.api.models.PageableResponse
+import es.i12capea.rickypedia.shared.data.api.models.character.RemoteCharacter
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path

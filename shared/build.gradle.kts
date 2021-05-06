@@ -17,6 +17,11 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.1.0")
+                implementation("io.ktor:ktor-client-core:${Versions.Libs.ktor}")
+                implementation("io.ktor:ktor-client-json:${Versions.Libs.ktor}")
+                implementation("io.ktor:ktor-client-logging:${Versions.Libs.ktor}")
+                implementation("io.ktor:ktor-client-serialization:${Versions.Libs.ktor}")
                 implementation(Dependencies.Kotlin.coroutinesCore)
             }
         }

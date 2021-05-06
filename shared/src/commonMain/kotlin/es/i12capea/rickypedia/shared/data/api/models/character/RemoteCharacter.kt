@@ -1,10 +1,8 @@
-package es.i12capea.data.api.models.character
+package es.i12capea.rickypedia.shared.data.api.models.character
 
-import android.os.Parcelable
-import es.i12capea.rickypedia.shared.data.api.models.character.RemoteLocationShort
-import kotlinx.parcelize.Parcelize
+import kotlinx.serialization.Serializable
 
-@Parcelize
+@Serializable
 data class RemoteCharacter(
     val id: Int,
     val name: String,
@@ -18,6 +16,4 @@ data class RemoteCharacter(
     val episode: ArrayList<String>,
     val url: String,
     val created: String
-) : Parcelable {
-
-}
+)

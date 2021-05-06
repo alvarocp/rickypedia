@@ -3,8 +3,8 @@ package es.i12capea.data.local.converters
 import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import es.i12capea.data.api.models.Info
-import es.i12capea.data.api.models.character.RemoteCharacter
+import es.i12capea.rickypedia.shared.data.api.models.Info
+import es.i12capea.rickypedia.shared.data.api.models.character.RemoteCharacter
 import es.i12capea.data.local.model.LocalLocationShort
 import java.lang.reflect.Type
 

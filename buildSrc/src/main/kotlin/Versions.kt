@@ -8,6 +8,7 @@ object Versions {
         const val glide = "4.11.0"
         const val hilt = "2.35"
         const val material_dialogs = "3.3.0"
+        const val ktor = "1.5.3"
     }
 
     object AndroidX {
