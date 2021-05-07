@@ -1,6 +1,6 @@
 object Versions {
 
-    const val gradlePlugin = "4.1.1"
+    const val gradlePlugin = "7.0.0-alpha15"
     const val googleServices = "4.3.4"
 
     object Libs {
@@ -26,8 +26,8 @@ object Versions {
     }
 
     object Kotlin{
-        const val kotlin = "1.4.32"
-        const val coroutines = "1.4.3"
+        const val kotlin = "1.5.0"
+        const val coroutines = "1.5.0-RC"
     }
 
     object Test{

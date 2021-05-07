@@ -14,13 +14,13 @@ android {
         viewBinding = true
     }
 
-    compileSdkVersion(Config.compileSdk)
-    buildToolsVersion(Config.buildTools)
+    compileSdk = Config.compileSdk
+    buildToolsVersion = Config.buildTools
 
     defaultConfig {
         applicationId = Config.applicationId
-        minSdkVersion(Config.minSdk)
-        targetSdkVersion(Config.targetSdk)
+        minSdk = Config.minSdk
+        targetSdk = Config.targetSdk
         versionCode = Config.versionCode
         versionName = Config.versionName
         testInstrumentationRunner = Config.testInstrumentationRunner

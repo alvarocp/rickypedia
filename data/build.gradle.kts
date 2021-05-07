@@ -7,15 +7,13 @@ plugins {
 }
 
 android {
-    compileSdkVersion(Config.compileSdk)
-    buildToolsVersion(Config.buildTools)
-
+    compileSdk = Config.compileSdk
+    buildToolsVersion = Config.buildTools
 
     defaultConfig {
-        minSdkVersion(Config.minSdk)
-        targetSdkVersion(Config.targetSdk)
-        versionCode = Config.versionCode
-        versionName = Config.versionName
+        minSdk = Config.minSdk
+        targetSdk = Config.targetSdk
+        compileSdk = Config.compileSdk
         testInstrumentationRunner = Config.testInstrumentationRunner
     }
 
@@ -23,11 +21,9 @@ android {
         buildTypes {
             getByName(Config.release){
                 isMinifyEnabled = false
-                isDebuggable = false
                 proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.txt")
             }
             getByName(Config.debug){
-                isDebuggable = true
             }
         }
     }

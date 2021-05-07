@@ -1,7 +1,6 @@
 package es.i12capea.data.api.models.character
 
 import android.os.Parcelable
-import es.i12capea.rickypedia.shared.data.api.models.character.RemoteLocationShort
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
