@@ -9,6 +9,7 @@ object Versions {
         const val hilt = "2.35"
         const val material_dialogs = "3.3.0"
         const val ktor = "1.5.3"
+        const val sql_delight = "1.5.0"
     }
 
     object AndroidX {

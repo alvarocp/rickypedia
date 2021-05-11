@@ -4,4 +4,6 @@ object Classpaths {
     const val navigationSafeArgs = "androidx.navigation:navigation-safe-args-gradle-plugin:" + Versions.AndroidX.navigation
     const val googleServices = "com.google.gms:google-services:" + Versions.googleServices
     const val hilt = "com.google.dagger:hilt-android-gradle-plugin:" + Versions.Libs.hilt
+    const val sql_delight = "com.squareup.sqldelight:gradle-plugin:${Versions.Libs.sql_delight}"
+    const val kotlinSerialization = "org.jetbrains.kotlin:kotlin-serialization:${Versions.Kotlin.kotlin}"
 }

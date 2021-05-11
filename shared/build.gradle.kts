@@ -3,6 +3,8 @@ import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 plugins {
     kotlin("multiplatform")
     id("com.android.library")
+    id("com.squareup.sqldelight")
+    kotlin("plugin.serialization")
 }
 
 kotlin {
@@ -31,14 +33,22 @@ kotlin {
                 implementation(kotlin("test-annotations-common"))
             }
         }
-        val androidMain by getting
+        val androidMain by getting {
+            dependencies {
+                implementation("com.squareup.sqldelight:android-driver:${Versions.Libs.sql_delight}")
+            }
+        }
         val androidTest by getting {
             dependencies {
                 implementation(kotlin("test-junit"))
                 implementation("junit:junit:4.13")
             }
         }
-        val iosMain by getting
+        val iosMain by getting {
+            dependencies {
+                implementation("com.squareup.sqldelight:native-driver:${Versions.Libs.sql_delight}")
+            }
+        }
         val iosTest by getting
     }
 }
@@ -51,6 +61,13 @@ android {
         targetSdk = Config.targetSdk
     }
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
+}
+
+sqldelight {
+    database("LocalDb") {
+        packageName = "mylocal.db"
+        sourceFolders = listOf("kotlin")
+    }
 }
 
 val packForXcode by tasks.creating(Sync::class) {

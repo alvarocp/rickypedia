@@ -1,0 +1,60 @@
+import es.i12capea.rickypedia.shared.data.local.model.LocalLocationShort;
+import kotlin.collections.List;
+
+CREATE TABLE LocalCharacter(
+    id INTEGER AS Int NOT NULL PRIMARY KEY,
+    page INTEGER AS Int,
+    name TEXT NOT NULL,
+    status TEXT NOT NULL,
+    species TEXT NOT NULL,
+    type TEXT NOT NULL,
+    gender TEXT NOT NULL,
+    origin TEXT AS LocalLocationShort NOT NULL,
+    location TEXT AS LocalLocationShort NOT NULL,
+    image TEXT NOT NULL,
+    episodes TEXT AS List<Int> NOT NULL,
+    FOREIGN KEY (page) REFERENCES LocalCharacterPage(actualPage)
+);
+
+selectCharactersInPage:
+SELECT *
+FROM LocalCharacter
+WHERE page = ?;
+
+searchCharactersByIds:
+SELECT * FROM LocalCharacter
+WHERE id IN :ids;
+
+selectCharacter:
+SELECT *
+FROM LocalCharacter
+WHERE id = ?;
+
+updateEpisodesFromCharacter:
+UPDATE LocalCharacter
+SET episodes = :episodes
+WHERE id = :id;
+
+updateEpisodesAndPage:
+UPDATE LocalCharacter
+SET episodes = :episodes,
+page = :page
+WHERE id = :id;
+
+insertCharacter:
+INSERT OR REPLACE INTO LocalCharacter(
+    id,
+    page,
+    name,
+    status,
+    species,
+    type,
+    gender,
+    origin,
+    location,
+    image,
+    episodes
+) VALUES (:id,:page,:name,
+:status,:species,:type,
+:gender,:origin,:location,
+:image,:episodes);

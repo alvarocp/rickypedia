@@ -1,0 +1,19 @@
+CREATE TABLE LocalCharacterPage(
+    actualPage INTEGER AS Int NOT NULL PRIMARY KEY,
+    nextPage INTEGER AS Int,
+    prevPage INTEGER AS Int,
+    count INTEGER AS Int NOT NULL
+);
+
+selectLocalCharacterPage:
+SELECT *
+FROM LocalCharacterPage
+WHERE actualPage = ?;
+
+insertLocalCharacterPage:
+INSERT OR REPLACE INTO LocalCharacterPage(
+    actualPage,
+    nextPage,
+    prevPage,
+    count
+) VALUES (:actualPage, :nextPage, :prevPage, :count);
